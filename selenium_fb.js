@@ -53,24 +53,73 @@ async function openCrawlerWeb() {
     await driver.wait(until.elementLocated(By.xpath(`//*[contains(@id,":R6kmpaj9emhpapd5aq:")]`)))
 
     //登入成功後要前往粉專頁面
-    const fanpage = "https://www.facebook.com/baobaonevertell/"
+    const fanpage = "https://www.facebook.com/groups/1230482576964177"
     await driver.get(fanpage)
-
     //瀏覽器前往粉專頁面3秒後再進行爬蟲
     await driver.sleep(3000)
-    let fb_post = [];//這是紀錄FB追蹤人數
-    //因為考慮到登入之後每個粉專顯示追蹤人數的位置都不一樣，所以就採用全抓在分析
-    const fb_trace_path =`//div[@class='xdj266r x11i5rnm xat24cr x1mh8g0r x1vvkbs x126k92a']`
-    const fb_trace_eles = await driver.wait(until.elementsLocated(By.xpath(fb_trace_path)))
-    for (const fb_trace_ele of fb_trace_eles) {
-      const fb_text = await fb_trace_ele.getText()
-      fb_post.push(fb_text)
-      // if (fb_text.includes('人在追蹤')) {
-      //   break;
-      // }
-    }
-    console.log(`fb_post: ${fb_post}`)
 
-    driver.quit();
+
+    async function showTodayData(number,itemsCssName,itemTimeCssName){
+      const itemFirst = await driver.findElement(By.css(itemsCssName))
+      const itemFirstY = Math.round((await itemFirst.getRect()).y) //該DIV的高
+      const scrollHeight = itemFirstY+number
+      // console.log(scrollHeight)
+      await driver.actions().scroll(0, 0, 0, scrollHeight).perform()
+
+      //抓最後一筆
+      await driver.sleep(1000)
+      const item = await driver.findElements(By.css(CssName))
+      const itemLast = item[item.length-1]
+      //抓最後一筆時間
+      const timeLink=  await itemLast.findElement(By.css(`${itemTimeCssName} use`))
+      let timeId= await timeLink.getAttribute("xlink:href");
+      timeId = await driver.findElement(By.css(`${timeId} use`)).getAttribute("xlink:href");
+      let timeText = await driver.findElement(By.css(`${timeId}`)).getAttribute("innerHTML");
+      console.log(timeText)
+      if(!timeText.includes('日')){
+        showTodayData(number,itemsCssName,itemTimeCssName)
+      }else{
+        return 'ok';
+      }
+    }
+
+    //資料類別名
+    const itemsCssName = '.x1yztbdb.x1n2onr6.xh8yej3.x1ja2u2z';
+    const itemTimeCssName = '.x1i10hfl.xjbqb8w.x6umtig.x1b1mbwd.xaqea5y.xav7gou.x9f619.x1ypdohk.xt0psk2.xe8uvvx.xdj266r.x11i5rnm.xat24cr.x1mh8g0r.xexx8yu.x4uap5.x18d9i69.xkhd6sd.x16tdsg8.x1hl2dhg.xggy1nq.x1a2a7pz.x1heor9g.xt0b8zv.xo1l8bm';
+    const arrays = []
+
+    //顯示今天資料
+    await showTodayData(200,itemsCssName,itemTimeCssName)
+    console.log(obj);
+
+    //抓取資料
+    const items = await driver.findElement(By.css(itemsCssName))
+    for (const item of items) {
+      const obj = {}
+      //時間
+      const timeLink= await item.findElement(By.css(itemTimeCssName))
+      // const time= await timeLink.getText()
+      obj.timeurl= await timeLink.getAttribute("href");
+      const dt=new Date();
+      obj.time= `${dt.getFullYear()}${('0'+(dt.getMonth()+1)).slice(-2)}${('0'+dt.getDate()).slice(-2)}`
+      console.log(time,timeurl)
+
+      //圖片
+      const imgsrc= await item.findElement(By.css('.x1ey2m1c.xds687c.x5yr21d.x10l6tqk.x17qophe.x13vifvy.xh8yej3.xl1xv1r')).getAttribute("src");
+      console.log(imgsrc)
+    
+      //名子
+      const nameObj= await item.findElement(By.css('a.x1i10hfl.xjbqb8w.x6umtig.x1b1mbwd.xaqea5y.xav7gou.x9f619.x1ypdohk.xt0psk2.xe8uvvx.xdj266r.x11i5rnm.xat24cr.x1mh8g0r.xexx8yu.x4uap5.x18d9i69.xkhd6sd.x16tdsg8.x1hl2dhg.xggy1nq.x1a2a7pz.xt0b8zv.xzsf02u.x1s688f'));
+      obj.name= await nameObj.findElement(By.css('strong span')).getText();
+      obj.namehref= await nameObj.getAttribute('href');
+      console.log(name,namehref)
+  
+      //文章
+      const articlesObj = await item.findElement(By.css('.x193iq5w.xeuugli.x13faqbe.x1vvkbs.x1xmvt09.x1lliihq.x1s928wv.xhkezso.x1gmr53x.x1cpjm7i.x1fgarty.x1943h6x.xudqn12.x3x7a5m.x6prxxf.xvq8zen.xo1l8bm.xzsf02u.x1yc453h'))
+      const articles = articlesObj.getText()
+      console.log(articles)
+    }
+
+    // driver.quit();
 }
 openCrawlerWeb()//打開爬蟲網頁
