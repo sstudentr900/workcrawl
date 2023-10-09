@@ -52,6 +52,7 @@ async function openCrawlerWeb() {
     //以登入後才會出現的元件作為判斷登入與否的依據
     await driver.wait(until.elementLocated(By.xpath(`//*[contains(@id,":R6kmpaj9emhpapd5aq:")]`)))
 
+
     //登入成功後要前往粉專頁面
     const fanpage = "https://www.facebook.com/groups/1230482576964177"
     await driver.get(fanpage)
@@ -59,6 +60,12 @@ async function openCrawlerWeb() {
     await driver.sleep(3000)
 
 
+    //資料類別名
+    const itemsCssName = '.x1yztbdb.x1n2onr6.xh8yej3.x1ja2u2z';
+    const itemTimeCssName = '.x1i10hfl.xjbqb8w.x6umtig.x1b1mbwd.xaqea5y.xav7gou.x9f619.x1ypdohk.xt0psk2.xe8uvvx.xdj266r.x11i5rnm.xat24cr.x1mh8g0r.xexx8yu.x4uap5.x18d9i69.xkhd6sd.x16tdsg8.x1hl2dhg.xggy1nq.x1a2a7pz.x1heor9g.xt0b8zv.xo1l8bm';
+
+    //顯示可抓資料
+    console.log(`顯示可抓資料`)
     async function showTodayData(number,itemsCssName,itemTimeCssName){
       const itemFirst = await driver.findElement(By.css(itemsCssName))
       const itemFirstY = Math.round((await itemFirst.getRect()).y) //該DIV的高
@@ -68,57 +75,70 @@ async function openCrawlerWeb() {
 
       //抓最後一筆
       await driver.sleep(1000)
-      const item = await driver.findElements(By.css(CssName))
+      const item = await driver.findElements(By.css(itemsCssName))
       const itemLast = item[item.length-1]
       //抓最後一筆時間
       const timeLink=  await itemLast.findElement(By.css(`${itemTimeCssName} use`))
       let timeId= await timeLink.getAttribute("xlink:href");
-      timeId = await driver.findElement(By.css(`${timeId} use`)).getAttribute("xlink:href");
+      // await driver.sleep(1000)
+      // timeId = await driver.findElement(By.css(`${timeId} use`)).getAttribute("xlink:href");
+      // await driver.sleep(1000)
       let timeText = await driver.findElement(By.css(`${timeId}`)).getAttribute("innerHTML");
-      console.log(timeText)
-      if(!timeText.includes('日')){
-        showTodayData(number,itemsCssName,itemTimeCssName)
-      }else{
+      console.log(`timeText:${timeText},${timeText.includes('日')},${timeText.includes('天')}`)
+      if(timeText.includes('日') || timeText.includes('天')){
         return 'ok';
+      }else{
+        await showTodayData(number,itemsCssName,itemTimeCssName)
       }
     }
-
-    //資料類別名
-    const itemsCssName = '.x1yztbdb.x1n2onr6.xh8yej3.x1ja2u2z';
-    const itemTimeCssName = '.x1i10hfl.xjbqb8w.x6umtig.x1b1mbwd.xaqea5y.xav7gou.x9f619.x1ypdohk.xt0psk2.xe8uvvx.xdj266r.x11i5rnm.xat24cr.x1mh8g0r.xexx8yu.x4uap5.x18d9i69.xkhd6sd.x16tdsg8.x1hl2dhg.xggy1nq.x1a2a7pz.x1heor9g.xt0b8zv.xo1l8bm';
-    const arrays = []
-
-    //顯示今天資料
     await showTodayData(200,itemsCssName,itemTimeCssName)
-    console.log(obj);
 
     //抓取資料
-    const items = await driver.findElement(By.css(itemsCssName))
+    console.log(`抓取資料`)
+    const arrays = []
+    const items = await driver.findElements(By.css(itemsCssName))
     for (const item of items) {
       const obj = {}
       //時間
       const timeLink= await item.findElement(By.css(itemTimeCssName))
       // const time= await timeLink.getText()
       obj.timeurl= await timeLink.getAttribute("href");
-      const dt=new Date();
-      obj.time= `${dt.getFullYear()}${('0'+(dt.getMonth()+1)).slice(-2)}${('0'+dt.getDate()).slice(-2)}`
-      console.log(time,timeurl)
+      const dt= new Date();
+      obj.time= `${dt.getFullYear()}-${('0'+(dt.getMonth()+1)).slice(-2)}-${('0'+dt.getDate()).slice(-2)}`
+      console.log(`time:${obj.time}`)
+      console.log(`timeurl:${obj.timeurl}`)
 
       //圖片
-      const imgsrc= await item.findElement(By.css('.x1ey2m1c.xds687c.x5yr21d.x10l6tqk.x17qophe.x13vifvy.xh8yej3.xl1xv1r')).getAttribute("src");
-      console.log(imgsrc)
+      const imgsrcs= await item.findElements(By.css('.x1ey2m1c.xds687c.x5yr21d.x10l6tqk.x17qophe.x13vifvy.xh8yej3.xl1xv1r'));
+      if(imgsrcs.length > 0){
+        obj.imgsrc= await imgsrcs[0].getAttribute("src")
+        console.log(`imgsrc:${obj.imgsrc}`)
+      }
     
       //名子
       const nameObj= await item.findElement(By.css('a.x1i10hfl.xjbqb8w.x6umtig.x1b1mbwd.xaqea5y.xav7gou.x9f619.x1ypdohk.xt0psk2.xe8uvvx.xdj266r.x11i5rnm.xat24cr.x1mh8g0r.xexx8yu.x4uap5.x18d9i69.xkhd6sd.x16tdsg8.x1hl2dhg.xggy1nq.x1a2a7pz.xt0b8zv.xzsf02u.x1s688f'));
       obj.name= await nameObj.findElement(By.css('strong span')).getText();
       obj.namehref= await nameObj.getAttribute('href');
-      console.log(name,namehref)
+      console.log(`name:${obj.name}`)
+      console.log(`namehref:${obj.namehref}`)
   
       //文章
-      const articlesObj = await item.findElement(By.css('.x193iq5w.xeuugli.x13faqbe.x1vvkbs.x1xmvt09.x1lliihq.x1s928wv.xhkezso.x1gmr53x.x1cpjm7i.x1fgarty.x1943h6x.xudqn12.x3x7a5m.x6prxxf.xvq8zen.xo1l8bm.xzsf02u.x1yc453h'))
-      const articles = articlesObj.getText()
-      console.log(articles)
+      const articlesObj = await item.findElement(By.css('.x193iq5w.xeuugli.x13faqbe.x1vvkbs.x1xmvt09.x1lliihq.x1s928wv.xhkezso.x1gmr53x.x1cpjm7i.x1fgarty.x1943h6x.xudqn12.x3x7a5m.x6prxxf.xvq8zen.xo1l8bm.xzsf02u'))
+      //文章打開顯示更多
+      const articlesMore = await articlesObj.findElements(By.xpath("//div[contains(text(),'顯示更多')]"))
+      console.log(`articlesMore:${articlesMore.length}`)
+      if(articlesMore.length>0){
+        await articlesMore[0].click()
+        await driver.sleep(1000)
+      }
+      obj.articles = await articlesObj.getText()
+      console.log(`articles:${obj.articles}`)
+
+      arrays.push(obj)
+      await driver.sleep(2000)
     }
+
+    // console.log(`arrays:${arrays}`)
 
     // driver.quit();
 }

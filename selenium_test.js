@@ -14,16 +14,32 @@ async function openCrawlerWeb() {
     let driver = await new webdriver.Builder().forBrowser("chrome").withCapabilities(options).build();
     const web = 'https://ithelp.ithome.com.tw/users/20150652/ironman/5050?page=3';//我們要前往FB
     await driver.get(web)//在這裡要用await確保打開完網頁後才能繼續動作
+    await driver.sleep(1000)
 
+    //使用屬性查找元素 element by attribute------------------------------------------
+    //https://www.lambdatest.com/blog/how-to-find-element-by-text-in-selenium/
+    //const obj5 = await driver.findElement(By.xpath("//a[@rel='prev']"))
+    // console.log(obj5);
 
-    //查找該元素------------------------------------------
-    const obj = await driver.findElements(By.css('.qa-list__title-link'))
-    if(obj.length > 0)
+    //使用包含字元查找元素 element by contains------------------------------------------
+    //https://www.lambdatest.com/blog/how-to-find-element-by-text-in-selenium/
+    const obj6 = await driver.findElements(By.xpath("//button[contains(text(),'展開')]"))
+    if(obj6.length > 0)
     {
-      console.log(await obj[0].getText());
+      obj6[0].click()
     }else{
       console.log('no');
     }
+    console.log(obj6);
+
+    //查找該元素------------------------------------------
+    // const obj4 = await driver.findElements(By.css('.qa-list__title-link'))
+    // if(obj4.length > 0)
+    // {
+    //   console.log(await obj4[0].getText());
+    // }else{
+    //   console.log('no');
+    // }
 
     //單個------------------------------------------
     // const obj = await driver.findElement(By.css('.qa-list__title-link'))
