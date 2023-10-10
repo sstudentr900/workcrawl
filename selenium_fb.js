@@ -8,18 +8,6 @@ const fs = require("fs");//讀取檔案用
 const fb_username = process.env.FB_USERNAME
 const fb_userpass = process.env.FB_PASSWORD
 
-function getCrawlerPath () {
-  if (process.env.FB_VERSION === 'new') {//如果是新版FB
-      return {
-          "fb_head_path": `//*[contains(@class,"fzdkajry")]`
-      }
-  } else {//如果為設定皆默認為舊版
-      return {
-          "fb_head_path": `//*[contains(@class,"_1vp5")]`
-      }
-  }
-}
-
 async function openCrawlerWeb() {
     // 建立這個browser的類型
     const options = new chrome.Options();
@@ -45,9 +33,6 @@ async function openCrawlerWeb() {
     login_elem.click()
 
 
-    // FB有經典版以及新版的區分，兩者的爬蟲路徑不同，我們藉由函式取得各自的路徑
-    // const { fb_head_path } = getCrawlerPath();
-
     //因為登入這件事情要等server回應，你直接跳轉粉絲專頁會導致登入失敗
     //以登入後才會出現的元件作為判斷登入與否的依據
     await driver.wait(until.elementLocated(By.xpath(`//*[contains(@id,":R6kmpaj9emhpapd5aq:")]`)))
@@ -64,27 +49,45 @@ async function openCrawlerWeb() {
     const itemsCssName = '.x1yztbdb.x1n2onr6.xh8yej3.x1ja2u2z';
     const itemTimeCssName = '.x1i10hfl.xjbqb8w.x6umtig.x1b1mbwd.xaqea5y.xav7gou.x9f619.x1ypdohk.xt0psk2.xe8uvvx.xdj266r.x11i5rnm.xat24cr.x1mh8g0r.xexx8yu.x4uap5.x18d9i69.xkhd6sd.x16tdsg8.x1hl2dhg.xggy1nq.x1a2a7pz.x1heor9g.xt0b8zv.xo1l8bm';
 
-    //顯示可抓資料
-    console.log(`顯示可抓資料`)
+  
+    async function getTime(obj,itemTimeCssName){
+      let timeLink = await obj.findElements(By.css(`${itemTimeCssName} use`))
+      if(timeLink.length>0){
+        let timeId= await timeLink[0].getAttribute("xlink:href");
+        // await driver.sleep(1000)
+        // timeId = await driver.findElement(By.css(`${timeId} use`)).getAttribute("xlink:href");
+        // await driver.sleep(1000)
+        let timeText = await driver.findElement(By.css(`${timeId}`)).getAttribute("innerHTML");
+        console.log(`顯示可抓資料(svg):${timeText}`)
+        return timeText;
+      }else{
+        let timeText = await obj.findElement(By.css(`${itemTimeCssName}`)).getText()
+        console.log(`顯示可抓資料(text):${timeText}`)
+        return timeText;
+      }
+    }
     async function showTodayData(number,itemsCssName,itemTimeCssName){
       const itemFirst = await driver.findElement(By.css(itemsCssName))
       const itemFirstY = Math.round((await itemFirst.getRect()).y) //該DIV的高
       const scrollHeight = itemFirstY+number
       // console.log(scrollHeight)
       await driver.actions().scroll(0, 0, 0, scrollHeight).perform()
-
+      await driver.sleep(2000)
+      
       //抓最後一筆
-      await driver.sleep(1000)
       const item = await driver.findElements(By.css(itemsCssName))
       const itemLast = item[item.length-1]
       //抓最後一筆時間
-      const timeLink=  await itemLast.findElement(By.css(`${itemTimeCssName} use`))
-      let timeId= await timeLink.getAttribute("xlink:href");
+      // const timeLink=  await itemLast.findElement(By.css(`${itemTimeCssName} use`))
+      // let timeId= await timeLink.getAttribute("xlink:href");
       // await driver.sleep(1000)
       // timeId = await driver.findElement(By.css(`${timeId} use`)).getAttribute("xlink:href");
-      // await driver.sleep(1000)
-      let timeText = await driver.findElement(By.css(`${timeId}`)).getAttribute("innerHTML");
-      console.log(`timeText:${timeText},${timeText.includes('日')},${timeText.includes('天')}`)
+      // // await driver.sleep(1000)
+      // let timeText = await driver.findElement(By.css(`${timeId}`)).getAttribute("innerHTML");
+      // console.log(`timeText:${timeText},${timeText.includes('日')},${timeText.includes('天')}`)
+      // if(timeText.includes('日') || timeText.includes('天')){
+      const timeText = await getTime(itemLast,itemTimeCssName)
+      // console.log(`timeText:${timeText},${timeText.includes('日')},${timeText.includes('天')}`)
       if(timeText.includes('日') || timeText.includes('天')){
         return 'ok';
       }else{
@@ -93,52 +96,100 @@ async function openCrawlerWeb() {
     }
     await showTodayData(200,itemsCssName,itemTimeCssName)
 
-    //抓取資料
     console.log(`抓取資料`)
     const arrays = []
     const items = await driver.findElements(By.css(itemsCssName))
     for (const item of items) {
       const obj = {}
-      //時間
+
+      console.log(`一定滾動到要抓取位置---------------------------`)
+      // const itemY = Math.round((await item.getRect()).y) //該DIV的高
+      await driver.actions().scroll(0, 0, 0, 0, item).perform()
+      await driver.sleep(4000)
+
+      const timeText = await getTime(item,itemTimeCssName)
+      if(timeText.includes('日') || timeText.includes('天')){ console.log(`時間為日或天跳出:${timeText}`);break;}
+
+      //console.log(`文章`)
+      let articlesTexts=''
+      const articlesObjs = await item.findElements(By.css('.x1iorvi4.x1pi30zi'))
+      if(articlesObjs.length > 0){
+        // console.log(`文章A:${articlesObjs.length}`)
+        const articlesMore = await articlesObjs[0].findElements(By.xpath("//div[contains(text(),'顯示更多')]"))
+        if(articlesMore.length>0){
+          // console.log(`文章A_顯示更多:${articlesMore.length}`)
+          await driver.executeScript("arguments[0].click();", articlesMore[0]);
+        }
+        const articlesMore2 = await articlesObjs[0].findElements(By.xpath("//div[contains(text(),'查看更多')]"))
+        if(articlesMore2.length>0){
+          // console.log(`文章A_查看更多:${articlesMore2.length}`)
+          await driver.executeScript("arguments[0].click();", articlesMore2[0]);
+        }
+        // await driver.sleep(3000)
+        articlesTexts = await articlesObjs[0].getText()
+      }
+      const articlesObjs2 = await item.findElements(By.css('.x5yr21d.xyqdw3p'))
+      if(articlesObjs2.length > 0){
+        // console.log(`文章B:${articlesObjs2.length}`)
+        articlesTexts = await item.findElement(By.css('.x5yr21d.xyqdw3p')).getText()
+      }
+      //console.log(`文章抓取發案,誠徵`)
+      if(articlesTexts.includes('發案') || articlesTexts.includes('誠徵')){
+        obj.articles = articlesTexts
+        console.log(`文章_發案,誠徵文字抓取:${obj.articles}`)
+        // console.log(`文章_有發案,誠徵文字出`)
+        // continue;
+      }else if(articlesTexts.includes('接案')){
+        console.log(`文章_接案文字跳出`)
+        continue;
+        // obj.articles = articlesTexts
+        // console.log(`文章_有接案文字抓取:${obj.articles}`)
+      }else{
+        obj.articles = articlesTexts
+        console.log(`文章_其他抓取:${obj.articles}`)
+      }
+
+
+      // console.log(`名子`)
+      const nameObj= await item.findElement(By.css('.xt0psk2 .x1i10hfl.xjbqb8w.x6umtig.x1b1mbwd.xaqea5y.xav7gou.x9f619.x1ypdohk.xt0psk2.xe8uvvx.xdj266r.x11i5rnm.xat24cr.x1mh8g0r.xexx8yu.x4uap5.x18d9i69.xkhd6sd.x16tdsg8.x1hl2dhg.xggy1nq.x1a2a7pz.xt0b8zv.xzsf02u.x1s688f'));
+      obj.name= await nameObj.findElement(By.css('strong span')).getText();
+      obj.namehref= await nameObj.getAttribute('href');
+      console.log(`名子:${JSON.stringify(obj.name)}`)
+      console.log(`名子href:${obj.namehref}`)
+
+
+      // console.log(`時間`)
       const timeLink= await item.findElement(By.css(itemTimeCssName))
       // const time= await timeLink.getText()
       obj.timeurl= await timeLink.getAttribute("href");
       const dt= new Date();
       obj.time= `${dt.getFullYear()}-${('0'+(dt.getMonth()+1)).slice(-2)}-${('0'+dt.getDate()).slice(-2)}`
-      console.log(`time:${obj.time}`)
-      console.log(`timeurl:${obj.timeurl}`)
+      console.log(`時間:${obj.time}`)
+      console.log(`時間_url:${obj.timeurl}`)
+  
 
-      //圖片
-      const imgsrcs= await item.findElements(By.css('.x1ey2m1c.xds687c.x5yr21d.x10l6tqk.x17qophe.x13vifvy.xh8yej3.xl1xv1r'));
-      if(imgsrcs.length > 0){
-        obj.imgsrc= await imgsrcs[0].getAttribute("src")
-        console.log(`imgsrc:${obj.imgsrc}`)
+      // console.log(`圖片`)
+      const imgsrcdivs= await item.findElements(By.css('img.x1ey2m1c.xds687c.x5yr21d.x10l6tqk.x17qophe.x13vifvy.xh8yej3'));
+      if(imgsrcdivs.length > 0){
+        const img = [];
+        for (const imgsrcdiv of imgsrcdivs) {
+          img.push(await imgsrcdiv.getAttribute("src"))
+        }
+        obj.imgsrc= img
+        console.log(`圖片:${obj.imgsrc}`)
       }
     
-      //名子
-      const nameObj= await item.findElement(By.css('a.x1i10hfl.xjbqb8w.x6umtig.x1b1mbwd.xaqea5y.xav7gou.x9f619.x1ypdohk.xt0psk2.xe8uvvx.xdj266r.x11i5rnm.xat24cr.x1mh8g0r.xexx8yu.x4uap5.x18d9i69.xkhd6sd.x16tdsg8.x1hl2dhg.xggy1nq.x1a2a7pz.xt0b8zv.xzsf02u.x1s688f'));
-      obj.name= await nameObj.findElement(By.css('strong span')).getText();
-      obj.namehref= await nameObj.getAttribute('href');
-      console.log(`name:${obj.name}`)
-      console.log(`namehref:${obj.namehref}`)
-  
-      //文章
-      const articlesObj = await item.findElement(By.css('.x193iq5w.xeuugli.x13faqbe.x1vvkbs.x1xmvt09.x1lliihq.x1s928wv.xhkezso.x1gmr53x.x1cpjm7i.x1fgarty.x1943h6x.xudqn12.x3x7a5m.x6prxxf.xvq8zen.xo1l8bm.xzsf02u'))
-      //文章打開顯示更多
-      const articlesMore = await articlesObj.findElements(By.xpath("//div[contains(text(),'顯示更多')]"))
-      console.log(`articlesMore:${articlesMore.length}`)
-      if(articlesMore.length>0){
-        await articlesMore[0].click()
-        await driver.sleep(1000)
-      }
-      obj.articles = await articlesObj.getText()
-      console.log(`articles:${obj.articles}`)
 
+      // console.log(`頭圖`)
+      const headimgsrc= await item.findElement(By.css('svg.x3ajldb image')).getAttribute("xlink:href");
+      console.log(`頭圖:${headimgsrc}`)
+      obj.headimg= headimgsrc
+
+      //push arrays
       arrays.push(obj)
-      await driver.sleep(2000)
     }
 
-    // console.log(`arrays:${arrays}`)
+    console.log(`arrays:${JSON.stringify(arrays)}`)
 
     // driver.quit();
 }

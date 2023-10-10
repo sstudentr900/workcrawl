@@ -11,7 +11,10 @@ async function openCrawlerWeb() {
     const options = new chrome.Options();
     //因為FB會有notifications干擾到爬蟲，所以要先把它關閉
     options.setUserPreferences({ 'profile.default_content_setting_values.notifications': 1 });
-    let driver = await new webdriver.Builder().forBrowser("chrome").withCapabilities(options).build();
+    let driver = await new webdriver.Builder().forBrowser("chrome").withCapabilities(
+      options,
+      { acceptSslCerts: true, acceptInsecureCerts: true }//解決跨網域問題
+    ).build();
     const web = 'https://ithelp.ithome.com.tw/users/20150652/ironman/5050?page=3';//我們要前往FB
     await driver.get(web)//在這裡要用await確保打開完網頁後才能繼續動作
     await driver.sleep(1000)
@@ -31,6 +34,14 @@ async function openCrawlerWeb() {
       console.log('no');
     }
     console.log(obj6);
+
+     //gettext error------------------------------------------
+  // <a href=https://stackoverflow.com/questions/16705165/unable-to-extract-the-text-using-gettext-in-selenium-webdriver-and-also-unable-t">gettext</a>
+    // getAttribute("innerHTML")
+    // getAttribute("textContent")
+
+    //點擊錯誤------------------------------------------
+    // <a href="https://stackoverflow.com/questions/58218032/selenium-element-click-is-not-clickable-at-point-52-346-other-element-would">點擊錯誤</a>
 
     //查找該元素------------------------------------------
     // const obj4 = await driver.findElements(By.css('.qa-list__title-link'))
@@ -74,14 +85,15 @@ async function openCrawlerWeb() {
     // const href2 = await item2.getAttribute('href')
     // console.log(href2)
 
-    //滾動
+    //滾動------------------------------------------
+    //https://www.selenium.dev/documentation/webdriver/actions_api/wheel/
     // const obj3 = await driver.findElement(By.css('.qa-list.profile-list.ir-profile-list'))
     // // console.log(await obj3.getRect())
     // const obj3Y = Math.round((await obj3.getRect()).y) //該DIV的高
     // // console.log(obj3Y)
     // await driver.actions().scroll(0, 0, 0, obj3Y).perform()
 
-
+    //關閉------------------------------------------
     // driver.quit();
 }
 openCrawlerWeb()//打開爬蟲網頁
