@@ -225,7 +225,7 @@
 
 
 
-    <h2>click is not clickable</h2>
+    <h2>npm selenium-webdriver click is not clickable</h2>
     <pre class="prettyprint">
       <xmp>
         //js
@@ -239,92 +239,47 @@
     </ul>
 
 
-    <h2>echarts 圖表</h2>
-    <h3>ECharts关于y轴刻度调整</h3>
+    <h2>Node.js node:events</h2>
+    <h3></h3>
     <p></p>
     <pre class="prettyprint">
       <xmp>
-        1.
-        min:0,  //取0为最小刻度
-        max: 100, //取100为最大刻度
-
-        2.
-        min:'dataMin', //取最小值为最小刻度
-        max: 'dataMax', //取最大值为最大刻度
-
-        3.
-        min: function(value) {//取最小值向下取整为最小刻度
-            return Math.floor(value.min)
-        },
-        max: function(value) {//取最大值向上取整为最大刻度
-            return  Math.ceil(value.max) 
-        },
-
-        4.
-        scale: true, //自适应
-        minInterval: 0.1, //分割刻度
       </xmp>
     </pre>
     <h4>參考</h4>
     <ul>
       <li>
-        <a href="https://www.jianshu.com/p/34351adb4fc0">ECharts关于y轴刻度调整</a>
-      </li>
-      <li>
-        <a href="https://echarts.apache.org/zh/option.html#dataZoom-slider">echarts 中文</a>
+        <a href="https://askjavascript.com/cannot-find-module-nodeevents-in-node-js/">node:events</a>
       </li>
     </ul>
 
 
-    <h2>同時運行Node.js服務器和Apache服務器</h2>
-    <h3>1.在Apache->httpd.conf 加入ProxyPass</h3>
-    <p>/stock2/會轉成->http://localhost:3000/</p>
-    <p>/stock2/多個斜線因為後面會有接值</p>
+    <h2>git md</h2>
+    <h3></h3>
+    <p></p>
     <pre class="prettyprint">
       <xmp>
-        ProxyPass /stock2/ http://localhost:3000/
-      </xmp>
-    </pre>
-    <h3>2.刪除註釋</h3>
-    <pre class="prettyprint">
-      <xmp>
-        LoadModule proxy_module modules/mod_proxy.so
-        LoadModule proxy_http_module modules/mod_proxy_http.so
       </xmp>
     </pre>
     <h4>參考</h4>
     <ul>
       <li>
-        <a href="https://medium.com/@chamiperera95/how-to-run-node-js-server-and-apache-server-together-ee225ece6a44">參考</a>
-      </li>
-      <li>
-        <a href="https://blog.csdn.net/u011277123/article/details/77165137">參考</a>
+        <a href="https://docs.github.com/zh/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax">git md</a>
       </li>
     </ul>
     <hr>
 
 
-    <h2>爬蟲 用 request + cheerio</h2>
-    <h3>安裝</h3>
+    <h2>Google Sheets</h2>
+    <h3></h3>
     <pre class="prettyprint">
       <xmp>
-        npm install request cheerio
-      </xmp>
-    </pre>
-    <h3>一般網站的防爬蟲機制</h3>
-    <p>直接偵測requests的header</p>
-    <pre class="prettyprint">
-      <xmp>
-        headers:{'user-agent': 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.116 Safari/537.36'}
       </xmp>
     </pre>
     <h4>參考</h4>
     <ul>
       <li>
-        <a href="https://andy6804tw.github.io/2018/02/11/nodejs-crawler/">[Node.js 爬蟲] 用 request + cheerio 抓取地震資訊</a>
-      </li>
-      <li>
-        <a href="https://ithelp.ithome.com.tw/articles/10191165">html檔的取得及常見問題</a>
+        <a href="https://andy6804tw.github.io/2018/02/11/nodejs-crawler/">Google Sheets</a>
       </li>
     </ul>
     <hr>
