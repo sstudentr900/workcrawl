@@ -1,7 +1,7 @@
 const express = require('express');
 // const remuneration = require('./controllers/remuneration');
 // const compare = require('./controllers/compare');
-// const home = require('./controllers/home');
+const home = require('./controllers/home');
 // const individual = require('./controllers/individual');
 const app = express(); //載入express模組
 const port = 3030;//設定port
@@ -29,8 +29,8 @@ app.listen(port,()=>{console.log(`port ${port}`)});
 //   next();
 // });
 
-// //home
-// app.get('/', home.search)
+//home
+app.get('/', home.search)
 // //查詢個股
 // app.get('/individual/:stockno', individual.search)
 // //查詢股票報酬
@@ -47,10 +47,11 @@ app.listen(port,()=>{console.log(`port ${port}`)});
 // app.post('/compare/sort',compare.sort)
 
 
-app.get('/', function(req, res){
-  // console.log(`發送文字`)
-  res.send('send home 文字')
-})
+//home
+// app.get('/', function(req, res){
+//   console.log(`home`)
+//   res.send('home')
+// })
 //發送文字
 // app.get('/test', function(req, res){
 //   // console.log(`發送文字`)

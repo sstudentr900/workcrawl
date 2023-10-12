@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <%- include('publicHead') -%>
+  <link rel="stylesheet" href="./css/<%= active %>.css">
+</head>
+<body>
+  <div class="publicPage <%= active %>">
+    <%- include('publicNav') %>
+      <div class="publicContent">
+        <div class="publicBox"></div>
+        <div class="publicWidth">
+          <div class="publicCols">
+            <div class="publicCol-5">
+              <div class="publictitle">工作項目</div>
+              <div class="publicBox">
+                <div class="item title">
+                  <div class="text">名稱</div>
+                  <div class="state">狀態</div>
+                </div>
+                <div class="item">
+                  <div class="text">4564564654878</div>
+                  <div class="state">
+                    <a href="#" class="delete">刪除</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="publicCol-5">
+              <div class="publictitle">新增工作項目</div>
+              <div class="publicBox">
+                <div class="inputDiv">
+                  <div class="label">
+                    <label for="name">名稱</label>
+                  </div>
+                  <div class="input">
+                    <input type="text" id="name" name="name" required minlength="4" maxlength="8" size="10" />
+                  </div>
+                </div>
+                <div class="inputDiv">
+                  <div class="label">
+                    <label for="url">網址</label>
+                  </div>
+                  <div class="input">
+                    <input type="text" id="url" name="url" required/>
+                  </div>
+                </div>
+                <div class="inputDiv">
+                  <div class="label">
+                    <label for="category">來源</label>
+                  </div>
+                  <div class="input">
+                    <select name="category" id="category">
+                      <option value="fb">fb</option>
+                      <option value="104">104</option>
+                      <option value="518">518</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="buttonDiv">
+                  <a href="#" class="delete">新增</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <%- include('publicFooter') %>
+    <script src="./js/<%= active %>.js"></script>
+  </div>
+</body>
+</html>
