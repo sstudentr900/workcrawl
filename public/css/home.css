@@ -81,7 +81,8 @@
   text-align: center;
 }
 .home .publicBox .buttonDiv a:hover{
-  background-color: #52ca94;
+  /* background-color: #52ca94; */
+  background-color: #3eaf7c;
 }
 /* .home .publicCol-3 .publicBox{
   padding: 8px 16px;
