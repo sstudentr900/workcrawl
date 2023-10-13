@@ -1,0 +1,25 @@
+<% if(data['pageTotle']>1){ %>
+  <ul class="publicPageNumber">
+    <li>
+      <% if(data['pageStart']==1 ){ %>
+        <a class="disable">
+      <% }else{ %>
+        <a href="./<%= active %>/<%= data['pageNow']-1 %>">
+      <% } %>
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M16.67 0l2.83 2.829-9.339 9.175 9.339 9.167-2.83 2.829-12.17-11.996z"/></svg>
+      </a>
+    </li>
+    <% for (let i = 1; i <= data['pageTotle']; i++){ %>
+    <li><a href="./<%= active %>/<%= i %>" class="<%= data['pageNow']==i?'active':'' %>"><%= i %></a></li>
+    <% } %>
+    <li>
+      <% if(data['pageStart']==data['pageTotle']){ %>
+        <a class="disable">
+      <% }else{ %>
+        <a href="./<%= active %>/<%= Number(data['pageNow'])+1 %>">
+      <% } %>
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M7.33 24l-2.83-2.829 9.339-9.175-9.339-9.167 2.83-2.829 12.17 11.996z"/></svg>
+      </a>
+    </li>
+  </ul>
+  <% } %>

@@ -1,8 +1,6 @@
 const express = require('express');
-// const remuneration = require('./controllers/remuneration');
-// const compare = require('./controllers/compare');
 const home = require('./controllers/home');
-// const individual = require('./controllers/individual');
+const crawl = require('./controllers/crawl');
 const app = express(); //載入express模組
 const port = 3030;//設定port
 
@@ -30,20 +28,18 @@ app.listen(port,()=>{console.log(`port ${port}`)});
 // });
 
 //home
-app.get('/', home.search)
-// //查詢個股
-// app.get('/individual/:stockno', individual.search)
-// //查詢股票報酬
-// app.get('/remuneration', remuneration.search)
-// //查詢股票報酬
-// app.post('/remuneration', remuneration.search_post)
-// //查詢股票比較
-// app.get('/compare', compare.search)
-// //增加股票報酬
-// app.post('/compare',compare.add)
-// //刪除股票報酬
-// app.delete('/compare/:id',compare.delet)
-// //排序股票報酬
+app.get('/', function(req, res){
+  //重新定向
+  res.redirect('./home/1');
+})
+app.get('/home/:id', home.search)
+//項目 crawl
+app.get('/crawl', crawl.search)
+//增加項目
+app.post('/crawl',crawl.add)
+//刪除項目
+app.delete('/crawl/:id',crawl.delet)
+// //排序項目
 // app.post('/compare/sort',compare.sort)
 
 

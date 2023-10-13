@@ -92,7 +92,7 @@ body {
     font-family: 'Noto Sans TC',sans-serif;
     margin: 0;
     padding: 0;
-    color: #626264;
+    color: #858588;
     font-size: 16px;
     position: relative;
     background: #f8f8f8;
@@ -209,13 +209,13 @@ input:focus{
 /*publicWidth*/
 .publicWidth{
   /* max-width: 1280px; */
-  max-width: 980px;
+  max-width: 1120px;
   margin: auto;
   padding: 0 20px;
   display: flex;
 }
 /* @media (max-width: 1360px){ */
-@media (max-width: 1040px){
+@media (max-width: 1160px){
   .publicWidth {
     max-width: calc(100% - 60px);
   }
@@ -226,19 +226,28 @@ input:focus{
   }
 } 
 /*共用--------------------------------------------------------------------*/
-/* .publicTextGreen{
-  color: #198754!important;
+.publicTextGreen{
+  color: #13ab67!important;
 }
 .publicTextRed{
-  color: #F95F53!important;
-} */
+  color: #f16363!important;
+}
+.publicTextDeepBlack{
+  color: #26262b!important;
+}
+.publicTextBlack{
+  color: #858588!important;
+}
+.publicTextLightBlack{
+  color: #b4b8bb!important;
+}
 /*publicContent*/
 .publicContent{
   padding-top: 80px;
 }
 /*publictitle*/
 .publictitle{
-  color: #626264;
+  color: #26262b;
   font-size: 18px;
   margin: 16px 0;
   font-weight: 400;
@@ -257,9 +266,7 @@ input:focus{
   border-radius: 5px;
   background:#fff;
 }
-.publicBox+.publicBox{
-  margin-top: 24px;
-}
+
 /*publicPageNumber*/
 .publicPageNumber{
   display: flex;
@@ -274,6 +281,7 @@ input:focus{
   border-radius: 2px;
   margin: 0 2px;
 }
+.publicPageNumber a.disable:hover svg,
 .publicPageNumber a.disable svg,
 .publicPageNumber a.disable:hover,
 .publicPageNumber a.disable{
@@ -281,13 +289,17 @@ input:focus{
   background: none;
   fill: #e8e0d7;
 }
+
 .publicPageNumber a.active:hover,
 .publicPageNumber a.active{
   color: #fff;
   background-color: #13ab67;
 }
+.publicPageNumber a:hover svg,
 .publicPageNumber a:hover{
-  background-color: #f0f2f1;
+  background-color: #e2e3e3;
+  color: #13ab67;
+  fill: #13ab67;
 }
 .publicPageNumber a svg{
   width: 12px;

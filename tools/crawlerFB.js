@@ -2,8 +2,7 @@ require('dotenv').config(); //載入.env環境檔
 const { initDrive } = require("./initDrive.js");
 const { By, until } = require('selenium-webdriver') // 從套件中取出需要用到的功能
 const { dbQuery,dbInsert,dbUpdata,dbDelete } = require('./db')
-exports.crawlerFB = crawlerFB;//讓其他程式在引入時可以使用這個函式
-async function loginFb(driver) {
+async function fbLogin(driver) {
   const fb_username = process.env.FB_USERNAME
   const fb_userpass = process.env.FB_PASSWORD
   const web = 'https://www.facebook.com/login';//我們要前往FB
@@ -30,7 +29,7 @@ async function loginFb(driver) {
     return false;
   }
 }
-async function getTime(driver,obj,itemTimeCssName){
+async function fbGetTime(driver,obj,itemTimeCssName){
   const timeLink = await obj.findElements(By.css(`${itemTimeCssName} use`))
   let timeText = ''
   if(timeLink.length>0){
@@ -47,7 +46,7 @@ async function getTime(driver,obj,itemTimeCssName){
   }
   return timeText;
 }
-async function showFbData(driver,number,itemsCssName,itemTimeCssName){
+async function fbShowData(driver,number,itemsCssName,itemTimeCssName){
   // console.log(`顯示資料`)
   const itemFirst = await driver.findElement(By.css(itemsCssName))
   const itemFirstY = Math.round((await itemFirst.getRect()).y) //該DIV的高
@@ -68,19 +67,19 @@ async function showFbData(driver,number,itemsCssName,itemTimeCssName){
   // let timeText = await driver.findElement(By.css(`${timeId}`)).getAttribute("innerHTML");
   // console.log(`timeText:${timeText},${timeText.includes('日')},${timeText.includes('天')}`)
   // if(timeText.includes('日') || timeText.includes('天')){
-  const timeText = await getTime(driver,itemLast,itemTimeCssName)
-  console.log(`showFbData,timeText:${timeText},${timeText.includes('日')},${timeText.includes('天')}`)
-  if(item.length>5){
-    console.log('showFbData_大於5個跳出')
-    return true;
-  }
+  const timeText = await fbGetTime(driver,itemLast,itemTimeCssName)
+  console.log(`fbShowData,timeText:${timeText},${timeText.includes('日')},${timeText.includes('天')}`)
+  // if(item.length>5){
+  //   console.log('fbShowData_大於5個跳出')
+  //   return true;
+  // }
   if(timeText.includes('日') || timeText.includes('天')){
     return true;
   }else{
-    await showFbData(driver,number,itemsCssName,itemTimeCssName)
+    await fbShowData(driver,number,itemsCssName,itemTimeCssName)
   }
 }
-async function showNewPost(driver) {
+async function fbShowNewPost(driver) {
   // console.log(`顯示新貼文`)
   //選擇相關
   const newBtn = await driver.findElement(By.css('.x19f6ikt.x169t7cy.xsag5q8.x1swvt13 .x9f619.x1n2onr6.x1ja2u2z.x78zum5.x2lah0s.x1qughib.x6s0dn4.xozqiw3.x1q0g3np.xzt5al7'))
@@ -97,7 +96,7 @@ async function showNewPost(driver) {
   await driver.executeScript("arguments[0].click();", newPosts[2]);
   await driver.sleep(3000)
 }
-async function getFbData(driver,itemsCssName,itemTimeCssName) {
+async function fbGetData(driver,itemsCssName,itemTimeCssName) {
   // console.log(`抓取fb資料`)
   const arrays = []
   const items = await driver.findElements(By.css(itemsCssName))
@@ -109,7 +108,7 @@ async function getFbData(driver,itemsCssName,itemTimeCssName) {
     await driver.sleep(4000)
 
      //console.log(`時間為日或天跳出`)
-    const timeText = await getTime(driver,item,itemTimeCssName)
+    const timeText = await fbGetTime(driver,item,itemTimeCssName)
     if(timeText.includes('日') || timeText.includes('天')){ console.log(`時間為日或天跳出:${timeText}`);break;}
 
 
@@ -147,7 +146,7 @@ async function getFbData(driver,itemsCssName,itemTimeCssName) {
     // console.log(`頭圖`)
     const headimgsrc= await item.findElement(By.css('svg.x3ajldb image')).getAttribute("xlink:href");
     console.log(`頭圖:${headimgsrc}`)
-    obj.headimg= headimgsrc
+    obj.headimgsrc= headimgsrc
 
 
 
@@ -189,46 +188,51 @@ async function getFbData(driver,itemsCssName,itemTimeCssName) {
 
 
     //push arrays
-    if(arrays.length>5){
-      console.log('getFbData_大於5個跳出')
-      break;
-    }
+    // if(arrays.length>5){
+    //   console.log('fbGetData_大於5個跳出')
+    //   break;
+    // }
     arrays.push(obj)
   }
-  console.log('getFbData_array',arrays)
+  console.log('fbGetData_array',arrays)
   return arrays;
 }
-async function getTrace(driver,row) {
+async function fbGetTrace(driver,row) {
   // console.log(`跳到該頁`)
-  console.log(`getTrace_url:${row['url']}`)
+  console.log(`fbGetTrace_url:${row['url']}`)
   await driver.get(row['url'])
   // const url = 'https://www.facebook.com/groups/239168157628070'
   // await driver.get(url)
   await driver.sleep(3000)
   // console.log(`顯示新貼文`)
-  await showNewPost(driver)
+  await fbShowNewPost(driver)
   // console.log(`料類別名`)
   const itemsCssName = '.x1yztbdb.x1n2onr6.xh8yej3.x1ja2u2z';
   const itemTimeCssName = '.x1i10hfl.xjbqb8w.x6umtig.x1b1mbwd.xaqea5y.xav7gou.x9f619.x1ypdohk.xt0psk2.xe8uvvx.xdj266r.x11i5rnm.xat24cr.x1mh8g0r.xexx8yu.x4uap5.x18d9i69.xkhd6sd.x16tdsg8.x1hl2dhg.xggy1nq.x1a2a7pz.x1heor9g.xt0b8zv.xo1l8bm';
   // console.log(`顯示fb資料`)
-  await showFbData(driver,200,itemsCssName,itemTimeCssName)
+  await fbShowData(driver,200,itemsCssName,itemTimeCssName)
   // console.log(`抓取fb資料`)
-  const arrays = await getFbData(driver,itemsCssName,itemTimeCssName)
+  const arrays = await fbGetData(driver,itemsCssName,itemTimeCssName)
+  console.log('fbGetTrace_array',arrays)
+  if(!arrays.length){return false;}
   // console.log(`存fb資料`)
-  // if(!arrays.length){return false;}
-  // for (const array of arrays) {
-  //   array['crawlerurl_id'] = row['id']
-  //   await dbInsert('work',array)
-  // }
+  for (const array of arrays) {
+    array['crawlerurl_id'] = row['id']
+    await dbInsert('work',array)
+  }
 }
 async function crawlerFB() {    
   const driver = await initDrive();
-  await loginFb(driver)
-  const rows = await dbQuery( 'SELECT * from crawlerurl' )
+  await fbLogin(driver)
+  const rows = await dbQuery( 'SELECT * from crawlerurl where deletes = ? and category_id = ?',['n','1'])
   if(!rows){console.log(`crawlerFB沒有資料跳出`);return false;}
   for (const row of rows) {
-    await getTrace(driver,row)
+    await fbGetTrace(driver,row)
   }
-  // await getTrace(driver,rows[0])
+  // await fbGetTrace(driver,rows[0])
   driver.quit();
 }
+exports.crawlerFB = crawlerFB;//讓其他程式在引入時可以使用這個函式
+// module.exports={
+//   crawlerFB,
+// }

@@ -1,40 +1,78 @@
 
-.home .publicCol-7 .publicBox .topDiv{
-  display: flex;
+.home .publicContent .publicWidth{
+  display: block;
 }
-.home .publicCol-7 .publicBox .topDiv .img{
+.home .publicBoxs{
+  column-count: 3;
+  column-gap: 12px;
+  /* display: grid; */
+  /* grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  grid-template-rows: masonry; */
+}
+.home .publicBox+.publicBox{
+  margin-top: 12px;
+}
+.home .publicBox{
+  break-inside: avoid;
+  /*定義頁面、列或是區域發生中斷時的元素表現方式。 auto->元素中斷、acoid->元素不中斷*/
+}
+.home .publicBox .topDiv{
+  display: flex;
+  justify-content: space-between;
+}
+.home .publicBox .topDiv .left{
+  display: flex;
+  align-items: center;
+}
+.home .publicBox .topDiv .img{
   width: 40px;
-  height: auto;
+  height: 40px;
   overflow: hidden;
   border-radius: 40px;
+  background: #b4b8bb;
 }
-.home .publicCol-7 .publicBox .topDiv img{
+.home .publicBox .topDiv img{
   width: 40px;
   height: auto;
 }
-.home .publicCol-7 .publicBox .topDiv .text{
+.home .publicBox .topDiv .text{
   margin-left: 10px;
 }
-.home .publicCol-7 .publicBox .topDiv .name{
+.home .publicBox .topDiv .name{
   color: #13ab67;
   font-size: 18px;
   font-weight: bold;
 }
-.home .publicCol-7 .publicBox .topDiv .date{
-  font-size: 12px;
+.home .publicBox .topDiv .date{
+  font-size: 13px;
+  color: #a7abaf;
+  margin-top: -3px;
 }
-.home .publicCol-7 .publicBox .textDiv{
-  font-size: 16px;
-  padding: 12px 0;
+.home .publicBox .topDiv .delete svg{
+  fill: #b6b8bb;
+  width: 16px;
+  height: auto;
 }
-.home .publicCol-7 .publicBox .imgDiv{
+.home .publicBox .topDiv .delete:hover svg{
+  fill: #858588;
+}
+.home .publicBox .textDiv p{
+  font-size: 14px;
+  padding: 12px 0 24px;
+  /* white-space: pre; */
+  white-space: break-spaces;
+  line-height: 1.6;
+  font-weight: 400;
+}
+.home .publicBox .imgDiv{
   margin-bottom: 12px;
 }
-.home .publicCol-7 .publicBox .imgDiv img{
+.home .publicBox .imgDiv img{
   width: 100%;
   height: auto;
 }
-.home .publicCol-7 .publicBox .buttonDiv a{
+.home .publicBox .buttonDiv a{
   font-size: 15px;
   color: #fff;
   background-color: #13ab67;
@@ -42,13 +80,16 @@
   border-radius: 4px;
   text-align: center;
 }
-.home .publicCol-7 .publicBox .buttonDiv a:hover{
+.home .publicBox .buttonDiv a:hover{
   background-color: #52ca94;
+}
+/* .home .publicCol-3 .publicBox{
+  padding: 8px 16px;
 }
 .home .publicCol-3 .publicBox .item{
   display: flex;
   font-size: 15px;
-  padding: 6px 0;
+  padding: 12px 0;
   justify-content: space-between;
 }
 .home .publicCol-3 .publicBox .item+.item{
@@ -56,11 +97,13 @@
 }
 
 .home .publicCol-3 .publicBox .text{
-  max-width: 80%;
+  max-width: 70%;
+  word-break: break-all;
 }
 .home .publicCol-3 .publicBox .number{
-  color: #13ab67;
+  color: #b4b8bb;
+  font-weight: 400;
 }
 .home .publicCol-3 .publicBox .title .text{
   font-size: 12px;
-}
+} */
