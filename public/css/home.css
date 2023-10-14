@@ -1,4 +1,7 @@
 
+.home a{
+  cursor: pointer;
+}
 .home .publicContent .publicWidth{
   display: block;
 }
@@ -84,27 +87,6 @@
   /* background-color: #52ca94; */
   background-color: #3eaf7c;
 }
-/* .home .publicCol-3 .publicBox{
-  padding: 8px 16px;
+.home .publicPageNumber{
+  margin-top: 36px;
 }
-.home .publicCol-3 .publicBox .item{
-  display: flex;
-  font-size: 15px;
-  padding: 12px 0;
-  justify-content: space-between;
-}
-.home .publicCol-3 .publicBox .item+.item{
-  border-top: 1px solid #e6e9f1;
-}
-
-.home .publicCol-3 .publicBox .text{
-  max-width: 70%;
-  word-break: break-all;
-}
-.home .publicCol-3 .publicBox .number{
-  color: #b4b8bb;
-  font-weight: 400;
-}
-.home .publicCol-3 .publicBox .title .text{
-  font-size: 12px;
-} */

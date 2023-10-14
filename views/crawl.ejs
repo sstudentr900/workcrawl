@@ -9,185 +9,119 @@
     <%- include('publicNav') %>
     <div class="publicContent">
       <div class="publicWidth">
-        <div class="publicCols">
-          <div class="publicCol-7">
-            <div class="publictitle">工作項目</div>
-            <div class="publicBox">
-              <div class="titleDiv">
-                <div class="itemDiv">
-                  <div class="text">名稱</div>
-                  <div class="state">狀態</div>
-                </div>
-              </div>
-              <div class="itemDivs">
-                <div class="itemDiv">
-                  <div class="text">4564564654878</div>
-                  <div class="state">
-                    <a href="#" class="delete">刪除</a>
-                  </div>
-                </div>
-                <div class="itemDiv">
-                  <div class="text">4564564654878</div>
-                  <div class="state">
-                    <a href="#" class="delete">刪除</a>
-                  </div>
-                </div>
-                <div class="itemDiv">
-                  <div class="text">4564564654878</div>
-                  <div class="state">
-                    <a href="#" class="delete">刪除</a>
-                  </div>
-                </div>
-                <div class="itemDiv">
-                  <div class="text">4564564654878</div>
-                  <div class="state">
-                    <a href="#" class="delete">刪除</a>
-                  </div>
-                </div>
-                <div class="itemDiv">
-                  <div class="text">4564564654878</div>
-                  <div class="state">
-                    <a href="#" class="delete">刪除</a>
-                  </div>
-                </div>
-                <div class="itemDiv">
-                  <div class="text">4564564654878</div>
-                  <div class="state">
-                    <a href="#" class="delete">刪除</a>
-                  </div>
-                </div>
-                <div class="itemDiv">
-                  <div class="text">4564564654878</div>
-                  <div class="state">
-                    <a href="#" class="delete">刪除</a>
-                  </div>
-                </div>
-                <div class="itemDiv">
-                  <div class="text">4564564654878</div>
-                  <div class="state">
-                    <a href="#" class="delete">刪除</a>
-                  </div>
-                </div>
-                <div class="itemDiv">
-                  <div class="text">4564564654878</div>
-                  <div class="state">
-                    <a href="#" class="delete">刪除</a>
-                  </div>
-                </div>
-                <div class="itemDiv">
-                  <div class="text">4564564654878</div>
-                  <div class="state">
-                    <a href="#" class="delete">刪除</a>
-                  </div>
-                </div>
-                <div class="itemDiv">
-                  <div class="text">4564564654878</div>
-                  <div class="state">
-                    <a href="#" class="delete">刪除</a>
-                  </div>
-                </div>
-                <div class="itemDiv">
-                  <div class="text">4564564654878</div>
-                  <div class="state">
-                    <a href="#" class="delete">刪除</a>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="publictitle">新增項目</div>
-            <div class="publicBox">
-              <div class="inputDiv">
-                <div class="label">
-                  <label for="name">項目名稱</label>
-                </div>
-                <div class="input">
-                  <input type="text" id="name" name="name" required minlength="4" maxlength="8" size="10" />
-                </div>
-              </div>
-              <div class="inputDiv">
-                <div class="label">
-                  <label for="url">項目網址</label>
-                </div>
-                <div class="input">
-                  <input type="text" id="url" name="url" required/>
-                </div>
-              </div>
-              <div class="inputDiv">
-                <div class="label">
-                  <label for="category">項目來源</label>
-                </div>
-                <div class="input">
-                  <select name="category" id="category">
-                    <option value="fb">fb</option>
-                    <option value="104">104</option>
-                    <option value="518">518</option>
-                  </select>
-                </div>
-              </div>
-              <div class="buttonDiv">
-                <a href="#" class="delete">新增</a>
-              </div>
+        <div class="publicBox tableDiv">
+          <div class="titleDiv">
+            <div class="flex">
+              <div class="publictitle">爬蟲項目</div>
+              <a class="add">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M24 9h-9v-9h-6v9h-9v6h9v9h6v-9h9z"/></svg>
+                新增
+              </a>
             </div>
           </div>
-          <div class="publicCol-3">
-            <div class="publictitle">總數量</div>
-            <div class="publicBox">
-              <!-- <div class="item title">
-                <div class="text">名稱</div>
-                <div class="text">數量</div>
-              </div> -->
-              <%# data['rows1'].forEach(function(r) { %>
-              <div class="item">
-                <div class="text"><%= r.storename %></div>
-                <div class="number"><%= r.number %></div>
-              </div>
-              <%# }) %>
-              <!-- <div class="item">
-                <div class="text">13333333333333333333333333321</div>
-                <div class="number">12</div>
-              </div>
-              <div class="item">
-                <div class="text">13333333333333333333333333321</div>
-                <div class="number">12</div>
-              </div>
-              <div class="item">
-                <div class="text">13333333333333333333333333321</div>
-                <div class="number">12</div>
-              </div> -->
+          <div class="tableTitle">
+            <div class="flex">
+              <div class="name">來源名稱</div>
+              <div class="url">來源網址</div>
+              <div class="keyword">抓取關鍵字</div>
+              <div class="nokeyword">排除關鍵字</div>
+              <div class="totle">周量</div>
+              <div class="amount">總量</div>
+              <div class="state">狀態</div>
             </div>
-            <div class="publictitle">周數量</div>
-            <div class="publicBox">
-              <!-- <div class="item title">
-                <div class="text">名稱</div>
-                <div class="text">數量</div>
-              </div> -->
-              <%# data['rows2'].forEach(function(r) { %>
-                <div class="item">
-                  <div class="text"><%= r.storename %></div>
-                  <div class="number"><%= r.number %></div>
-                </div>
-              <%# }) %>
-              <!-- <div class="item">
-                <div class="text">13333333333333333333321</div>
-                <div class="number">12</div>
+          </div>
+          <div class="tableContent">
+            <% data['rows'].forEach(function(r) { %>
+            <div class="flex">
+              <div class="name">
+                <div class="input"><input type="text" value='<%= r.storename %>' name='storename'></div>
               </div>
-              <div class="item">
-                <div class="text">13333333333333333333333333321</div>
-                <div class="number">12</div>
+              <div class="url">
+                <div class="input"><input type="text" value='<%= r.storeurl %>' name='storeurl'></div>
               </div>
-              <div class="item">
-                <div class="text">13333333333333333333333333321</div>
-                <div class="number">12</div>
+              <div class="keyword">
+                <div class="input"><input type="text" value='<%= r.keyword %>' name='keyword'></div>
               </div>
-              <div class="item">
-                <div class="text">13333333333333333333333333321</div>
-                <div class="number">12</div>
-              </div> -->
+              <div class="nokeyword">
+                <div class="input"><input type="text" value='<%= r.nokeyword %>' name='nokeyword'></div>
+              </div>
+              <div class="totle"><%= r.total %></div>
+              <div class="amount"><%= r.amount %></div>
+              <div class="state">
+                <a class="edit">
+                  <svg clip-rule="evenodd" fill-rule="evenodd" stroke-linejoin="round" stroke-miterlimit="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="m11.25 6c.398 0 .75.352.75.75 0 .414-.336.75-.75.75-1.505 0-7.75 0-7.75 0v12h17v-8.75c0-.414.336-.75.75-.75s.75.336.75.75v9.25c0 .621-.522 1-1 1h-18c-.48 0-1-.379-1-1v-13c0-.481.38-1 1-1zm-2.011 6.526c-1.045 3.003-1.238 3.45-1.238 3.84 0 .441.385.626.627.626.272 0 1.108-.301 3.829-1.249zm.888-.889 3.22 3.22 8.408-8.4c.163-.163.245-.377.245-.592 0-.213-.082-.427-.245-.591-.58-.578-1.458-1.457-2.039-2.036-.163-.163-.377-.245-.591-.245-.213 0-.428.082-.592.245z" fill-rule="nonzero"/></svg>
+                </a>
+                <a class="delete" data-id='<%= r.id %>'>
+                  <svg clip-rule="evenodd" fill-rule="evenodd" stroke-linejoin="round" stroke-miterlimit="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="m4.015 5.494h-.253c-.413 0-.747-.335-.747-.747s.334-.747.747-.747h5.253v-1c0-.535.474-1 1-1h4c.526 0 1 .465 1 1v1h5.254c.412 0 .746.335.746.747s-.334.747-.746.747h-.254v15.435c0 .591-.448 1.071-1 1.071-2.873 0-11.127 0-14 0-.552 0-1-.48-1-1.071zm14.5 0h-13v15.006h13zm-4.25 2.506c-.414 0-.75.336-.75.75v8.5c0 .414.336.75.75.75s.75-.336.75-.75v-8.5c0-.414-.336-.75-.75-.75zm-4.5 0c-.414 0-.75.336-.75.75v8.5c0 .414.336.75.75.75s.75-.336.75-.75v-8.5c0-.414-.336-.75-.75-.75zm3.75-4v-.5h-3v.5z" fill-rule="nonzero"/></svg>
+                </a>
+                <a class="ok" data-id='<%= r.id %>'>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M12 2c5.514 0 10 4.486 10 10s-4.486 10-10 10-10-4.486-10-10 4.486-10 10-10zm0-2c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm-1.959 17l-4.5-4.319 1.395-1.435 3.08 2.937 7.021-7.183 1.422 1.409-8.418 8.591z"/></svg>
+                </a>
+                <a class="cancel">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M12 2c5.514 0 10 4.486 10 10s-4.486 10-10 10-10-4.486-10-10 4.486-10 10-10zm0-2c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm6 16.538l-4.592-4.548 4.546-4.587-1.416-1.403-4.545 4.589-4.588-4.543-1.405 1.405 4.593 4.552-4.547 4.592 1.405 1.405 4.555-4.596 4.591 4.55 1.403-1.416z"/></svg>
+                </a>
+              </div>
             </div>
+            <% }); %>
+            <!-- <div class="flex active">
+              <div class="name">
+                <div class="input"><input type="text" value='★⟪平面設計、影音製作⟫外包菁英集散地★' name='name'></div>
+              </div>
+              <div class="url">
+                <div class="input"><input type="text" value='https://www.facebook.com/groups/1230482576964177' name='url'></div>
+              </div>
+              <div class="keyword">
+                <div class="input"><input type="text" value='https://www.facebook.com/groups/1230482576964177' name='keyword'></div>
+              </div>
+              <div class="nokeyword">
+                <div class="input"><input type="text" value='https://www.facebook.com/groups/1230482576964177' name='nokeyword'></div>
+              </div>
+              <div class="totle">12</div>
+              <div class="amount">55</div>
+              <div class="state">
+                <a class="edit" data-id='1'>
+                  <svg clip-rule="evenodd" fill-rule="evenodd" stroke-linejoin="round" stroke-miterlimit="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="m11.25 6c.398 0 .75.352.75.75 0 .414-.336.75-.75.75-1.505 0-7.75 0-7.75 0v12h17v-8.75c0-.414.336-.75.75-.75s.75.336.75.75v9.25c0 .621-.522 1-1 1h-18c-.48 0-1-.379-1-1v-13c0-.481.38-1 1-1zm-2.011 6.526c-1.045 3.003-1.238 3.45-1.238 3.84 0 .441.385.626.627.626.272 0 1.108-.301 3.829-1.249zm.888-.889 3.22 3.22 8.408-8.4c.163-.163.245-.377.245-.592 0-.213-.082-.427-.245-.591-.58-.578-1.458-1.457-2.039-2.036-.163-.163-.377-.245-.591-.245-.213 0-.428.082-.592.245z" fill-rule="nonzero"/></svg>
+                </a>
+                <a class="delete" data-id='1'>
+                  <svg clip-rule="evenodd" fill-rule="evenodd" stroke-linejoin="round" stroke-miterlimit="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="m4.015 5.494h-.253c-.413 0-.747-.335-.747-.747s.334-.747.747-.747h5.253v-1c0-.535.474-1 1-1h4c.526 0 1 .465 1 1v1h5.254c.412 0 .746.335.746.747s-.334.747-.746.747h-.254v15.435c0 .591-.448 1.071-1 1.071-2.873 0-11.127 0-14 0-.552 0-1-.48-1-1.071zm14.5 0h-13v15.006h13zm-4.25 2.506c-.414 0-.75.336-.75.75v8.5c0 .414.336.75.75.75s.75-.336.75-.75v-8.5c0-.414-.336-.75-.75-.75zm-4.5 0c-.414 0-.75.336-.75.75v8.5c0 .414.336.75.75.75s.75-.336.75-.75v-8.5c0-.414-.336-.75-.75-.75zm3.75-4v-.5h-3v.5z" fill-rule="nonzero"/></svg>
+                </a>
+                <a class="ok">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M12 2c5.514 0 10 4.486 10 10s-4.486 10-10 10-10-4.486-10-10 4.486-10 10-10zm0-2c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm-1.959 17l-4.5-4.319 1.395-1.435 3.08 2.937 7.021-7.183 1.422 1.409-8.418 8.591z"/></svg>
+                </a>
+                <a class="cancel">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M12 2c5.514 0 10 4.486 10 10s-4.486 10-10 10-10-4.486-10-10 4.486-10 10-10zm0-2c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm6 16.538l-4.592-4.548 4.546-4.587-1.416-1.403-4.545 4.589-4.588-4.543-1.405 1.405 4.593 4.552-4.547 4.592 1.405 1.405 4.555-4.596 4.591 4.55 1.403-1.416z"/></svg>
+                </a>
+              </div>
+            </div>
+            <div class="flex">
+              <div class="name">
+                <div class="input"><input type="text" value='★⟪平面設計、影音製作⟫外包菁英集散地★' name='name'></div>
+              </div>
+              <div class="url">
+                <div class="input"><input type="text" value='https://www.facebook.com/groups/1230482576964177' name='url'></div>
+              </div>
+              <div class="keyword">
+                <div class="input"><input type="text" value='https://www.facebook.com/groups/1230482576964177' name='keyword'></div>
+              </div>
+              <div class="nokeyword">
+                <div class="input"><input type="text" value='https://www.facebook.com/groups/1230482576964177' name='nokeyword'></div>
+              </div>
+              <div class="totle">1255</div>
+              <div class="amount">5555</div>
+              <div class="state">
+                <a class="edit" data-id='1'>
+                  <svg clip-rule="evenodd" fill-rule="evenodd" stroke-linejoin="round" stroke-miterlimit="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="m11.25 6c.398 0 .75.352.75.75 0 .414-.336.75-.75.75-1.505 0-7.75 0-7.75 0v12h17v-8.75c0-.414.336-.75.75-.75s.75.336.75.75v9.25c0 .621-.522 1-1 1h-18c-.48 0-1-.379-1-1v-13c0-.481.38-1 1-1zm-2.011 6.526c-1.045 3.003-1.238 3.45-1.238 3.84 0 .441.385.626.627.626.272 0 1.108-.301 3.829-1.249zm.888-.889 3.22 3.22 8.408-8.4c.163-.163.245-.377.245-.592 0-.213-.082-.427-.245-.591-.58-.578-1.458-1.457-2.039-2.036-.163-.163-.377-.245-.591-.245-.213 0-.428.082-.592.245z" fill-rule="nonzero"/></svg>
+                </a>
+                <a class="delete" data-id='1'>
+                  <svg clip-rule="evenodd" fill-rule="evenodd" stroke-linejoin="round" stroke-miterlimit="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="m4.015 5.494h-.253c-.413 0-.747-.335-.747-.747s.334-.747.747-.747h5.253v-1c0-.535.474-1 1-1h4c.526 0 1 .465 1 1v1h5.254c.412 0 .746.335.746.747s-.334.747-.746.747h-.254v15.435c0 .591-.448 1.071-1 1.071-2.873 0-11.127 0-14 0-.552 0-1-.48-1-1.071zm14.5 0h-13v15.006h13zm-4.25 2.506c-.414 0-.75.336-.75.75v8.5c0 .414.336.75.75.75s.75-.336.75-.75v-8.5c0-.414-.336-.75-.75-.75zm-4.5 0c-.414 0-.75.336-.75.75v8.5c0 .414.336.75.75.75s.75-.336.75-.75v-8.5c0-.414-.336-.75-.75-.75zm3.75-4v-.5h-3v.5z" fill-rule="nonzero"/></svg>
+                </a>
+              </div>
+            </div> -->
           </div>
         </div>
       </div>
     </div>
+    <%- include('publicPop') %>
     <%- include('publicFooter') %>
     <script src="./js/<%= active %>.js"></script>
   </div>

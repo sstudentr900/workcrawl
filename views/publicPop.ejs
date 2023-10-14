@@ -1,0 +1,261 @@
+<style>
+  /*publicPop*/
+  .publicPop{
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0,0,0,.3);
+    z-index: 100;
+  }
+  .publicPop.active{
+    display: flex;
+  }
+  .publicPop .box{
+    width: 580px;
+    background: #fff;
+    border-radius: 8px;
+    border: 1px solid #e2e6e4;
+  }
+  .publicPop .boxTop{
+    padding: 16px 24px;
+    border-bottom: 1px solid #e2e6e4;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .publicPop .boxTop .close{
+    height: 16px;
+    cursor: pointer;
+  }
+  .publicPop .boxTop .close svg{
+    width: 16px;
+    height: auto;
+    fill: #8c8c8f;
+  }
+  .publicPop .boxTop .close:hover svg{
+    fill: #13ab67;
+  }
+  .publicPop .boxTop .publictitle{
+    margin: 0;
+  }
+  .publicPop .boxMiddle{
+    padding: 32px 24px;
+    border-bottom: 1px solid #e2e6e4;
+  }
+  .publicPop .inputDiv{
+    margin-bottom: 16px;
+    position: relative;
+  }
+  .publicPop .inputDiv .label label{
+    font-size: 12px;
+    display: block;
+    margin-bottom: 3px;
+  }
+  .publicPop .inputDiv .input{
+    position: relative;
+    width: 100%;
+  }
+  .publicPop .inputDiv .input select,
+  .publicPop .inputDiv .input input{
+    min-height: 38px;
+    border: 1px solid #e2e6e4;
+    border-radius: 4px;
+    padding: 8px 12px;
+    background-color: #fff;
+    font-size: 14px;
+    width: 100%;
+  }
+  .publicPop .inputDiv .input select{
+    background: #fff url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' fill='%23626264' viewBox='0 0 448 512'><path d='M224 416c-8.188 0-16.38-3.125-22.62-9.375l-192-192c-12.5-12.5-12.5-32.75 0-45.25s32.75-12.5 45.25 0L224 338.8l169.4-169.4c12.5-12.5 32.75-12.5 45.25 0s12.5 32.75 0 45.25l-192 192C240.4 412.9 232.2 416 224 416z'/></svg>") no-repeat right 18px center/12px;
+    outline: none;
+    appearance: none;
+  }
+  .publicPop .inputDiv .error{
+    font-size: 12px;
+    padding: 3px 6px;
+    color: #fff;
+    background: red;
+    border-radius: 4px;
+    position: absolute;
+    left: 0;
+    bottom: -15px;
+    line-height: 1;
+  }
+  .publicPop .boxBottom{
+    padding: 16px 24px;
+    display: flex;
+    justify-content: end;
+  }
+  .publicPop .boxBottom .add{
+    width: 100px;
+  }
+</style>
+<div class="publicPop">
+  <div class="box">
+    <div class="boxTop">
+      <div class="publictitle">新增項目</div>
+      <a class="close">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+        >
+          <path d="M24 20.188l-8.315-8.209 8.2-8.282-3.697-3.697-8.212 8.318-8.31-8.203-3.666 3.666 8.321 8.24-8.206 8.313 3.666 3.666 8.237-8.318 8.285 8.203z"/>
+        </svg>
+      </a>
+    </div>
+    <!-- <form id="form1"> -->
+    <div class="boxMiddle">
+      <div class="publicCols">
+        <div class="publicCol-5">
+          <div class="inputDiv">
+            <div class="label">
+              <label for="name">來源名稱</label>
+            </div>
+            <div class="input">
+              <input
+                type="text"
+                id="name"
+                name="storename"
+                required
+              >
+            </div>
+          </div>
+        </div>
+        <div class="publicCol-5">
+          <div class="inputDiv">
+            <div class="label">
+              <label for="url">來源網址</label>
+            </div>
+            <div class="input">
+              <input
+                type="text"
+                id="url"
+                name="storeurl"
+                required
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="publicCols">
+        <div class="publicCol-5">
+          <div class="inputDiv">
+            <div class="label">
+              <label for="keyword">抓取關鍵字</label>
+            </div>
+            <div class="input">
+              <input
+                type="text"
+                id="keyword"
+                name="keyword"
+                value="發案,誠徵,徵委託"
+                required
+              >
+            </div>
+          </div>
+        </div>
+        <div class="publicCol-5">
+          <div class="inputDiv">
+            <div class="label">
+              <label for="nokeyword">排除關鍵字</label>
+            </div>
+            <div class="input">
+              <input
+                type="text"
+                id="nokeyword"
+                name="nokeyword"
+                value="徵友,接案,接委,無償,換圖,公告"
+                required
+              >
+            </div>
+          </div>
+        </div>
+        <!-- <div class="inputDiv">
+          <div class="label">
+            <label for="category">項目來源</label>
+          </div>
+          <div class="input">
+            <select name="category" id="category">
+              <option value="fb">fb</option>
+              <option value="104">104</option>
+              <option value="518">518</option>
+            </select>
+          </div>
+        </div> -->
+      </div>
+    </div>
+    <div class="boxBottom">
+      <a class="publicButton add">新增</a>
+      <!-- <input type="submit" value="新增" class="publicButton add"> -->
+    </div>
+    <!-- </form> -->
+  </div>
+</div>
+<script>
+  function publicFormError(t){
+    // console.log(this)
+    this.closest('.input').insertAdjacentHTML("afterend",`<span class="error">${t}</span>`)
+  }
+  function publicFormInputValue(inputs){
+    const objs = {}
+    document.querySelectorAll('span.error').forEach(o=>o.remove('active'))
+    inputs.forEach(o=>{
+      if(!o.value){
+        // publicFormError(o,'不能為空')
+        publicFormError.call(o,'不能為空')
+      }
+      objs[o.name] = o.value
+      // console.log(o.value)
+    })
+    console.log(objs)
+    return objs;
+  }
+  function publicPopClose(){
+    // console.log(this)
+    const publicPop = this.closest('.publicPop')
+    publicPop.querySelectorAll('input').forEach(o=>{
+      if(o.name=='keyword'){
+        o.value = '發案,誠徵,徵委託'
+      }else if(o.name=='nokeyword'){
+        o.value = '徵友,接案,接委,無償,換圖,公告'
+      }else{
+        o.value = ''
+      }
+    })
+    publicPop.querySelectorAll('.error').forEach(o=>o.remove('active'))
+    publicPop.classList.remove('active')
+  }
+  function publicPopAdd(){
+    const publicPop = this.closest('.publicPop')
+    //判斷input值
+    const objs = publicFormInputValue(publicPop.querySelectorAll('input'))
+    if(!Object.values(objs).some(x => x !== null && x !== '')){return false};
+    // console.log('241',objs)
+    getJSON({
+      'url': './crawl',
+      'method': 'POST',
+      'body': objs
+    }).then(function (json) {
+      // console.log(json)
+      if(json['result']=='false'){
+        alert(json['message'])
+      }else{
+        // o.closest('.publicBox').remove();
+        // publicPop.classList.remove('active')
+        // publicPopClose.call(this)
+        alert(json['message'])
+        window.location.reload();
+      }
+    });
+  }
+  const publicPop = document.querySelector('.publicPop')
+  publicPop.querySelector('.close').addEventListener('click',publicPopClose)
+  publicPop.querySelector('.add').addEventListener('click',publicPopAdd)
+</script>

@@ -179,7 +179,7 @@ async function fbGetData(driver,itemsCssName,itemTimeCssName) {
     if(articlesTexts.includes('發案') || articlesTexts.includes('誠徵') || articlesTexts.includes('徵委託')){
       console.log(`文章(發案/誠徵/徵委託)抓取`)
     }else if(!articlesTexts || articlesTexts.includes('徵友') || articlesTexts.includes('接案') || articlesTexts.includes('接委') || articlesTexts.includes('無償') || articlesTexts.includes('換圖') || articlesTexts.includes('公告')){
-      console.log(`文章(''/徵友/接案/接委/無償/換圖/公告)跳出`)
+      console.log(`文章(徵友/接案/接委/無償/換圖/公告)跳出`)
       continue;
     }else{
       console.log(`文章(其他)抓取`)

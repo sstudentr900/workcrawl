@@ -1,82 +1,140 @@
-.crawl .publicContent {
-  padding: 80px 20px 60px;
-  max-width: 680px;
-  width: 100%;
-  margin: auto;
-}
-.crawl .publicBox{
-  padding: 32px;
-}
-.crawl .itemDiv{
-  display: flex;
-  justify-content: space-between;
+.crawl{
   font-size: 14px;
 }
-.crawl .itemDiv .text{
-  width: 70%;
+.crawl .publicContent{
+  min-height: calc(100vh - 57px);
 }
-.crawl .titleDiv{
-  border-bottom: 1px solid #d1d6d4;
-  padding: 0 16px;
-  padding-bottom: 10px;
-}
-.crawl .itemDivs{
-  padding: 8px 16px;
-  height: 230px;
-  overflow: auto;
-  margin-top: 8px;
-}
-.crawl .itemDivs .itemDiv+.itemDiv{
-  margin-top: 6px;
-}
-.crawl .itemDivs .itemDiv .delete{
-  color: #f16363;
-  text-decoration: underline;
-}
-.crawl .inputDiv{
-  margin-bottom: 16px;
-  display: flex;
-  align-items: center;
-}
-.crawl .inputDiv .label{
-  flex: 0 0 80px;
-}
-.crawl .inputDiv .label label{
-  color: #626264;
-  font-size: 14px;
-  font-weight: 400;
+.crawl .publicContent .publicWidth {
   display: block;
 }
-.crawl .inputDiv .input{
-  position: relative;
-  width: 100%;
+.crawl .publicContent .publicBox{
+  padding: 0;
+  border-radius: 8px;
+  border: 1px solid #e2e6e4;
 }
-.crawl .inputDiv .input select,
-.crawl .inputDiv .input input{
-  min-height: 40px;
-  border: 1px solid #d1d6d4;
-  border-radius: 4px;
-  padding: 8px;
-  background-color: #fff;
-  font-size: 14px;
-  width: 100%;
-}
-.crawl .inputDiv .input select{
-  background: #fff url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' fill='%23626264' viewBox='0 0 448 512'><path d='M224 416c-8.188 0-16.38-3.125-22.62-9.375l-192-192c-12.5-12.5-12.5-32.75 0-45.25s32.75-12.5 45.25 0L224 338.8l169.4-169.4c12.5-12.5 32.75-12.5 45.25 0s12.5 32.75 0 45.25l-192 192C240.4 412.9 232.2 416 224 416z'/></svg>") no-repeat right 18px center/12px;
-  outline: none;
-  appearance: none;
-}
-.crawl .buttonDiv{
-  margin: 24px 0 0;
+.crawl .flex{
   display: flex;
-  justify-content: end;
+  padding: 6px 24px;
+  align-items: center;
 }
-.crawl .buttonDiv a{
-  font-size: 15px;
-  color: #fff;
-  background-color: #13ab67;
-  padding: 12px;
+.crawl .titleDiv .flex{
+  justify-content: space-between;
+  padding: 16px 24px;
+}
+.crawl .titleDiv .publictitle{
+  margin: 0;
+}
+.crawl .titleDiv .add {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #e2e6e4;
+  padding: 6px 12px;
   border-radius: 4px;
-  text-align: center;
-  width: calc(100% - 80px);
+  cursor: pointer;
 }
+.crawl .titleDiv .add svg{
+  width: 12px;
+  height: auto;
+  margin-right: 6px;
+  fill: #8c8c8f;
+}
+.crawl .tableTitle{
+  background: #f9f9f9;
+  border-top: 1px solid #e2e6e4;
+  border-bottom: 1px solid #e2e6e4;
+}
+.crawl .tableContent {
+  padding: 10px 0 20px;
+}
+.crawl .tableContent .input{
+  position: relative;
+}
+.crawl .tableContent .input .error{
+  font-size: 12px;
+  padding: 3px 6px;
+  color: #fff;
+  background: red;
+  border-radius: 4px;
+  position: absolute;
+  left: 0;
+  bottom: -15px;
+  line-height: 1;
+}
+.crawl .tableContent input{
+  border: none;
+  color: #8c8c8f;
+  padding: 8px;
+  width: 100%;
+  border-radius: 6px;
+}
+.crawl .tableContent .flex.active input{
+  border: 1px solid #e2e6e4;
+}
+.crawl .tableDiv .flex>div{
+  padding: 6px 12px;
+}
+.crawl .tableDiv .totle,
+.crawl .tableDiv .amount,
+.crawl .tableDiv .state{
+  width: 6%;
+}
+.crawl .tableDiv .keyword,
+.crawl .tableDiv .nokeyword{
+  width: 17%;
+}
+.crawl .tableDiv .name,
+.crawl .tableDiv .url{
+  width: 25%;
+}
+.crawl .tableDiv .totle,
+.crawl .tableDiv .amount{
+  display: flex;
+  justify-content: center;
+}
+.crawl .tableDiv .state{
+  display: flex;
+  justify-content: flex-end;
+}
+.crawl .tableDiv .state a{
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  margin-left: 6px;
+}
+.crawl .tableDiv .state a.ok svg,
+.crawl .tableDiv .state a.ok:hover svg,
+.crawl .tableDiv .state a.edit:hover svg{
+  fill: #13ab67;
+}
+.crawl .tableDiv .state a.cancel svg,
+.crawl .tableDiv .state a.delete:hover svg,
+.crawl .tableDiv .state a.cancel:hover svg{
+  fill: #f16363;
+}
+.crawl .tableDiv .state a svg{
+  width: 18px;
+  height: auto;
+  fill: #8c8c8f;
+}
+.crawl .tableContent .flex.active .state a.ok svg,
+.crawl .tableContent .flex.active .state a.cancel svg{
+  width: 15px;
+}
+.crawl .tableContent .flex.active .state a.cancel{
+  margin-left: 10px;
+  margin-right: 1px;
+} 
+.crawl .tableContent .flex .state a.ok,
+.crawl .tableContent .flex .state a.cancel{
+  display: none;
+}
+.crawl .tableContent .flex.active .state a.ok,
+.crawl .tableContent .flex.active .state a.cancel{
+  display: flex;
+}
+.crawl .tableContent .flex.active .state a.edit,
+.crawl .tableContent .flex.active .state a.delete{
+  display: none;
+}
+

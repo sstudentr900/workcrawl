@@ -175,7 +175,6 @@ input:focus{
   gap: 20px;
   width: 100%;
 }
-/*publicCol*/
 .publicCol-10{
   width: 100%;
 }
@@ -206,6 +205,11 @@ input:focus{
 .publicCol-1{
   width: 10%;
 }
+/* 用法 */
+/* .publicCols
+  .publicCol-5
+  .publicCol-5 */
+
 /*publicWidth*/
 .publicWidth{
   /* max-width: 1280px; */
@@ -226,6 +230,18 @@ input:focus{
   }
 } 
 /*共用--------------------------------------------------------------------*/
+.publicButton{
+  color: #fff;
+  background-color: #13ab67;
+  padding: 8px;
+  border-radius: 4px;
+  text-align: center;
+  border: none;
+  cursor: pointer;
+}
+.publicButton:hover {
+  background-color: #3eaf7c;
+}
 .publicTextGreen{
   color: #13ab67!important;
 }
@@ -243,7 +259,7 @@ input:focus{
 }
 /*publicContent*/
 .publicContent{
-  padding-top: 80px;
+  padding: 80px 0 20px;
 }
 /*publictitle*/
 .publictitle{

@@ -33,14 +33,16 @@ app.get('/', function(req, res){
   res.redirect('./home/1');
 })
 app.get('/home/:id', home.search)
+//home刪除
+app.delete('/home/:id',home.delet)
 //項目 crawl
 app.get('/crawl', crawl.search)
 //增加項目
 app.post('/crawl',crawl.add)
 //刪除項目
 app.delete('/crawl/:id',crawl.delet)
-// //排序項目
-// app.post('/compare/sort',compare.sort)
+//修改項目
+app.put('/crawl/:id',crawl.put)
 
 
 //home
