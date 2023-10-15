@@ -28,26 +28,44 @@ window.onload=async function(){
     o.addEventListener('click',function(){
       tableDivFlexRemove.call(o)
       const flex = this.closest('.flex')
-      const input = flex.querySelectorAll('.input');
+      // console.log(flex)
+      const input = flex.querySelectorAll('input');
+      // console.log(input)
       const objs = publicFormInputValue(input)
-      if(!Object.values(objs).some(x => x !== null && x !== '')){return false};
+      if(Object.values(objs).some(x => x == '')){return false};
+      console.log('36',objs)
       getJSON({
-        'url': `./crawl/${o.dataset.id}`,
-        'method': 'put',
+        'url': './crawl/'+o.dataset.id,
+        'method': 'POST',
         'body': objs
       }).then(function (json) {
-        console.log(json)
+        // console.log(json)
         if(json['result']=='false'){
           alert(json['message'])
         }else{
+          // o.closest('.publicBox').remove();
+          // publicPop.classList.remove('active')
+          // publicPopClose.call(this)
           alert(json['message'])
           window.location.reload();
         }
       });
+      // getJSON({
+      //   'url': `./crawl/${o.dataset.id}`,
+      //   'method': 'post',
+      //   'body': objs
+      // }).then(function (json) {
+      //   console.log(json)
+      //   if(json['result']=='false'){
+      //     alert(json['message'])
+      //   }else{
+      //     alert(json['message'])
+      //     window.location.reload();
+      //   }
+      // });
     })
   })
   tableDiv.querySelectorAll('.delete').forEach(o=>{
-
     o.addEventListener('click',function(){
       tableDivFlexRemove.call(this)
       getJSON({

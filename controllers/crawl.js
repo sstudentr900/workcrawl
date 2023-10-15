@@ -10,12 +10,11 @@ async function search(req, res) {
     },
   })
 }
-async function add(req, res) {
-  const params = req.body
-  const storename = params.storename
-  const storeurl = params.storeurl
-  const keyword = params.keyword
-  const nokeyword = params.nokeyword
+async function isValue(req, res) {
+  const storename = req.body.storename
+  const storeurl = req.body.storeurl
+  const keyword = req.body.keyword
+  const nokeyword = req.body.nokeyword
   // console.log(params,storename,storeurl,keyword,nokeyword)
   if(!storename || !storeurl || !keyword || !nokeyword){
     // console.log(`來源資料錯誤:${storename}-${storeurl}-${keyword}-${nokeyword}`)
@@ -29,6 +28,27 @@ async function add(req, res) {
     res.json({result:'false',message:'資料重複'})
     return false;
   }
+}
+async function add(req, res) {
+  const params = req.body
+  // const storename = req.body.storename
+  // const storeurl = req.body.storeurl
+  // const keyword = req.body.keyword
+  // const nokeyword = req.body.nokeyword
+  // // console.log(params,storename,storeurl,keyword,nokeyword)
+  // if(!storename || !storeurl || !keyword || !nokeyword){
+  //   // console.log(`來源資料錯誤:${storename}-${storeurl}-${keyword}-${nokeyword}`)
+  //   res.json({result:'false',message:'來源資料錯誤'})
+  //   return false;
+  // }
+  // const crawlerurlNumber = await dbQuery('SELECT id from crawlerurl WHERE storename = ? OR storeurl = ? ',[storename,storeurl])
+  // // console.log(`stocknoArray,${stocknoArray.length}`)
+  // if(crawlerurlNumber.length){
+  //   console.log('false,資料重複')
+  //   res.json({result:'false',message:'資料重複'})
+  //   return false;
+  // }
+  await isValue(req, res)
   await dbInsert('crawlerurl',params)
   res.json({result:'true',message: '新增成功' })
 }
@@ -49,14 +69,17 @@ async function delet(req, res) {
   }
 }
 async function put(req, res) {
-  const params = req.params
-  const storename = req.params.name
-  const storeurl = req.params.url
-  const keyword = req.params.keyword
-  const nokeyword = req.params.nokeyword
   const id = req.params.id
-  console.log(params,storename,storeurl,keyword,nokeyword,id)
-  await dbUpdata('crawlerurl',{'storename':storename,'storeurl':storeurl,'keyword':keyword,'nokeyword':nokeyword},id)
+  const params = req.body
+  // const storename = req.body.storename
+  // const storeurl = req.body.storeurl
+  // const keyword = req.body.keyword
+  // const nokeyword = req.body.nokeyword
+  // if(!storename || !storeurl || !keyword || !nokeyword || !id){
+  //   res.json({result:'false',message: '資料錯誤'})
+  // }
+  await isValue(req, res)
+  await dbUpdata('crawlerurl',params,id)
   res.json({result:'true',message: '修改成功'})
 }
 module.exports = { 

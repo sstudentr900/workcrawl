@@ -42,7 +42,7 @@ app.post('/crawl',crawl.add)
 //刪除項目
 app.delete('/crawl/:id',crawl.delet)
 //修改項目
-app.put('/crawl/:id',crawl.put)
+app.post('/crawl/:id',crawl.put)
 
 
 //home

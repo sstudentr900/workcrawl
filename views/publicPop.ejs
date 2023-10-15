@@ -201,7 +201,7 @@
 <script>
   function publicFormError(t){
     // console.log(this)
-    this.closest('.input').insertAdjacentHTML("afterend",`<span class="error">${t}</span>`)
+    this.closest('.input').insertAdjacentHTML("beforeend",`<span class="error">${t}</span>`)
   }
   function publicFormInputValue(inputs){
     const objs = {}
@@ -236,7 +236,7 @@
     const publicPop = this.closest('.publicPop')
     //判斷input值
     const objs = publicFormInputValue(publicPop.querySelectorAll('input'))
-    if(!Object.values(objs).some(x => x !== null && x !== '')){return false};
+    if(Object.values(objs).some(x => x == '')){return false};
     // console.log('241',objs)
     getJSON({
       'url': './crawl',

@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 5.1.1
+-- version 5.2.0
 -- https://www.phpmyadmin.net/
 --
 -- 主機： 127.0.0.1
--- 產生時間： 2023-10-13 12:38:42
--- 伺服器版本： 10.4.21-MariaDB
--- PHP 版本： 7.3.30
+-- 產生時間： 2023-10-15 17:29:37
+-- 伺服器版本： 10.4.24-MariaDB
+-- PHP 版本： 7.4.29
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -18,26 +18,8 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- 資料庫: `workcrawl`
+-- 資料庫： `workcrawl`
 --
-
--- --------------------------------------------------------
-
---
--- 資料表結構 `category`
---
-
-CREATE TABLE `category` (
-  `id` int(10) UNSIGNED NOT NULL,
-  `name` varchar(255) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
---
--- 傾印資料表的資料 `category`
---
-
-INSERT INTO `category` (`id`, `name`) VALUES
-(1, 'fb');
 
 -- --------------------------------------------------------
 
@@ -47,9 +29,10 @@ INSERT INTO `category` (`id`, `name`) VALUES
 
 CREATE TABLE `crawlerurl` (
   `id` int(10) UNSIGNED NOT NULL,
-  `storeurl` varchar(1000) NOT NULL,
+  `storeurl` varchar(500) NOT NULL,
   `storename` varchar(255) NOT NULL,
-  `category_id` int(10) UNSIGNED NOT NULL DEFAULT 1 COMMENT '類別',
+  `keyword` varchar(255) DEFAULT NULL COMMENT '關鍵字',
+  `nokeyword` varchar(255) DEFAULT NULL COMMENT '排除',
   `deletes` enum('y','n') NOT NULL DEFAULT 'n' COMMENT '刪除'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -57,12 +40,12 @@ CREATE TABLE `crawlerurl` (
 -- 傾印資料表的資料 `crawlerurl`
 --
 
-INSERT INTO `crawlerurl` (`id`, `storeurl`, `storename`, `category_id`, `deletes`) VALUES
-(1, 'https://www.facebook.com/groups/1230482576964177', '★⟪平面設計、影音製作⟫外包菁英集散地★', 1, 'n'),
-(3, 'https://www.facebook.com/groups/164843387045745', '外包達人-發案/接案/', 1, 'n'),
-(4, 'https://www.facebook.com/groups/1335691586521825', 'App系列找工作集散地【找開發工程師（iOS、Android、Unity、H5）、設計師（UI/UX）、專案管理、 接案、外包、就業、海外、合作夥伴】', 1, 'y'),
-(5, 'https://www.facebook.com/groups/836547183156386', '設計者~歡迎發包接案', 1, 'n'),
-(6, 'https://www.facebook.com/groups/2553682591549795/', 'SOHO接案坊 - 外包 / SOHO族接案 / 平面設計 / UIUX設計 / 動畫設計 / 影片剪輯 / 音樂音效', 1, 'n');
+INSERT INTO `crawlerurl` (`id`, `storeurl`, `storename`, `keyword`, `nokeyword`, `deletes`) VALUES
+(1, 'https://www.facebook.com/groups/1230482576964177', '★⟪平面設計、影音製作⟫外包菁英集散地★', '1', NULL, 'n'),
+(3, 'https://www.facebook.com/groups/164843387045745', '外包達人-發案/接案/', '1', NULL, 'n'),
+(4, 'https://www.facebook.com/groups/1335691586521825', 'App系列找工作集散地【找開發工程師（iOS、Android、Unity、H5）、設計師（UI/UX）、專案管理、 接案、外包、就業、海外、合作夥伴】', '1', NULL, 'y'),
+(5, 'https://www.facebook.com/groups/836547183156386', '設計者~歡迎發包接案', '1', NULL, 'n'),
+(6, 'https://www.facebook.com/groups/2553682591549795/', 'SOHO接案坊 - 外包 / SOHO族接案 / 平面設計 / UIUX設計 / 動畫設計 / 影片剪輯 / 音樂音效', '1', NULL, 'n');
 
 -- --------------------------------------------------------
 
@@ -73,12 +56,12 @@ INSERT INTO `crawlerurl` (`id`, `storeurl`, `storename`, `category_id`, `deletes
 CREATE TABLE `work` (
   `id` int(10) UNSIGNED NOT NULL,
   `name` varchar(255) DEFAULT NULL COMMENT '名子',
-  `namehref` varchar(1000) DEFAULT NULL,
+  `namehref` varchar(500) DEFAULT NULL,
   `time` varchar(255) DEFAULT NULL COMMENT '時間',
-  `timeurl` varchar(1000) DEFAULT NULL,
-  `headimgsrc` varchar(1000) DEFAULT NULL COMMENT '頭圖',
+  `timeurl` varchar(500) DEFAULT NULL,
+  `headimgsrc` varchar(500) DEFAULT NULL COMMENT '頭圖',
   `imgsrc` varchar(1000) DEFAULT NULL COMMENT '圖片',
-  `articles` varchar(2000) DEFAULT NULL COMMENT '文章',
+  `articles` varchar(1000) DEFAULT NULL COMMENT '文章',
   `crawlerurl_id` int(10) UNSIGNED NOT NULL COMMENT '來源'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -87,9 +70,6 @@ CREATE TABLE `work` (
 --
 
 INSERT INTO `work` (`id`, `name`, `namehref`, `time`, `timeurl`, `headimgsrc`, `imgsrc`, `articles`, `crawlerurl_id`) VALUES
-(1, 'Wang REi', 'https://www.facebook.com/groups/836547183156386/user/100001526608988/?__cft__[0]=AZWtp6hJpKZFcNqtxyI4gtQGYvQbXoTDH0UlXfWXsWQ_EjfSDqp8PezYrqHsPtU8nt-wLJsrzyKSaL4oOQZWx4pyt0p9JQcXOmpxew6YrYVpXeV8a7SZERQwJo318uaDKss1u1cU0cnZ5uI8JmYt4epTw4aJRanNVYYRHiVBIWrE3s', '2023-10-13', 'https://www.facebook.com/groups/836547183156386?sorting_setting=CHRONOLOGICAL#', 'https://scontent.fkhh1-1.fna.fbcdn.net/v/t39.30808-1/240521564_4455222524538590_5303297315910899938_n.jpg?stp=cp0_dst-jpg_p40x40&_nc_cat=106&ccb=1-7&_nc_sid=5f2048&_nc_ohc=1hqWaURqbakAX_BYyPX&_nc_ht=scontent.fkhh1-1.fna&cb_e2o_trans=t&oh=00_AfBN-H_fQJGtnx', NULL, '#我要發案\n初創個人工作室｜想尋求長期美編合作夥伴\n【徵求】包月社群小編（美編＋文案）\n【預算】請私訊作品集，謝謝！\n【時間】如配合順利希望長期合作\n【案件類型】 IG，#健身房知識型多圖貼文（3-6張）\n會給文字檔、文章，產出一篇圖文。', 5),
-(2, '林恩', 'https://www.facebook.com/groups/164843387045745/user/100084217981276/?__cft__[0]=AZVvALOAOx5LNqCuBFtYi4IMyLsTa5Hr-InsD6dxjEs1whQ6cZvMO0ckCMsmgWvxPbQaWhCGc_ZI4cWva0xBIQ4WTUks_jXZ8ak5R9WntvlL4uYvxamyKh2G8V5zGyPN7wuIWwZny3PTK9ibaNxdjmqB3ssRqF__-s26l53fP2z2Lh', '2023-10-13', 'https://www.facebook.com/groups/164843387045745#', 'https://scontent.fkhh1-2.fna.fbcdn.net/v/t39.30808-1/313866547_136311589186107_1882904522505907306_n.jpg?stp=cp0_dst-jpg_p40x40&_nc_cat=104&ccb=1-7&_nc_sid=5f2048&_nc_ohc=V9gnYVViNX0AX_t-TRK&_nc_ht=scontent.fkhh1-2.fna&cb_e2o_trans=t&oh=00_AfBFdUPTrGJz5-m', NULL, '【影片製作/短影音/抖音拍攝人員】\n工作内容:\n(1)日常TikTok、FB、IGReels、Youtube short内容企劃。\n(2)執行腳本撰寫、時程安排、拍攝、後製並上線。\n(3)現場能靈活應變、頻道影片內容更新發想。\n(4)配合店家、社群活動或檔期活動發想影音素材。\n具備條件:\n(1)有相關工作經驗,了解短影音市場尤佳。\n(2)對影音趨勢、時事迷因、影音笑點節奏有極高敏感度。\n(3)具備腳本撰寫能力,且善安排影音拍攝流程及進度經驗。\n(4)具備分鏡概念,後製和剪輯經驗。\n(5)對社群網站影音需求', 3),
-(3, '林放心', 'https://www.facebook.com/groups/164843387045745/user/100092668701702/?__cft__[0]=AZX3XCvApE3jJ0Q6eD3cJnhddgRzlCS_ofzXamBSR0T26HO8C9bSToNtw__oaIUn_VUg-fjoCl2twl6hvAg4dl6p8UleImS_hER93QQOfznXm353t6jhYi6u9tEDyUdi9N0mEOED8P8K_lZvJ2MlVvNRIAMH_nLqiGcll0wLpQjgYl', '2023-10-13', 'https://www.facebook.com/groups/164843387045745#', 'https://scontent.fkhh1-1.fna.fbcdn.net/v/t39.30808-1/350110203_667686595190921_5369504517708244722_n.jpg?stp=c7.0.40.40a_cp0_dst-jpg_p40x40&_nc_cat=102&ccb=1-7&_nc_sid=5f2048&_nc_ohc=kHS905UY1Z0AX8Z6g4L&_nc_ht=scontent.fkhh1-1.fna&cb_e2o_trans=t&oh=00_AfB', NULL, '#我要發案\n徵廣告投手\n1.規劃專案每月廣告計劃\n2.熟悉廣告投放策略（Meta、Google），提出優化策略與執行方式\n3.數位媒體操作、數據追蹤、廣告成效優化及廣告投放\n4.投放預算規劃，產出報表和數據分析\n【工作薪資】 私訊報價\n【聯絡方式】 私訊即可，並附上履歷及作品集', 3),
 (4, '徐珮瑜', 'https://www.facebook.com/groups/164843387045745/user/100004620330394/?__cft__[0]=AZVjZAFek2SuJv2uZG8dKPvGgIA1B3Tm5-3o3vGAlsF3fIjlulwU3JYK6QPrkejzyRAE_5VwHhncqBJqNQHUVMykU6Btvorwmr2plT5Til8sRYVU_s3PfSc-gFjozzS39GabmJua_KEvV-oDY7y70cerIEd-WU6UZJsxxN9N5wqauN', '2023-10-13', 'https://www.facebook.com/groups/164843387045745#', 'https://scontent.fkhh1-1.fna.fbcdn.net/v/t39.30808-1/362917801_2517030638460923_1595968023018704554_n.jpg?stp=c0.0.40.40a_cp0_dst-jpg_p40x40&_nc_cat=106&ccb=1-7&_nc_sid=5f2048&_nc_ohc=UQS9Ns-GMCYAX9OPQty&_nc_ht=scontent.fkhh1-1.fna&cb_e2o_trans=t&oh=00_Af', NULL, '#我要發案\n徵 社群美編、\n內容：社群小編、美編\n貼文、文宣、影片製作\n類型：美髮\n兼職長期合作佳（需包月）\n提供社群作品\n請訊息我 謝謝', 3),
 (5, '黃仁長', 'https://www.facebook.com/groups/164843387045745/user/100035410670020/?__cft__[0]=AZXOm7uJHtaf_bRPafQ2i1Vx8iTVPM3a93hp2tHfHDaaL9J4bSGxAxIjU6DBpv_932A_hlTy6lR-7c3LcExBITf-Vwz6wlJrjKtN9flMsUagDUcnod5uJIkgi1-9cMcQCwuUAA9CouCbHosnxN4pTpFgqgTXUkjEJcjtJZWSK9ZUy-', '2023-10-13', 'https://www.facebook.com/groups/164843387045745#', 'https://scontent.fkhh1-1.fna.fbcdn.net/v/t39.30808-1/240521564_4455222524538590_5303297315910899938_n.jpg?stp=dst-jpg_p200x200&_nc_cat=106&ccb=1-7&_nc_sid=5f2048&_nc_ohc=1hqWaURqbakAX_BYyPX&_nc_ht=scontent.fkhh1-1.fna&cb_e2o_trans=t&oh=00_AfA4NMv4dbhCSouz', 'https://scontent.fkhh1-1.fna.fbcdn.net/v/t39.30808-6/387817615_1083652849491727_8836864446894416264_n.jpg?stp=dst-jpg_p526x296&_nc_cat=100&ccb=1-7&_nc_sid=5f2048&_nc_ohc=fSsxeKKQyPYAX-EXnRc&_nc_ht=scontent.fkhh1-1.fna&cb_e2o_trans=t&oh=00_AfCcufM0uEoYWAbd', '經營者｜企業主｜想要創業  看過來\n【smepass對談活動】高效獲得政府資源關鍵力｜智慧資源媒合 x 一鍵取回\n眾多政府資源，想效率地找到適用的獎補助計畫? \n跟政府申請計畫，各項佐證資料要花好多時間到不同部會申請\n本次活動您能了解\n跨產業經營關鍵\n如何善用數位工具，高效掌握政府資源和補助，助您創業與經營路一臂之力！\n經營晉升之旅即刻開始\n活動地點：線上\n活動詳情與報名https://reurl.cc/x6vxq4', 3),
 (6, '杜政霖', 'https://www.facebook.com/groups/164843387045745/user/100003995880256/?__cft__[0]=AZUuKDkoFyQ96vJnDcRERlhXlSb_oTVXHHKn_5ZvbnjHQf9VV06_USOn-TSN1YJv8fleOtOgWM4yTRObgnTvlcwFfOySvGE5sVQjxi2O0qeSrKnj2yC7XYvOrk3ZzRl5r_IGXhrjsfpv9ePctjIdOMcgI7mukimz2AYohbhBdk2Rjb', '2023-10-13', 'https://www.facebook.com/groups/164843387045745#', 'https://scontent.fkhh1-1.fna.fbcdn.net/v/t1.6435-1/190967376_2149399785203197_7756688676229065873_n.jpg?stp=cp0_dst-jpg_p40x40&_nc_cat=101&ccb=1-7&_nc_sid=2b6aad&_nc_ohc=uAKjYjLftZ8AX84J0IQ&_nc_ht=scontent.fkhh1-1.fna&cb_e2o_trans=t&oh=00_AfDS1BGr9HQJgr_M', NULL, '我要發案\nApp內的廣告置入橫幅的圖片設計\n（遊戲週邊） (3c商品）\n有蝦皮設計經驗佳！￼', 3),
@@ -110,12 +90,6 @@ INSERT INTO `work` (`id`, `name`, `namehref`, `time`, `timeurl`, `headimgsrc`, `
 --
 
 --
--- 資料表索引 `category`
---
-ALTER TABLE `category`
-  ADD PRIMARY KEY (`id`);
-
---
 -- 資料表索引 `crawlerurl`
 --
 ALTER TABLE `crawlerurl`
@@ -132,16 +106,10 @@ ALTER TABLE `work`
 --
 
 --
--- 使用資料表自動遞增(AUTO_INCREMENT) `category`
---
-ALTER TABLE `category`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
-
---
 -- 使用資料表自動遞增(AUTO_INCREMENT) `crawlerurl`
 --
 ALTER TABLE `crawlerurl`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
 
 --
 -- 使用資料表自動遞增(AUTO_INCREMENT) `work`
