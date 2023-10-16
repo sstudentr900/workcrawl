@@ -11,14 +11,14 @@ async function isValue(req, res, id) {
     res.json({result:'false',message:'資料錯誤',name:'storename'})
     return false;
   }
-  const crawlerurlNumber = await dbQuery('SELECT id from crawlerurl WHERE storename = ? AND id != ?',[storename,id])
+  const crawlerurlNumber = await dbQuery('SELECT id from crawlerurl WHERE storename = CONVERT(? USING utf8mb4) AND id != ?',[storename,id])
   // console.log(`stocknoArray,${stocknoArray.length}`)
   if(crawlerurlNumber.length){
     // console.log('false,資料重複')
     res.json({result:'false',message:'資料重複',name:'storename'})
     return false;
   }
-  const crawlerurlNumber2 = await dbQuery('SELECT id from crawlerurl WHERE storeurl = ? AND id != ?',[storeurl,id])
+  const crawlerurlNumber2 = await dbQuery('SELECT id from crawlerurl WHERE storeurl = CONVERT(? USING utf8mb4) AND id != ?',[storeurl,id])
   // console.log(`stocknoArray,${stocknoArray.length}`)
   if(crawlerurlNumber2.length){
     // console.log('false,資料重複')
