@@ -61,27 +61,41 @@
   bottom: -15px;
   line-height: 1;
 }
-.crawl .tableContent input{
-  border: none;
+.crawl .tableContent .input textarea,
+.crawl .tableContent .input p,
+.crawl .tableContent .input input{
+  /* border: none; */
   color: #8c8c8f;
   padding: 8px;
   width: 100%;
   border-radius: 6px;
+  font-size: 13px;
+  font-weight: 400;
+  word-wrap:break-word
+}
+.crawl .tableContent .input input{
+  display: none;
+  border: 1px solid #e2e6e4;
 }
 .crawl .tableContent .flex.active input{
-  border: 1px solid #e2e6e4;
+  display: block;
+}
+.crawl .tableContent .flex.active p{
+  display: none;
 }
 .crawl .tableDiv .flex>div{
   padding: 6px 12px;
 }
 .crawl .tableDiv .totle,
-.crawl .tableDiv .amount,
-.crawl .tableDiv .state{
+.crawl .tableDiv .amount{
   width: 6%;
+}
+.crawl .tableDiv .state{
+  width: 7%;
 }
 .crawl .tableDiv .keyword,
 .crawl .tableDiv .nokeyword{
-  width: 17%;
+  width: 15%;
 }
 .crawl .tableDiv .name,
 .crawl .tableDiv .url{
@@ -113,18 +127,15 @@
   fill: #f16363;
 }
 .crawl .tableDiv .state a svg{
-  width: 18px;
+  /* max-width: 20px; */
+  width: 100%;
   height: auto;
   fill: #8c8c8f;
 }
-.crawl .tableContent .flex.active .state a.ok svg,
-.crawl .tableContent .flex.active .state a.cancel svg{
-  width: 15px;
-}
+.crawl .tableContent .flex.active .state a.ok,
 .crawl .tableContent .flex.active .state a.cancel{
-  margin-left: 10px;
-  margin-right: 1px;
-} 
+  padding: 1px;
+}
 .crawl .tableContent .flex .state a.ok,
 .crawl .tableContent .flex .state a.cancel{
   display: none;

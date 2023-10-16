@@ -34,16 +34,32 @@
             <% data['rows'].forEach(function(r) { %>
             <div class="flex">
               <div class="name">
-                <div class="input"><input type="text" value='<%= r.storename %>' name='storename'></div>
+                <div class="input">
+                  <!-- <textarea name='storename'><%= r.storename %></textarea> -->
+                  <input type="text" value='<%= r.storename %>' name='storename'>
+                  <p><%= r.storename %></p>
+                </div>
               </div>
               <div class="url">
-                <div class="input"><input type="text" value='<%= r.storeurl %>' name='storeurl'></div>
+                <div class="input">
+                  <!-- <textarea name='storeurl'><%= r.storeurl %></textarea> -->
+                  <input type="text" value='<%= r.storeurl %>' name='storeurl'>
+                  <p><%= r.storeurl %></p>
+                </div>
               </div>
               <div class="keyword">
-                <div class="input"><input type="text" value='<%= r.keyword %>' name='keyword'></div>
+                <div class="input">
+                  <!-- <textarea name='keyword'><%= r.keyword %></textarea> -->
+                  <input type="text" value='<%= r.keyword %>' name='keyword'>
+                  <p><%= r.keyword %></p>
+                </div>
               </div>
               <div class="nokeyword">
-                <div class="input"><input type="text" value='<%= r.nokeyword %>' name='nokeyword'></div>
+                <div class="input">
+                  <!-- <textarea name='nokeyword'><%= r.nokeyword %></textarea> -->
+                  <input type="text" value='<%= r.nokeyword %>' name='nokeyword'>
+                  <p><%= r.nokeyword %></p>
+                </div>
               </div>
               <div class="totle"><%= r.total %></div>
               <div class="amount"><%= r.amount %></div>

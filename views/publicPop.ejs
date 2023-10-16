@@ -214,7 +214,7 @@
       objs[o.name] = o.value
       // console.log(o.value)
     })
-    console.log(objs)
+    // console.log(objs)
     return objs;
   }
   function publicPopClose(){
@@ -233,9 +233,11 @@
     publicPop.classList.remove('active')
   }
   function publicPopAdd(){
+    // console.log('add')
     const publicPop = this.closest('.publicPop')
     //判斷input值
-    const objs = publicFormInputValue(publicPop.querySelectorAll('input'))
+    const inputs = publicPop.querySelectorAll('input')
+    const objs = publicFormInputValue(inputs)
     if(Object.values(objs).some(x => x == '')){return false};
     // console.log('241',objs)
     getJSON({
@@ -245,12 +247,14 @@
     }).then(function (json) {
       // console.log(json)
       if(json['result']=='false'){
-        alert(json['message'])
+        // alert(json['message'])
+        // console.log(inputs[0])
+        publicFormError.call(publicPop.querySelector(`input[name="${json['name']}"]`),json['message'])
       }else{
         // o.closest('.publicBox').remove();
         // publicPop.classList.remove('active')
         // publicPopClose.call(this)
-        alert(json['message'])
+        // alert(json['message'])
         window.location.reload();
       }
     });
