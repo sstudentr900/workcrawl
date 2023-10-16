@@ -1,33 +1,48 @@
 require('dotenv').config(); //載入.env環境檔
 const { initDrive } = require("./initDrive.js");
 const { By, until } = require('selenium-webdriver') // 從套件中取出需要用到的功能
-const { dbQuery,dbInsert,dbUpdata,dbDelete } = require('./db')
-async function fbLogin(driver) {
-  const fb_username = process.env.FB_USERNAME
-  const fb_userpass = process.env.FB_PASSWORD
-  const web = 'https://www.facebook.com/login';//我們要前往FB
-  try {
-    //在這裡要用await確保打開完網頁後才能繼續動作
-    await driver.get(web)
+const { dbQuery,dbInsert,dbUpdata,dbDelete } = require('./db.js')
+async function login(driver) {
+  const OHF_username = process.env.OHF_USERNAME
+  const OHF_userpass = process.env.OHF_PASSWORD
+  const web = 'https://www.104.com.tw/';
+  // try {
+  //在這裡要用await確保打開完網頁後才能繼續動作
+  await driver.get(web)
 
-    //填入fb登入資訊
-    const fb_email_ele = await driver.wait(until.elementLocated(By.xpath(`//*[@id="email"]`)), 3000);
-    fb_email_ele.sendKeys(fb_username)
-    const fb_pass_ele = await driver.wait(until.elementLocated(By.xpath(`//*[@id="pass"]`)), 3000);
-    fb_pass_ele.sendKeys(fb_userpass)
+  //選登入
+  const login = await driver.wait(until.elementLocated(By.css('.js-header_member-menu_item-login.active')), 3000);
+  await driver.executeScript("arguments[0].click();", login);
+  
 
-    //抓到登入按鈕然後點擊
-    const login_elem = await driver.wait(until.elementLocated(By.xpath(`//*[@id="loginbutton"]`)), 3000)
-    login_elem.click()
+  //填入fb登入資訊
+  const OHF_email_ele = await driver.wait(until.elementLocated(By.xpath(`//*[@id="username"]`)), 3000);
+  OHF_email_ele.sendKeys( OHF_username)
+  const OHF_pass_ele = await driver.wait(until.elementLocated(By.xpath(`//*[@id="password"]`)), 3000);
+  OHF_pass_ele.sendKeys( OHF_userpass)
 
-    //因為登入這件事情要等server回應，你直接跳轉粉絲專頁會導致登入失敗
-    //以登入後才會出現的元件作為判斷登入與否的依據
-    await driver.wait(until.elementLocated(By.xpath(`//*[contains(@id,":R6kmpaj9emhpapd5aq:")]`)), 5000)
-    return true;
-  } catch (e) {
-    console.error('登入失敗',e)
-    return false;
-  }
+  //抓到登入按鈕然後點擊
+  const login_elem = await driver.wait(until.elementLocated(By.xpath(`//*[@id="submitBtn"]`)), 3000)
+  login_elem.click()
+
+
+   //信箱驗證
+  // shoujicode=input('驗證碼: ')
+  await driver.sleep(30000)
+  // const emailInput = await driver.wait(until.elementLocated(By.css('.BaseInput.appearance-none.block.w-full.border.border-gray-200.rounded.py-8.px-12.h-44.focus:border-orange-400.focus:outline-none.gray-input')), 3000);
+  // emailInput.send_keys(shoujicode)
+  const emailBtn = await driver.wait(until.elementLocated(By.css('.btn.btn-primary.btn-size-large.mt-32.block.w-full')), 3000);
+  await driver.executeScript("arguments[0].click();", emailBtn);
+
+  //因為登入這件事情要等server回應，你直接跳轉粉絲專頁會導致登入失敗
+  //以登入後才會出現的元件作為判斷登入與否的依據
+  // await driver.wait(until.elementLocated(By.xpath(`//*[contains(@id,":R6kmpaj9emhpapd5aq:")]`)), 5000)
+
+  // return true;
+  // } catch (e) {
+  //   console.error('登入失敗',e)
+  //   return false;
+  // }
 }
 async function fbGetTime(driver,obj,itemTimeCssName){
   const timeLink = await obj.findElements(By.css(`${itemTimeCssName} use`))
@@ -203,49 +218,94 @@ async function fbGetData(driver,itemsCssName,itemTimeCssName,json) {
   console.log('fbGetData_array',arrays)
   return arrays;
 }
-async function fbGetTrace(driver,row) {
+async function getTrace(driver,row) {
   // console.log(`跳到該頁`)
-  console.log(`fbGetTrace,row,${row}`)
+  console.log(`getTrace,row,${row}`)
   //來源ID
   const crawlerurl_id = row['id']
+  //關鍵字
+  const ikeywordInput = await driver.wait(until.elementLocated(By.css('.b-search-block--l input')), 3000)
+  ikeywordInput.sendKeys(row['keyword'])
+  //職務類別
+  const jobInput = await driver.wait(until.elementLocated(By.css('.b-search-block--m input')), 3000)
+  // jobInput.click()
+  await driver.executeScript("arguments[0].click();", jobInput);
+  const informationBtn = await driver.wait(until.elementLocated(By.css('.category-picker__modal-body li:nth-child(7) a')),3000)
+  // informationBtn.click()
+  await driver.executeScript("arguments[0].click();", informationBtn);
+  const informationBtn2 = await driver.wait(until.elementLocated(By.css('.category-item.category-item--title input.checkbox-input')),3000)
+  // informationBtn2.click()
+  await driver.executeScript("arguments[0].click();", informationBtn2);
+  const designBtn = await driver.wait(until.elementLocated(By.css('.category-picker__modal-body li:nth-child(11) a')),3000)
+  // designBtn.click()
+  await driver.executeScript("arguments[0].click();", designBtn);
+  const designBtn2 = await driver.wait(until.elementLocated(By.css('.category-item.category-item--title input.checkbox-input')),3000)
+  // designBtn2.click()
+  await driver.executeScript("arguments[0].click();", designBtn2);
+  const jobBtn = await driver.wait(until.elementLocated(By.css('.category-picker-btn-primary')),3000)
+  // jobBtn.click()
+  await driver.executeScript("arguments[0].click();", jobBtn);
+  //搜尋
+  const ikeywordBtn = await driver.wait(until.elementLocated(By.css('.b-btn.b-btn--primary.is-large.gtm-main-search')), 3000)
+  // ikeywordBtn.click()
+  await driver.executeScript("arguments[0].click();", ikeywordBtn);
+  await driver.sleep(6000)
+  //選日期排序
+  const selectInput = await driver.wait(until.elementLocated(By.xpath(`//*[@id="js-sort"]`)), 3000)
+  // selectInput.click()
+  await driver.executeScript("arguments[0].click();", selectInput);
+  const selectOption = await driver.wait(until.elementLocated(By.css('#js-sort value["2-0"]')), 3000)
+  // selectOption.click()
+  await driver.executeScript("arguments[0].click();", selectOption);
+  //抓取今天日期
+  
+
+  //抓取內容
+  const jobs = await driver.wait(until.elementLocated(By.css('#js-job-content article')), 3000)
+  // if(!arrays.length){return false;}
+  // // console.log(`存fb資料`)
+  // for (const array of arrays) {
+  //   array['crawlerurl_id'] = crawlerurl_id
+  //   await dbInsert('work',array)
+  // }
+
   // console.log(`類別名`)
-  const itemsCssName = '.x1yztbdb.x1n2onr6.xh8yej3.x1ja2u2z';
-  const itemTimeCssName = '.x1i10hfl.xjbqb8w.x6umtig.x1b1mbwd.xaqea5y.xav7gou.x9f619.x1ypdohk.xt0psk2.xe8uvvx.xdj266r.x11i5rnm.xat24cr.x1mh8g0r.xexx8yu.x4uap5.x18d9i69.xkhd6sd.x16tdsg8.x1hl2dhg.xggy1nq.x1a2a7pz.x1heor9g.xt0b8zv.xo1l8bm';
-  await driver.get(row['storeurl'])
+  // const itemsCssName = '.x1yztbdb.x1n2onr6.xh8yej3.x1ja2u2z';
+  // const itemTimeCssName = '.x1i10hfl.xjbqb8w.x6umtig.x1b1mbwd.xaqea5y.xav7gou.x9f619.x1ypdohk.xt0psk2.xe8uvvx.xdj266r.x11i5rnm.xat24cr.x1mh8g0r.xexx8yu.x4uap5.x18d9i69.xkhd6sd.x16tdsg8.x1hl2dhg.xggy1nq.x1a2a7pz.x1heor9g.xt0b8zv.xo1l8bm';
+  // await driver.get(row['storeurl'])
   // const url = 'https://www.facebook.com/groups/239168157628070'
   // await driver.get(url)
-  await driver.sleep(3000)
+  // await driver.sleep(3000)
   // console.log(`選擇新貼文`)
-  await fbSelectNewPost(driver)
+  // await fbSelectNewPost(driver)
   // console.log(`顯示fb資料`)
-  await fbShowData(driver,200,itemsCssName,itemTimeCssName)
+  // await fbShowData(driver,200,itemsCssName,itemTimeCssName)
   // console.log(`抓取fb資料`)
-  const arrays = await fbGetData(driver,itemsCssName,itemTimeCssName,row)
-  console.log('fbGetTrace_array',arrays)
-  if(!arrays.length){return false;}
-  // console.log(`存fb資料`)
-  for (const array of arrays) {
-    array['crawlerurl_id'] = crawlerurl_id
-    await dbInsert('work',array)
-  }
-}
-async function crawlerFB(row) {    
-  const driver = await initDrive();
-  await fbLogin(driver)
-  await fbGetTrace(driver,row)
-  // const rows = await dbQuery( 'SELECT * from crawlerurl where deletes = ?',['n'])
-  // if(!rows){console.log(`crawlerFB沒有資料跳出`);return false;}
-  // for (const row of rows) {
-  //   if(row['storeurl'].includes('facebook')){
-  //     await fbGetTrace(driver,row)
-  //   }else{
-  //     console.log('crawlerFB_url error',row)
-  //   }
+  // const arrays = await fbGetData(driver,itemsCssName,itemTimeCssName,row)
+  // if(json['keyword'].split(',').find(item=>articlesTexts.includes(item))){
+  //   console.log(`***文章(${json['keyword']})抓取***`)
+  // }else if(json['nokeyword'].split(',').find(item=>articlesTexts.includes(item))){
+  //   console.log(`***文章(${json['nokeyword']})跳出***`)
+  //   // continue;
+  // }else{
+  //   console.log(`文章(其他)抓取`)
+  //   // continue;
   // }
-  // await fbGetTrace(driver,rows[0])
+  // console.log('getTrace_array',arrays)
+  // if(!arrays.length){return false;}
+  // console.log(`存fb資料`)
+  // for (const array of arrays) {
+  //   array['crawlerurl_id'] = crawlerurl_id
+  //   await dbInsert('work',array)
+  // }
+}
+async function crawlerOHF(row) {    
+  const driver = await initDrive();
+  await login(driver)
+  await getTrace(driver,row)
   driver.quit();
 }
-exports.crawlerFB = crawlerFB;//讓其他程式在引入時可以使用這個函式
+exports.crawlerOHF = crawlerOHF;//讓其他程式在引入時可以使用這個函式
 // module.exports={
-//   crawlerFB,
+//   crawler,
 // }
