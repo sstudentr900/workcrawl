@@ -199,8 +199,8 @@ async function fbGetData(driver,itemsCssName,itemTimeCssName) {
 }
 async function fbGetTrace(driver,row) {
   // console.log(`跳到該頁`)
-  console.log(`fbGetTrace_url:${row['url']}`)
-  await driver.get(row['url'])
+  console.log(`fbGetTrace_url:${row['storeurl']}`)
+  await driver.get(row['storeurl'])
   // const url = 'https://www.facebook.com/groups/239168157628070'
   // await driver.get(url)
   await driver.sleep(3000)
@@ -217,14 +217,13 @@ async function fbGetTrace(driver,row) {
   if(!arrays.length){return false;}
   // console.log(`存fb資料`)
   for (const array of arrays) {
-    array['crawlerurl_id'] = row['id']
     await dbInsert('work',array)
   }
 }
 async function crawlerFB() {    
   const driver = await initDrive();
   await fbLogin(driver)
-  const rows = await dbQuery( 'SELECT * from crawlerurl where deletes = ? and category_id = ?',['n','1'])
+  const rows = await dbQuery( 'SELECT * from crawlerurl where deletes = ?',['n'])
   if(!rows){console.log(`crawlerFB沒有資料跳出`);return false;}
   for (const row of rows) {
     await fbGetTrace(driver,row)
