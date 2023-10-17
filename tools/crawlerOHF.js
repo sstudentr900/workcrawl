@@ -1,7 +1,7 @@
 require('dotenv').config(); //載入.env環境檔
 const { initDrive } = require("./initDrive.js");
-const { By, until } = require('selenium-webdriver') // 從套件中取出需要用到的功能
-const { dbQuery,dbInsert,dbUpdata,dbDelete } = require('./db.js')
+const { By, until,Select } = require('selenium-webdriver') // 從套件中取出需要用到的功能
+const { dbQuery,dbInsert,dbUpdata,dbDelete,timeFn } = require('./db.js')
 async function login(driver) {
   const OHF_username = process.env.OHF_USERNAME
   const OHF_userpass = process.env.OHF_PASSWORD
@@ -220,84 +220,61 @@ async function fbGetData(driver,itemsCssName,itemTimeCssName,json) {
 }
 async function getTrace(driver,row) {
   // console.log(`跳到該頁`)
-  console.log(`getTrace,row,${row}`)
-  //來源ID
-  const crawlerurl_id = row['id']
+  console.log(`getTrace,row`,row)
+
   //關鍵字
-  const ikeywordInput = await driver.wait(until.elementLocated(By.css('.b-search-block--l input')), 3000)
+  const ikeywordInput = await driver.wait(until.elementLocated(By.css('.input-group.input-group--search input.form-control')), 3000)
   ikeywordInput.sendKeys(row['keyword'])
   //職務類別
-  const jobInput = await driver.wait(until.elementLocated(By.css('.b-search-block--m input')), 3000)
-  // jobInput.click()
+  const jobInput = await driver.wait(until.elementLocated(By.css('.input-group-append+.input-group-append button')), 3000)
   await driver.executeScript("arguments[0].click();", jobInput);
+  //資訊
   const informationBtn = await driver.wait(until.elementLocated(By.css('.category-picker__modal-body li:nth-child(7) a')),3000)
-  // informationBtn.click()
   await driver.executeScript("arguments[0].click();", informationBtn);
+  await driver.sleep(3000)
   const informationBtn2 = await driver.wait(until.elementLocated(By.css('.category-item.category-item--title input.checkbox-input')),3000)
-  // informationBtn2.click()
   await driver.executeScript("arguments[0].click();", informationBtn2);
+  //設計
   const designBtn = await driver.wait(until.elementLocated(By.css('.category-picker__modal-body li:nth-child(11) a')),3000)
-  // designBtn.click()
   await driver.executeScript("arguments[0].click();", designBtn);
+  await driver.sleep(3000)
   const designBtn2 = await driver.wait(until.elementLocated(By.css('.category-item.category-item--title input.checkbox-input')),3000)
-  // designBtn2.click()
   await driver.executeScript("arguments[0].click();", designBtn2);
+  //確定
   const jobBtn = await driver.wait(until.elementLocated(By.css('.category-picker-btn-primary')),3000)
-  // jobBtn.click()
   await driver.executeScript("arguments[0].click();", jobBtn);
+  await driver.sleep(3000)
   //搜尋
-  const ikeywordBtn = await driver.wait(until.elementLocated(By.css('.b-btn.b-btn--primary.is-large.gtm-main-search')), 3000)
-  // ikeywordBtn.click()
+  const ikeywordBtn = await driver.wait(until.elementLocated(By.css('button.btn.btn-secondary.btn-block.btn-lg')), 3000)
   await driver.executeScript("arguments[0].click();", ikeywordBtn);
   await driver.sleep(6000)
   //選日期排序
   const selectInput = await driver.wait(until.elementLocated(By.xpath(`//*[@id="js-sort"]`)), 3000)
-  // selectInput.click()
-  await driver.executeScript("arguments[0].click();", selectInput);
-  const selectOption = await driver.wait(until.elementLocated(By.css('#js-sort value["2-0"]')), 3000)
-  // selectOption.click()
-  await driver.executeScript("arguments[0].click();", selectOption);
+  const selects = new Select(selectInput)
+  await selects.selectByIndex(2)
+  await driver.sleep(3000)
   //抓取今天日期
-  
-
+  let date = await timeFn()
+  date = date['date']
+  console.log('今天日期',date)
   //抓取內容
-  const jobs = await driver.wait(until.elementLocated(By.css('#js-job-content article')), 3000)
-  // if(!arrays.length){return false;}
-  // // console.log(`存fb資料`)
-  // for (const array of arrays) {
-  //   array['crawlerurl_id'] = crawlerurl_id
-  //   await dbInsert('work',array)
-  // }
+  const lis = await driver.findElements(By.css('#js-job-content article'))
+  for (const li of lis) {
+    const obj = {}
+    obj.title = await li.getAttribute('data-job-name')
+    obj.url = await li.findElement(By.css('h2.b-tit a')).getAttribute('href')
+    obj.time = date
+    let articles = await li.findElement(By.css('.job-list-item__info.b-clearfix.b-content')).getText()
+    articles += '<br>'
+    articles += await li.findElement(By.css('.job-list-tag.b-content')).getText()
+    obj.articles = articles
+    obj.crawlerurl_id = row['id']   //來源ID
 
-  // console.log(`類別名`)
-  // const itemsCssName = '.x1yztbdb.x1n2onr6.xh8yej3.x1ja2u2z';
-  // const itemTimeCssName = '.x1i10hfl.xjbqb8w.x6umtig.x1b1mbwd.xaqea5y.xav7gou.x9f619.x1ypdohk.xt0psk2.xe8uvvx.xdj266r.x11i5rnm.xat24cr.x1mh8g0r.xexx8yu.x4uap5.x18d9i69.xkhd6sd.x16tdsg8.x1hl2dhg.xggy1nq.x1a2a7pz.x1heor9g.xt0b8zv.xo1l8bm';
-  // await driver.get(row['storeurl'])
-  // const url = 'https://www.facebook.com/groups/239168157628070'
-  // await driver.get(url)
-  // await driver.sleep(3000)
-  // console.log(`選擇新貼文`)
-  // await fbSelectNewPost(driver)
-  // console.log(`顯示fb資料`)
-  // await fbShowData(driver,200,itemsCssName,itemTimeCssName)
-  // console.log(`抓取fb資料`)
-  // const arrays = await fbGetData(driver,itemsCssName,itemTimeCssName,row)
-  // if(json['keyword'].split(',').find(item=>articlesTexts.includes(item))){
-  //   console.log(`***文章(${json['keyword']})抓取***`)
-  // }else if(json['nokeyword'].split(',').find(item=>articlesTexts.includes(item))){
-  //   console.log(`***文章(${json['nokeyword']})跳出***`)
-  //   // continue;
-  // }else{
-  //   console.log(`文章(其他)抓取`)
-  //   // continue;
-  // }
-  // console.log('getTrace_array',arrays)
-  // if(!arrays.length){return false;}
-  // console.log(`存fb資料`)
-  // for (const array of arrays) {
-  //   array['crawlerurl_id'] = crawlerurl_id
-  //   await dbInsert('work',array)
-  // }
+    //save
+    const articlesValue = await dbQuery( 'SELECT * from work where articles = ?',[obj.articles])
+    if(!articlesValue.length){console.log(`getTrace文章重複跳出`);return false;}
+    await dbInsert('work',obj)
+  }
 }
 async function crawlerOHF(row) {    
   const driver = await initDrive();

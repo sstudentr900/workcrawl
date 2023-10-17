@@ -19,31 +19,29 @@ async function openCrawlerWeb() {
     await driver.get(web)//在這裡要用await確保打開完網頁後才能繼續動作
     await driver.sleep(1000)
 
-    //使用屬性查找元素 element by attribute------------------------------------------
+   
+
+    //屬性查找 element by attribute------------------------------------------
     //https://www.lambdatest.com/blog/how-to-find-element-by-text-in-selenium/
     //const obj5 = await driver.findElement(By.xpath("//a[@rel='prev']"))
     // console.log(obj5);
 
-    //使用包含字元查找元素 element by contains------------------------------------------
+    // const obj4 = await driver.findElement(By.css('a[title="2022-10-06 11:43:36"]'))
+    // console.log(await obj4.getText());
+
+
+    //字元查找 element by contains------------------------------------------
     //https://www.lambdatest.com/blog/how-to-find-element-by-text-in-selenium/
-    const obj6 = await driver.findElements(By.xpath("//button[contains(text(),'展開')]"))
-    if(obj6.length > 0)
-    {
-      obj6[0].click()
-    }else{
-      console.log('no');
-    }
-    console.log(obj6);
+    // const obj6 = await driver.findElements(By.xpath("//button[contains(text(),'展開')]"))
+    // if(obj6.length > 0)
+    // {
+    //   obj6[0].click()
+    // }else{
+    //   console.log('no');
+    // }
+    // console.log(obj6);
 
-     //gettext error------------------------------------------
-  // <a href=https://stackoverflow.com/questions/16705165/unable-to-extract-the-text-using-gettext-in-selenium-webdriver-and-also-unable-t">gettext</a>
-    // getAttribute("innerHTML")
-    // getAttribute("textContent")
-
-    //點擊錯誤------------------------------------------
-    // <a href="https://stackoverflow.com/questions/58218032/selenium-element-click-is-not-clickable-at-point-52-346-other-element-would">點擊錯誤</a>
-
-    //查找該元素------------------------------------------
+    //css查找------------------------------------------
     // const obj4 = await driver.findElements(By.css('.qa-list__title-link'))
     // if(obj4.length > 0)
     // {
@@ -51,6 +49,18 @@ async function openCrawlerWeb() {
     // }else{
     //   console.log('no');
     // }
+
+
+    //抓取getAttribute------------------------------------------
+    // const obj = await driver.findElement(By.css('.qa-list__title-link'))
+    //href
+    // const href = await obj.getAttribute('href')
+    // console.log(href)
+
+    //data-id
+    // const id = await obj.getAttribute('data-id')
+    // console.log(id)
+
 
     //單個------------------------------------------
     // const obj = await driver.findElement(By.css('.qa-list__title-link'))
@@ -84,6 +94,28 @@ async function openCrawlerWeb() {
     // //href
     // const href2 = await item2.getAttribute('href')
     // console.log(href2)
+
+    
+    //透過 Selenium 操作下拉式選單 (Select)------------------------------------------
+    //https://www.selenium.dev/zh-cn/documentation/webdriver/support_features/select_lists/
+    // <select name="multi" id="multi" multiple="multiple">
+    //   <option selected="selected" value="eggs">Eggs</option>
+    //   <option value="ham">Ham</option>
+    //   <option selected="selected" value="sausages">Sausages</option>
+    //   <option value="onion gravy">Onion gravy</option>
+    // </select>
+    // const {Select} = require('selenium-webdriver')
+    // const selectElement = await driver.findElement(By.name('selectomatic'))
+    // const select = new Select(selectElement)
+    // await selects.selectByIndex(2)
+
+    //gettext error------------------------------------------
+    // <a href=https://stackoverflow.com/questions/16705165/unable-to-extract-the-text-using-gettext-in-selenium-webdriver-and-also-unable-t">gettext</a>
+    // getAttribute("innerHTML")
+    // getAttribute("textContent")
+
+    //點擊錯誤------------------------------------------
+    // <a href="https://stackoverflow.com/questions/58218032/selenium-element-click-is-not-clickable-at-point-52-346-other-element-would">點擊錯誤</a>
 
     //滾動------------------------------------------
     //https://www.selenium.dev/documentation/webdriver/actions_api/wheel/
