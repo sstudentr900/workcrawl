@@ -41,6 +41,8 @@
 }
 .home .publicBox .topDiv .text{
   margin-left: 10px;
+  /* max-width: calc( 100% - ( 24px + 24px + 24px + 40px ) ); */
+  max-width: 80%;
 }
 .home .publicBox .topDiv .name{
   color: #13ab67;

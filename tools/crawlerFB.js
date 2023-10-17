@@ -148,8 +148,10 @@ async function fbGetData(driver,itemsCssName,itemTimeCssName,json) {
     //console.log(`文章`)
     let articlesTexts=''
     //<div class="" dir="auto">
+    // x1iorvi4 x1pi30zi x1swvt13 xjkvuk6
+    // x1swvt13 x1pi30zi xexx8yu x18d9i69
     const articlesObjs = await item.findElements(By.css('.x1iorvi4.x1pi30zi'))
-    if(articlesObjs.length > 0){
+    if(!articlesTexts && articlesObjs.length > 0){
       // console.log(`文章A:${articlesObjs.length}`)
       const articlesMore = await articlesObjs[0].findElements(By.xpath("//div[contains(text(),'顯示更多')]"))
       if(articlesMore.length>0){
@@ -166,12 +168,12 @@ async function fbGetData(driver,itemsCssName,itemTimeCssName,json) {
     }
     // x1swvt13 x1pi30zi
     const articlesObjs2 = await item.findElements(By.css('.x1swvt13.x1pi30zi'))
-    if(articlesObjs2.length > 0){
+    if( !articlesTexts && articlesObjs2.length > 0){
       // console.log(`文章B:${articlesObjs2.length}`)
       articlesTexts = await item.findElement(By.css('.x1swvt13.x1pi30zi')).getText()
     }
     const articlesObjs3 = await item.findElements(By.css('.x5yr21d.xyqdw3p'))
-    if(articlesObjs3.length > 0){
+    if(!articlesTexts && articlesObjs3.length > 0){
       // console.log(`文章B:${articlesObjs3.length}`)
       articlesTexts = await item.findElement(By.css('.x5yr21d.xyqdw3p')).getText()
     }
@@ -205,7 +207,7 @@ async function fbGetData(driver,itemsCssName,itemTimeCssName,json) {
 }
 async function fbGetTrace(driver,row) {
   // console.log(`跳到該頁`)
-  console.log(`fbGetTrace,row,${row}`)
+  console.log(`fbGetTrace,row`,row)
   //來源ID
   const crawlerurl_id = row['id']
   // console.log(`類別名`)
@@ -225,6 +227,10 @@ async function fbGetTrace(driver,row) {
   if(!arrays.length){return false;}
   // console.log(`存fb資料`)
   for (const array of arrays) {
+    if(array['articles']){
+      const articles = await dbQuery( 'SELECT * from work where articles = ?',[array['articles']])
+      if(!articles.length){console.log(`fbGetTrace文章重複跳出`);return false;}
+    }
     array['crawlerurl_id'] = crawlerurl_id
     await dbInsert('work',array)
   }
