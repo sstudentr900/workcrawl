@@ -68,7 +68,8 @@ async function fbShowData(driver,number,itemsCssName,itemTimeCssName){
   // console.log(`timeText:${timeText},${timeText.includes('日')},${timeText.includes('天')}`)
   // if(timeText.includes('日') || timeText.includes('天')){
   const timeText = await fbGetTime(driver,itemLast,itemTimeCssName)
-  console.log(`fbShowData,timeText:${timeText},${timeText.includes('日')},${timeText.includes('天')}`)
+  // console.log(`fbShowData,顯示日期:${timeText},${timeText.includes('日')},${timeText.includes('天')}`)
+  console.log(`fbShowData,顯示日期:${timeText}`)
   // if(item.length>5){
   //   console.log('fbShowData_大於5個跳出')
   //   return true;
@@ -150,6 +151,7 @@ async function fbGetData(driver,itemsCssName,itemTimeCssName,json) {
     //<div class="" dir="auto">
     // x1iorvi4 x1pi30zi x1swvt13 xjkvuk6
     // x1swvt13 x1pi30zi xexx8yu x18d9i69
+    // x1swvt13 x1pi30zi xexx8yu x18d9i69
     const articlesObjs = await item.findElements(By.css('.x1iorvi4.x1pi30zi'))
     if(!articlesTexts && articlesObjs.length > 0){
       // console.log(`文章A:${articlesObjs.length}`)
@@ -167,10 +169,10 @@ async function fbGetData(driver,itemsCssName,itemTimeCssName,json) {
       articlesTexts = await articlesObjs[0].getText()
     }
     // x1swvt13 x1pi30zi
-    const articlesObjs2 = await item.findElements(By.css('.x1swvt13.x1pi30zi'))
+    const articlesObjs2 = await item.findElements(By.css('.x1swvt13.x1pi30zi.xexx8yu.x18d9i69'))
     if( !articlesTexts && articlesObjs2.length > 0){
       // console.log(`文章B:${articlesObjs2.length}`)
-      articlesTexts = await item.findElement(By.css('.x1swvt13.x1pi30zi')).getText()
+      articlesTexts = await item.findElement(By.css('.x1swvt13.x1pi30zi.xexx8yu.x18d9i69')).getText()
     }
     const articlesObjs3 = await item.findElements(By.css('.x5yr21d.xyqdw3p'))
     if(!articlesTexts && articlesObjs3.length > 0){
@@ -184,10 +186,10 @@ async function fbGetData(driver,itemsCssName,itemTimeCssName,json) {
   
     // if(articlesTexts.includes('發案') || articlesTexts.includes('誠徵') || articlesTexts.includes('徵委託')){
     if(json['keyword'].split(',').find(item=>articlesTexts.includes(item))){
-      console.log(`***文章(${json['keyword']})抓取***`)
+      console.log(`文章(${json['keyword']})抓取`)
     // }else if(!articlesTexts || articlesTexts.includes('徵友') || articlesTexts.includes('接案') || articlesTexts.includes('接委') || articlesTexts.includes('無償') || articlesTexts.includes('換圖') || articlesTexts.includes('公告')){
     }else if(json['nokeyword'].split(',').find(item=>articlesTexts.includes(item))){
-      console.log(`***文章(${json['nokeyword']})跳出***`)
+      console.log(`文章(${json['nokeyword']})跳出`)
       continue;
     }else{
       console.log(`文章(其他)抓取`)
@@ -223,13 +225,13 @@ async function fbGetTrace(driver,row) {
   await fbShowData(driver,200,itemsCssName,itemTimeCssName)
   // console.log(`抓取fb資料`)
   const arrays = await fbGetData(driver,itemsCssName,itemTimeCssName,row)
-  console.log('fbGetTrace_array',arrays)
+  console.log('fbGetTrace_抓取fb資料',arrays)
   if(!arrays.length){return false;}
   // console.log(`存fb資料`)
   for (const array of arrays) {
     if(array['articles']){
       const articles = await dbQuery( 'SELECT * from work where articles = ?',[array['articles']])
-      if(!articles.length){console.log(`fbGetTrace文章重複跳出`);return false;}
+      if(articles.length>0){console.log(`fbGetTrace文章重複跳出`);continue;}
     }
     array['crawlerurl_id'] = crawlerurl_id
     await dbInsert('work',array)

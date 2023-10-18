@@ -61,7 +61,7 @@ async function dbDelete( dataName ,id ) {
 }
 async function pageFn( count, pageShow, pageNow ) {
   // console.log(`pageObj`)
-  let pageTotle = Number(Math.round(count / pageShow));
+  let pageTotle = Number(Math.ceil(count / pageShow));
   let pageStart = Number(pageNow);
   if (pageNow > pageTotle) {
     pageStart = pageTotle;

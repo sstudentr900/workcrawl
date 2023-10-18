@@ -7,32 +7,31 @@ async function login(driver) {
   const OHF_userpass = process.env.OHF_PASSWORD
   const web = 'https://www.104.com.tw/';
   // try {
-  //在這裡要用await確保打開完網頁後才能繼續動作
   await driver.get(web)
 
   //選登入
   const login = await driver.wait(until.elementLocated(By.css('.js-header_member-menu_item-login.active')), 3000);
   await driver.executeScript("arguments[0].click();", login);
-  
+  // await driver.sleep(3000)
 
-  //填入fb登入資訊
+  //填入登入資訊
   const OHF_email_ele = await driver.wait(until.elementLocated(By.xpath(`//*[@id="username"]`)), 3000);
-  OHF_email_ele.sendKeys( OHF_username)
+  OHF_email_ele.sendKeys( OHF_username )
   const OHF_pass_ele = await driver.wait(until.elementLocated(By.xpath(`//*[@id="password"]`)), 3000);
-  OHF_pass_ele.sendKeys( OHF_userpass)
+  OHF_pass_ele.sendKeys( OHF_userpass )
 
   //抓到登入按鈕然後點擊
   const login_elem = await driver.wait(until.elementLocated(By.xpath(`//*[@id="submitBtn"]`)), 3000)
   login_elem.click()
 
 
-   //信箱驗證
-  // shoujicode=input('驗證碼: ')
+  //信箱驗證 等30秒
   await driver.sleep(30000)
   // const emailInput = await driver.wait(until.elementLocated(By.css('.BaseInput.appearance-none.block.w-full.border.border-gray-200.rounded.py-8.px-12.h-44.focus:border-orange-400.focus:outline-none.gray-input')), 3000);
   // emailInput.send_keys(shoujicode)
   const emailBtn = await driver.wait(until.elementLocated(By.css('.btn.btn-primary.btn-size-large.mt-32.block.w-full')), 3000);
   await driver.executeScript("arguments[0].click();", emailBtn);
+  await driver.sleep(2000)
 
   //因為登入這件事情要等server回應，你直接跳轉粉絲專頁會導致登入失敗
   //以登入後才會出現的元件作為判斷登入與否的依據
@@ -44,240 +43,122 @@ async function login(driver) {
   //   return false;
   // }
 }
-async function fbGetTime(driver,obj,itemTimeCssName){
-  const timeLink = await obj.findElements(By.css(`${itemTimeCssName} use`))
-  let timeText = ''
-  if(timeLink.length>0){
-    let timeId= await timeLink[0].getAttribute("xlink:href");
-    timeText = await driver.findElement(By.css(`${timeId}`)).getAttribute("innerHTML");
-    if(timeText.includes('use')){
-      timeId = await driver.findElement(By.css(`${timeId} use`)).getAttribute("xlink:href");
-      timeText = await driver.findElement(By.css(`${timeId}`)).getAttribute("innerHTML");
-    }
-    // console.log(`顯示可抓資料(svg):${timeText}`)
-  }else{
-    timeText = await obj.findElement(By.css(`${itemTimeCssName}`)).getText()
-    // console.log(`顯示可抓資料(text):${timeText}`)
+async function showData(driver,date){
+  //console.log(`手動載入`)
+  const button = await driver.findElements(By.css('button.b-btn.b-btn--link.js-more-page'))
+  if(button.length>0){
+    await driver.executeScript("arguments[0].click();", button[0]);
+    await driver.sleep(3000)
   }
-  return timeText;
-}
-async function fbShowData(driver,number,itemsCssName,itemTimeCssName){
-  // console.log(`顯示資料`)
-  const itemFirst = await driver.findElement(By.css(itemsCssName))
-  const itemFirstY = Math.round((await itemFirst.getRect()).y) //該DIV的高
-  const scrollHeight = itemFirstY+number
-  // console.log(scrollHeight)
-  await driver.actions().scroll(0, 0, 0, scrollHeight).perform()
+  //console.log(`抓最後一筆`)
+  const lis = await driver.findElements(By.css('#js-job-content article'))
+  const lisLast = lis[lis.length-1]
+  //console.log(`滾動到要抓取位置`)
+  await driver.actions().scroll(0, 0, 0, 0, lisLast).perform()
   await driver.sleep(1000)
-  
-  //抓最後一筆
-  const item = await driver.findElements(By.css(itemsCssName))
-  const itemLast = item[item.length-1]
-  //抓最後一筆時間
-  // const timeLink=  await itemLast.findElement(By.css(`${itemTimeCssName} use`))
-  // let timeId= await timeLink.getAttribute("xlink:href");
-  // await driver.sleep(1000)
-  // timeId = await driver.findElement(By.css(`${timeId} use`)).getAttribute("xlink:href");
-  // // await driver.sleep(1000)
-  // let timeText = await driver.findElement(By.css(`${timeId}`)).getAttribute("innerHTML");
-  // console.log(`timeText:${timeText},${timeText.includes('日')},${timeText.includes('天')}`)
-  // if(timeText.includes('日') || timeText.includes('天')){
-  const timeText = await fbGetTime(driver,itemLast,itemTimeCssName)
-  console.log(`fbShowData,timeText:${timeText},${timeText.includes('日')},${timeText.includes('天')}`)
-  // if(item.length>5){
-  //   console.log('fbShowData_大於5個跳出')
-  //   return true;
-  // }
-  if(timeText.includes('日') || timeText.includes('天')){
+  //console.log(`判斷日期`)
+  const time = await lisLast.findElement(By.css('h2.b-tit span')).getAttribute("innerHTML")
+  console.log(`今天日期:${date}-來源日期:${time}`)
+  if(!(date<=time)){
     return true;
   }else{
-    await fbShowData(driver,number,itemsCssName,itemTimeCssName)
+    await showData(driver,date)
   }
-}
-async function fbSelectNewPost(driver) {
-  // console.log(`選擇新貼文`)
-  //選擇相關
-  const newBtn = await driver.findElement(By.css('.x19f6ikt.x169t7cy.xsag5q8.x1swvt13 .x9f619.x1n2onr6.x1ja2u2z.x78zum5.x2lah0s.x1qughib.x6s0dn4.xozqiw3.x1q0g3np.xzt5al7'))
-  //滾動相關位置
-  await driver.actions().scroll(0, 0, 0, 0, newBtn).perform()
-  await driver.sleep(1000)
-  //點擊相關
-  await driver.executeScript("arguments[0].click();", newBtn);
-  await driver.sleep(2000)
-  //選擇新貼文
-  const newPosts = await driver.findElements(By.css('.x78zum5.xdt5ytf.x1iyjqo2.x1n2onr6 .x1i10hfl.xjbqb8w.x6umtig.x1b1mbwd.xaqea5y.xav7gou.xe8uvvx.x1hl2dhg.xggy1nq.x1o1ewxj.x3x9cwd.x1e5q0jg.x13rtm0m.x87ps6o.x1lku1pv.x1a2a7pz.x6s0dn4.xjyslct.x9f619.x1ypdohk.x78zum5.x1q0g3np.x2lah0s.xnqzcj9.x1gh759c.xdj266r.xat24cr.x1344otq.x1de53dj.xz9dl7a.xsag5q8.x1n2onr6.x16tdsg8.x1ja2u2z'))
-  // console.log('newPosts',newPosts.length)
-  //點擊新貼文
-  await driver.executeScript("arguments[0].click();", newPosts[2]);
-  await driver.sleep(3000)
-}
-async function fbGetData(driver,itemsCssName,itemTimeCssName,json) {
-  // console.log(`抓取fb資料`)
-  const arrays = []
-  const items = await driver.findElements(By.css(itemsCssName))
-  for (const item of items) {
-    const obj = {}
-    console.log(`一定滾動到要抓取位置---------------------------`)
-    await driver.actions().scroll(0, 0, 0, 0, item).perform()
-    await driver.sleep(4000)
-
-     //console.log(`時間為日或天跳出`)
-    const timeText = await fbGetTime(driver,item,itemTimeCssName)
-    if(timeText.includes('日') || timeText.includes('天')){ console.log(`時間為日或天跳出:${timeText}`);break;}
-
-    // console.log(`名子`)
-    const nameObj= await item.findElement(By.css('h3.x1heor9g.x1qlqyl8.x1pd3egz.x1a2a7pz.x1gslohp.x1yc453h .x1i10hfl.xjbqb8w.x6umtig.x1b1mbwd.xaqea5y.xav7gou.x9f619.x1ypdohk.xt0psk2.xe8uvvx.xdj266r.x11i5rnm.xat24cr.x1mh8g0r.xexx8yu.x4uap5.x18d9i69.xkhd6sd.x16tdsg8.x1hl2dhg.xggy1nq.x1a2a7pz.xt0b8zv.xzsf02u.x1s688f'));
-    obj.name= await nameObj.getText();
-    // obj.name= await nameObj.findElement(By.css('strong span')).getText();
-    obj.namehref= await nameObj.getAttribute('href');
-    console.log(`名子:${JSON.stringify(obj.name)}`)
-    console.log(`名子href:${obj.namehref}`)
-
-    // console.log(`時間`)
-    const timeLink= await item.findElement(By.css(itemTimeCssName))
-    // const time= await timeLink.getText()
-    obj.timeurl= await timeLink.getAttribute("href");
-    const dt= new Date();
-    obj.time= `${dt.getFullYear()}-${('0'+(dt.getMonth()+1)).slice(-2)}-${('0'+dt.getDate()).slice(-2)}`
-    console.log(`時間:${obj.time}`)
-    console.log(`時間_url:${obj.timeurl}`)
-
-    // console.log(`圖片`)
-    // x1ey2m1c xds687c x5yr21d x10l6tqk x17qophe x13vifvy xh8yej3
-    // x1ey2m1c xds687c x5yr21d x10l6tqk x17qophe x13vifvy xh8yej3 xl1xv1r
-    const imgsrcdivs= await item.findElements(By.css('img.x1ey2m1c.xds687c.x5yr21d.x10l6tqk.x17qophe.x13vifvy.xh8yej3'));
-    if(imgsrcdivs.length > 0){
-      const img = [];
-      for (const imgsrcdiv of imgsrcdivs) {
-        img.push(await imgsrcdiv.getAttribute("src"))
-      }
-      obj.imgsrc= img.join(',')
-      console.log(`圖片:${obj.imgsrc}`)
-    }
-
-    // console.log(`頭圖`)
-    const headimgsrc= await item.findElement(By.css('svg.x3ajldb image')).getAttribute("xlink:href");
-    console.log(`頭圖:${headimgsrc}`)
-    obj.headimgsrc= headimgsrc
-
-    //console.log(`文章`)
-    let articlesTexts=''
-    //<div class="" dir="auto">
-    const articlesObjs = await item.findElements(By.css('.x1iorvi4.x1pi30zi'))
-    if(articlesObjs.length > 0){
-      // console.log(`文章A:${articlesObjs.length}`)
-      const articlesMore = await articlesObjs[0].findElements(By.xpath("//div[contains(text(),'顯示更多')]"))
-      if(articlesMore.length>0){
-        // console.log(`文章A_顯示更多:${articlesMore.length}`)
-        await driver.executeScript("arguments[0].click();", articlesMore[0]);
-      }
-      const articlesMore2 = await articlesObjs[0].findElements(By.xpath("//div[contains(text(),'查看更多')]"))
-      if(articlesMore2.length>0){
-        // console.log(`文章A_查看更多:${articlesMore2.length}`)
-        await driver.executeScript("arguments[0].click();", articlesMore2[0]);
-      }
-      // await driver.sleep(3000)
-      articlesTexts = await articlesObjs[0].getText()
-    }
-    // x1swvt13 x1pi30zi
-    const articlesObjs2 = await item.findElements(By.css('.x1swvt13.x1pi30zi'))
-    if(articlesObjs2.length > 0){
-      // console.log(`文章B:${articlesObjs2.length}`)
-      articlesTexts = await item.findElement(By.css('.x1swvt13.x1pi30zi')).getText()
-    }
-    const articlesObjs3 = await item.findElements(By.css('.x5yr21d.xyqdw3p'))
-    if(articlesObjs3.length > 0){
-      // console.log(`文章B:${articlesObjs3.length}`)
-      articlesTexts = await item.findElement(By.css('.x5yr21d.xyqdw3p')).getText()
-    }
-    obj.articles = articlesTexts
-    console.log(`文章:${obj.articles}`)
-    //console.log(`文章抓取發案,誠徵`)
-
-  
-    // if(articlesTexts.includes('發案') || articlesTexts.includes('誠徵') || articlesTexts.includes('徵委託')){
-    if(json['keyword'].split(',').find(item=>articlesTexts.includes(item))){
-      console.log(`***文章(${json['keyword']})抓取***`)
-    // }else if(!articlesTexts || articlesTexts.includes('徵友') || articlesTexts.includes('接案') || articlesTexts.includes('接委') || articlesTexts.includes('無償') || articlesTexts.includes('換圖') || articlesTexts.includes('公告')){
-    }else if(json['nokeyword'].split(',').find(item=>articlesTexts.includes(item))){
-      console.log(`***文章(${json['nokeyword']})跳出***`)
-      continue;
-    }else{
-      console.log(`文章(其他)抓取`)
-      // continue;
-    }
-
-
-    //push arrays
-    // if(arrays.length>5){
-    //   console.log('fbGetData_大於5個跳出')
-    //   break;
-    // }
-    arrays.push(obj)
-  }
-  console.log('fbGetData_array',arrays)
-  return arrays;
 }
 async function getTrace(driver,row) {
   // console.log(`跳到該頁`)
-  console.log(`getTrace,row`,row)
+  console.log(`getTrace`,row)
 
   //關鍵字
   const ikeywordInput = await driver.wait(until.elementLocated(By.css('.input-group.input-group--search input.form-control')), 3000)
-  ikeywordInput.sendKeys(row['keyword'])
+  ikeywordInput.sendKeys(row['keyword'].replaceAll(',',' '))
   //職務類別
   const jobInput = await driver.wait(until.elementLocated(By.css('.input-group-append+.input-group-append button')), 3000)
   await driver.executeScript("arguments[0].click();", jobInput);
   //資訊
   const informationBtn = await driver.wait(until.elementLocated(By.css('.category-picker__modal-body li:nth-child(7) a')),3000)
   await driver.executeScript("arguments[0].click();", informationBtn);
-  await driver.sleep(3000)
+  await driver.sleep(2000)
   const informationBtn2 = await driver.wait(until.elementLocated(By.css('.category-item.category-item--title input.checkbox-input')),3000)
   await driver.executeScript("arguments[0].click();", informationBtn2);
   //設計
   const designBtn = await driver.wait(until.elementLocated(By.css('.category-picker__modal-body li:nth-child(11) a')),3000)
   await driver.executeScript("arguments[0].click();", designBtn);
-  await driver.sleep(3000)
+  await driver.sleep(2000)
   const designBtn2 = await driver.wait(until.elementLocated(By.css('.category-item.category-item--title input.checkbox-input')),3000)
   await driver.executeScript("arguments[0].click();", designBtn2);
   //確定
   const jobBtn = await driver.wait(until.elementLocated(By.css('.category-picker-btn-primary')),3000)
   await driver.executeScript("arguments[0].click();", jobBtn);
-  await driver.sleep(3000)
+  await driver.sleep(2000)
   //搜尋
   const ikeywordBtn = await driver.wait(until.elementLocated(By.css('button.btn.btn-secondary.btn-block.btn-lg')), 3000)
   await driver.executeScript("arguments[0].click();", ikeywordBtn);
-  await driver.sleep(6000)
+  await driver.sleep(3000)
   //選日期排序
   const selectInput = await driver.wait(until.elementLocated(By.xpath(`//*[@id="js-sort"]`)), 3000)
   const selects = new Select(selectInput)
-  await selects.selectByIndex(2)
+  await selects.selectByIndex(1)
   await driver.sleep(3000)
   //抓取今天日期
   let date = await timeFn()
-  date = date['date']
-  console.log('今天日期',date)
+  const year = `${date['year']}`
+  date = `${date['month']}/${date['day']}`
+  //顯示要抓取內容
+  await showData(driver,date)
   //抓取內容
   const lis = await driver.findElements(By.css('#js-job-content article'))
-  for (const li of lis) {
+  console.log(`抓取內容數量:${ lis.length }`)
+  for (let li of lis) {
     const obj = {}
-    obj.title = await li.getAttribute('data-job-name')
-    obj.url = await li.findElement(By.css('h2.b-tit a')).getAttribute('href')
-    obj.time = date
-    let articles = await li.findElement(By.css('.job-list-item__info.b-clearfix.b-content')).getText()
-    articles += '<br>'
-    articles += await li.findElement(By.css('.job-list-tag.b-content')).getText()
-    obj.articles = articles
-    obj.crawlerurl_id = row['id']   //來源ID
+    // let time = await li.findElement(By.css('h2.b-tit span')).getText()
+    const time = await li.findElement(By.css('h2.b-tit span')).getAttribute("innerHTML")
+    console.log(`判斷日期:${ date }-${ time }`)
+    if(!(date<= time)){console.log(`***日期小於今天跳出***`);break;}
+    obj.time = `${year}-${time.replaceAll('/','-')}`
+
+    // console.log(`滾動到要抓取位置`)
+    await driver.actions().scroll(0, 0, 0, 0, li).perform()
+    await driver.sleep(1000)
+
+    //來源ID
+    obj.crawlerurl_id = row['id']
+    obj.name = await li.getAttribute('data-job-name')
+    obj.namehref = await li.findElement(By.css('h2.b-tit a')).getAttribute('href')
+    //文章
+    let articles = await li.findElements(By.css('.job-list-item__info.b-clearfix.b-content'))
+    if(articles.length>0){
+      articles = await articles[0].getText()
+      articles += '，'
+      articles += await li.findElement(By.css('.job-list-tag.b-content')).getText()
+      obj.articles = articles
+    }
+
+    console.log('目前抓取資料',obj)
+
+    //判斷標題
+    if(row['keyword'].split(',').find(item=>obj.name.includes(item))){
+      console.log(`標題(${row['keyword']})抓取`)
+    }else if(row['nokeyword'].split(',').find(item=>obj.name.includes(item))){
+      console.log(`標題(${row['nokeyword']})跳出`)
+      continue;
+    }else{
+      console.log(`標題(其他)跳出`)
+      continue;
+    }
+  
+    //判斷標題
+    const nameValue = await dbQuery( 'SELECT * from work where name = ?',[obj.name])
+    if(nameValue.length>0){console.log(`***標題重複跳出***`);continue;}
 
     //save
-    const articlesValue = await dbQuery( 'SELECT * from work where articles = ?',[obj.articles])
-    if(!articlesValue.length){console.log(`getTrace文章重複跳出`);return false;}
     await dbInsert('work',obj)
+    console.log('end----------------------------------')
   }
 }
 async function crawlerOHF(row) {    
-  const driver = await initDrive();
+  const driver = await initDrive()
+  await driver.manage().window().setRect({width: 1024, height: 880});
   await login(driver)
   await getTrace(driver,row)
   driver.quit();

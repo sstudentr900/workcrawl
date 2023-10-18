@@ -109,6 +109,11 @@ async function openCrawlerWeb() {
     // const select = new Select(selectElement)
     // await selects.selectByIndex(2)
 
+    //視窗大小------------------------------------------
+    //https://www.selenium.dev/zh-cn/documentation/webdriver/interactions/windows/
+    // await driver.manage().window().setRect({width: 1024, height: 768});
+
+
     //gettext error------------------------------------------
     // <a href=https://stackoverflow.com/questions/16705165/unable-to-extract-the-text-using-gettext-in-selenium-webdriver-and-also-unable-t">gettext</a>
     // getAttribute("innerHTML")

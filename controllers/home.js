@@ -4,7 +4,7 @@ async function search(req, res) {
   const pageNow = !isNaN(Number(req.params.id))?req.params.id:1;//當前頁碼且判斷是數字  
   const pageShow = 8;//顯示數量
   const pageCount = await dbQuery( 'SELECT COUNT(*) as number from work' )
-  //判斷有值
+  //判斷總數
   if(pageCount.length==0){
     res.render('home',{
       'active': 'home',
@@ -18,9 +18,15 @@ async function search(req, res) {
     return false;
   }
   const pageObj = await pageFn(Number(pageCount[0]['number']),pageShow,Number(pageNow))
+  // console.log('pageObj',pageNow,pageObj['pageTotle'])
+  //來源頁碼大於總頁數跳轉第1頁
+  if( pageNow > pageObj['pageTotle'] ){
+    res.redirect('./1');
+    return false;
+  }
   //工作
   const rows = await dbQuery( 'SELECT * from work LIMIT ?,?',[pageObj['startValue'],pageObj['endValue']] )
-  if(!rows.length){console.log(`serch,rows失敗`)}
+  // console.log('工作',rows.length)
   res.render('home',{
     'active': 'home',
     'data': {
