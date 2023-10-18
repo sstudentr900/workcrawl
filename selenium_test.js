@@ -61,6 +61,11 @@ async function openCrawlerWeb() {
     // const id = await obj.getAttribute('data-id')
     // console.log(id)
 
+    //字元查找 send key enter------------------------------------------
+    //https://stackoverflow.com/questions/41428871/node-js-selenium-send-key-enter
+    // const {Builder, By, Key, until} = require('selenium-webdriver');
+    // .sendKeys('webdriver', Key.RETURN);
+
 
     //單個------------------------------------------
     // const obj = await driver.findElement(By.css('.qa-list__title-link'))

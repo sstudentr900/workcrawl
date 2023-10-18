@@ -204,7 +204,7 @@ async function fbGetData(driver,itemsCssName,itemTimeCssName,json) {
     // }
     arrays.push(obj)
   }
-  console.log('fbGetData_array',arrays)
+  // console.log('fbGetData_array',arrays)
   return arrays;
 }
 async function fbGetTrace(driver,row) {
@@ -225,13 +225,16 @@ async function fbGetTrace(driver,row) {
   await fbShowData(driver,200,itemsCssName,itemTimeCssName)
   // console.log(`抓取fb資料`)
   const arrays = await fbGetData(driver,itemsCssName,itemTimeCssName,row)
-  console.log('fbGetTrace_抓取fb資料',arrays)
+  console.log('fbGetTrace_抓取資料數量',arrays.length)
   if(!arrays.length){return false;}
   // console.log(`存fb資料`)
   for (const array of arrays) {
     if(array['articles']){
       const articles = await dbQuery( 'SELECT * from work where articles = ?',[array['articles']])
-      if(articles.length>0){console.log(`fbGetTrace文章重複跳出`);continue;}
+      if(articles.length>0){
+        // console.log(`fbGetTrace文章重複跳出`);
+        continue;
+      }
     }
     array['crawlerurl_id'] = crawlerurl_id
     await dbInsert('work',array)
