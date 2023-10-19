@@ -93,8 +93,13 @@ async function fbSelectNewPost(driver) {
   //選擇新貼文
   const newPosts = await driver.findElements(By.css('.x78zum5.xdt5ytf.x1iyjqo2.x1n2onr6 .x1i10hfl.xjbqb8w.x6umtig.x1b1mbwd.xaqea5y.xav7gou.xe8uvvx.x1hl2dhg.xggy1nq.x1o1ewxj.x3x9cwd.x1e5q0jg.x13rtm0m.x87ps6o.x1lku1pv.x1a2a7pz.x6s0dn4.xjyslct.x9f619.x1ypdohk.x78zum5.x1q0g3np.x2lah0s.xnqzcj9.x1gh759c.xdj266r.xat24cr.x1344otq.x1de53dj.xz9dl7a.xsag5q8.x1n2onr6.x16tdsg8.x1ja2u2z'))
   // console.log('newPosts',newPosts.length)
-  //點擊新貼文
-  await driver.executeScript("arguments[0].click();", newPosts[2]);
+  if(newPosts.length==4){
+    //點擊 新商品動態
+    await driver.executeScript("arguments[0].click();", newPosts[1]);
+  }else if(newPosts.length==3){
+    //點擊新貼文
+    await driver.executeScript("arguments[0].click();", newPosts[2]);
+  }
   await driver.sleep(3000)
 }
 async function fbGetData(driver,itemsCssName,itemTimeCssName,json) {
@@ -112,12 +117,16 @@ async function fbGetData(driver,itemsCssName,itemTimeCssName,json) {
     if(timeText.includes('日') || timeText.includes('天')){ console.log(`時間為日或天跳出:${timeText}`);break;}
 
     // console.log(`名子`)
-    const nameObj= await item.findElement(By.css('h3.x1heor9g.x1qlqyl8.x1pd3egz.x1a2a7pz.x1gslohp.x1yc453h .x1i10hfl.xjbqb8w.x6umtig.x1b1mbwd.xaqea5y.xav7gou.x9f619.x1ypdohk.xt0psk2.xe8uvvx.xdj266r.x11i5rnm.xat24cr.x1mh8g0r.xexx8yu.x4uap5.x18d9i69.xkhd6sd.x16tdsg8.x1hl2dhg.xggy1nq.x1a2a7pz.xt0b8zv.xzsf02u.x1s688f'));
-    obj.name= await nameObj.getText();
-    // obj.name= await nameObj.findElement(By.css('strong span')).getText();
-    obj.namehref= await nameObj.getAttribute('href');
-    console.log(`名子:${JSON.stringify(obj.name)}`)
-    console.log(`名子href:${obj.namehref}`)
+    const nameObj= await item.findElements(By.css('h3.x1heor9g.x1qlqyl8.x1pd3egz.x1a2a7pz.x1gslohp.x1yc453h .x1i10hfl.xjbqb8w.x6umtig.x1b1mbwd.xaqea5y.xav7gou.x9f619.x1ypdohk.xt0psk2.xe8uvvx.xdj266r.x11i5rnm.xat24cr.x1mh8g0r.xexx8yu.x4uap5.x18d9i69.xkhd6sd.x16tdsg8.x1hl2dhg.xggy1nq.x1a2a7pz.xt0b8zv.xzsf02u.x1s688f'));
+    if(nameObj.length>0){
+      obj.name= await nameObj[0].getText();
+      // obj.name= await nameObj.findElement(By.css('strong span')).getText();
+      obj.namehref= await nameObj[0].getAttribute('href');
+      console.log(`名子:${JSON.stringify(obj.name)}`)
+      console.log(`名子href:${obj.namehref}`)
+    }else{
+      console.log(`找不到名子跳出`)
+    }
 
     // console.log(`時間`)
     const timeLink= await item.findElement(By.css(itemTimeCssName))
