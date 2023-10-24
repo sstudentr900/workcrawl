@@ -32,17 +32,21 @@ async function fbLogin(driver) {
 async function fbGetTime(driver,obj,itemTimeCssName){
   const timeLink = await obj.findElements(By.css(`${itemTimeCssName} use`))
   let timeText = ''
+  // console.log('fbGetTime_length',timeLink.length,'itemTimeCssName',await obj.findElements(By.css(`${itemTimeCssName}`)))
   if(timeLink.length>0){
     let timeId= await timeLink[0].getAttribute("xlink:href");
     timeText = await driver.findElement(By.css(`${timeId}`)).getAttribute("innerHTML");
+    // console.log(`fbGetTime_length_use:${timeText.includes('use')}`)
     if(timeText.includes('use')){
       timeId = await driver.findElement(By.css(`${timeId} use`)).getAttribute("xlink:href");
       timeText = await driver.findElement(By.css(`${timeId}`)).getAttribute("innerHTML");
     }
-    console.log(`顯示可抓資料(svg):${timeText}`)
+    // console.log(`顯示可抓資料(svg):${timeText}`)
   }else{
-    timeText = await obj.findElement(By.css(`${itemTimeCssName}`)).getText()
-    console.log(`顯示可抓資料(text):${timeText}`)
+    // console.log(`顯示可抓資料(itemTimeCssName):${itemTimeCssName}`)
+    // timeText = await obj.findElements(By.css(`${itemTimeCssName}`)).getText()
+    timeText = await obj.findElement(By.css(`${itemTimeCssName}`)).getAttribute("textContent");
+    // console.log(`顯示可抓資料(text):${timeText}`)
   }
   return timeText;
 }
