@@ -32,7 +32,8 @@ async function fbLogin(driver) {
 async function fbGetTime(driver,obj,itemTimeCssName){
   const timeLink = await obj.findElements(By.css(`${itemTimeCssName} use`))
   let timeText = ''
-  // console.log('fbGetTime_length',timeLink.length,'itemTimeCssName',await obj.findElements(By.css(`${itemTimeCssName}`)))
+  // console.log('fbGetTime_length',timeLink.length)
+  // console.log( 'itemTimeCssName',await obj.findElements(By.css(`${itemTimeCssName}`)) )
   if(timeLink.length>0){
     let timeId= await timeLink[0].getAttribute("xlink:href");
     timeText = await driver.findElement(By.css(`${timeId}`)).getAttribute("innerHTML");
@@ -43,10 +44,13 @@ async function fbGetTime(driver,obj,itemTimeCssName){
     }
     // console.log(`顯示可抓資料(svg):${timeText}`)
   }else{
-    // console.log(`顯示可抓資料(itemTimeCssName):${itemTimeCssName}`)
-    // timeText = await obj.findElements(By.css(`${itemTimeCssName}`)).getText()
-    timeText = await obj.findElement(By.css(`${itemTimeCssName}`)).getAttribute("textContent");
-    // console.log(`顯示可抓資料(text):${timeText}`)
+    let date = await obj.findElements(By.css(`${itemTimeCssName}`))
+    if(date.length>0){
+      timeText = await obj.findElement(By.css(`${itemTimeCssName}`)).getAttribute("textContent");
+    }else{
+      timeText = 'false'; 
+    }
+
   }
   return timeText;
 }
@@ -112,16 +116,24 @@ async function fbGetData(driver,itemsCssName,itemTimeCssName,json) {
   const items = await driver.findElements(By.css(itemsCssName))
   for (const item of items) {
     const obj = {}
-    console.log(`一定滾動到要抓取位置---------------------------`)
+    console.log(`fbGetData_一定滾動到要抓取位置---------------------------`)
     await driver.actions().scroll(0, 0, 0, 0, item).perform()
-    await driver.sleep(2000)
+    await driver.sleep(1000)
 
      //console.log(`時間為日或天跳出`)
     const timeText = await fbGetTime(driver,item,itemTimeCssName)
-    if(timeText.includes('日') || timeText.includes('天')){ console.log(`時間為日或天跳出:${timeText}`);break;}
+    if(timeText.includes('日') || timeText.includes('天')){ 
+      console.log(`時間為日或天跳出迴圈:${timeText}`);
+      break;
+    }else if(timeText.includes('false')){ 
+      console.log(`找不到日期跳出本循環`);
+      continue;
+    }
 
     // console.log(`名子`)
-    const nameObj= await item.findElements(By.css('h3.x1heor9g.x1qlqyl8.x1pd3egz.x1a2a7pz.x1gslohp.x1yc453h .x1i10hfl.xjbqb8w.x6umtig.x1b1mbwd.xaqea5y.xav7gou.x9f619.x1ypdohk.xt0psk2.xe8uvvx.xdj266r.x11i5rnm.xat24cr.x1mh8g0r.xexx8yu.x4uap5.x18d9i69.xkhd6sd.x16tdsg8.x1hl2dhg.xggy1nq.x1a2a7pz.xt0b8zv.xzsf02u.x1s688f'));
+    //x1heor9g x1qlqyl8 x1pd3egz x1a2a7pz x1gslohp x1yc453h
+    //x1i10hfl xjbqb8w x6umtig x1b1mbwd xaqea5y xav7gou x9f619 x1ypdohk xt0psk2 xe8uvvx xdj266r x11i5rnm xat24cr x1mh8g0r xexx8yu x4uap5 x18d9i69 xkhd6sd x16tdsg8 x1hl2dhg xggy1nq x1a2a7pz xt0b8zv xzsf02u x1s688f
+    const nameObj= await item.findElements(By.css('h3.x1heor9g.x1qlqyl8.x1pd3egz.x1a2a7pz.x1gslohp.x1yc453h a.x1i10hfl.xjbqb8w.x6umtig.x1b1mbwd.xaqea5y.xav7gou.x9f619.x1ypdohk.xt0psk2.xe8uvvx.xdj266r.x11i5rnm.xat24cr.x1mh8g0r.xexx8yu.x4uap5.x18d9i69.xkhd6sd.x16tdsg8.x1hl2dhg.xggy1nq.x1a2a7pz.xt0b8zv.xzsf02u.x1s688f'));
     if(nameObj.length>0){
       obj.name= await nameObj[0].getText();
       // obj.name= await nameObj.findElement(By.css('strong span')).getText();
@@ -133,13 +145,17 @@ async function fbGetData(driver,itemsCssName,itemTimeCssName,json) {
     }
 
     // console.log(`時間`)
-    const timeLink= await item.findElement(By.css(itemTimeCssName))
+    const timeLink= await item.findElements(By.css(itemTimeCssName))
     // const time= await timeLink.getText()
-    obj.timeurl= await timeLink.getAttribute("href");
-    const dt= new Date();
-    obj.time= `${dt.getFullYear()}-${('0'+(dt.getMonth()+1)).slice(-2)}-${('0'+dt.getDate()).slice(-2)}`
-    console.log(`時間:${obj.time}`)
-    console.log(`時間_url:${obj.timeurl}`)
+    if(timeLink.length > 0){
+      obj.timeurl= await timeLink[0].getAttribute("href");
+      const dt= new Date();
+      obj.time= `${dt.getFullYear()}-${('0'+(dt.getMonth()+1)).slice(-2)}-${('0'+dt.getDate()).slice(-2)}`
+      console.log(`時間:${obj.time}`)
+      console.log(`時間_url:${obj.timeurl}`)
+    }else{
+      console.log(`找不到時間跳出`)
+    }
 
     // console.log(`圖片`)
     // x1ey2m1c xds687c x5yr21d x10l6tqk x17qophe x13vifvy xh8yej3
@@ -152,6 +168,8 @@ async function fbGetData(driver,itemsCssName,itemTimeCssName,json) {
       }
       obj.imgsrc= img.join(',')
       console.log(`圖片:${obj.imgsrc}`)
+    }else{
+      console.log(`找不到圖片跳出`)
     }
 
     // console.log(`頭圖`)
@@ -226,9 +244,11 @@ async function fbGetTrace(driver,row) {
   //來源ID
   const crawlerurl_id = row['id']
   // console.log(`類別名`)
+  //x1yztbdb x1n2onr6 xh8yej3 x1ja2u2z
   const itemsCssName = '.x1yztbdb.x1n2onr6.xh8yej3.x1ja2u2z';
   // x1i10hfl xjbqb8w x6umtig x1b1mbwd xaqea5y xav7gou x9f619 x1ypdohk xt0psk2 xe8uvvx xdj266r x11i5rnm xat24cr x1mh8g0r xexx8yu x4uap5 x18d9i69 xkhd6sd x16tdsg8 x1hl2dhg xggy1nq x1a2a7pz x1heor9g xt0b8zv xo1l8bm
-  const itemTimeCssName = '.x1i10hfl.xjbqb8w.x6umtig.x1b1mbwd.xaqea5y.xav7gou.x9f619.x1ypdohk.xt0psk2.xe8uvvx.xdj266r.x11i5rnm.xat24cr.x1mh8g0r.xexx8yu.x4uap5.x18d9i69.xkhd6sd.x16tdsg8.x1hl2dhg.xggy1nq.x1a2a7pz.x1heor9g.xt0b8zv.xo1l8bm';
+  // x1i10hfl xjbqb8w x6umtig x1b1mbwd xaqea5y xav7gou x9f619 x1ypdohk xt0psk2 xe8uvvx xdj266r x11i5rnm xat24cr x1mh8g0r xexx8yu x4uap5 x18d9i69 xkhd6sd x16tdsg8 x1hl2dhg xggy1nq x1a2a7pz x1heor9g xt0b8zv xo1l8bm
+  const itemTimeCssName = 'a.x1i10hfl.xjbqb8w.x6umtig.x1b1mbwd.xaqea5y.xav7gou.x9f619.x1ypdohk.xt0psk2.xe8uvvx.xdj266r.x11i5rnm.xat24cr.x1mh8g0r.xexx8yu.x4uap5.x18d9i69.xkhd6sd.x16tdsg8.x1hl2dhg.xggy1nq.x1a2a7pz.x1heor9g.xt0b8zv.xo1l8bm';
 
   await driver.get(row['storeurl'])
   // const url = 'https://www.facebook.com/groups/239168157628070'
