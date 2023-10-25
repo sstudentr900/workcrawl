@@ -114,6 +114,7 @@ async function fbGetData(driver,itemsCssName,itemTimeCssName,json) {
   // console.log(`抓取fb資料`)
   const arrays = []
   const items = await driver.findElements(By.css(itemsCssName))
+  console.log(`fbGetData_抓取內容數量:${ items.length }`)
   for (const item of items) {
     const obj = {}
     console.log(`fbGetData_一定滾動到要抓取位置---------------------------`)

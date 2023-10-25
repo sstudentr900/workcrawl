@@ -34,7 +34,8 @@ app.get('/', function(req, res){
 })
 app.get('/home/:id', home.search)
 //home刪除
-app.delete('/home/:id',home.delet)
+app.post('/home',home.delet)
+// app.delete('/home/:id',home.delet)
 //項目 crawl
 app.get('/crawl', crawl.search)
 //增加項目

@@ -89,7 +89,7 @@ async function getTrace(driver,row) {
   await showData(driver,date)
   //抓取內容
   const lis = await driver.findElements(By.css('.item__job.job_item'))
-  console.log(`抓取內容數量:${ lis.length }`)
+  console.log(`抓取1111內容數量:${ lis.length }`)
   for (let li of lis) {
     const obj = {}
     const time = await li.findElement(By.css('.item_data small.text-muted.job_item_date')).getText()

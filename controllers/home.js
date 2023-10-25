@@ -2,7 +2,7 @@ const { dbQuery,dbInsert,dbUpdata,dbDelete,pageFn,timeFn } = require('../tools/d
 async function search(req, res) {
   //總數
   const pageNow = !isNaN(Number(req.params.id))?req.params.id:1;//當前頁碼且判斷是數字  
-  const pageShow = 8;//顯示數量
+  const pageShow = 16;//顯示數量
   const pageCount = await dbQuery( 'SELECT COUNT(*) as number from work' )
   //判斷總數
   if(pageCount.length==0){
@@ -38,8 +38,10 @@ async function search(req, res) {
   })
 }
 async function delet(req, res) {
-  const id = req.params.id
-  // console.log(`delet_id:${id}`)
+  // console.log(`req`,req)
+  // const id = req.params.id
+  const id = req.body.id
+  // console.log(`id`,id)
   if(!id){
     // console.log(`來源資料錯誤:${params}`)
     res.json({result:'false',message:'來源資料錯誤'})

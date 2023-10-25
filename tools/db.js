@@ -54,10 +54,11 @@ async function dbUpdata( dataName, objs ,id ) {
   return await dbQuery( sql,val );
 }
 async function dbDelete( dataName ,id ) {
-  // console.log(`dbDelete`)
+  console.log('dbDelete',id)
   if(!dataName){console.log('dataName錯誤');return false;}
   if(!id){console.log('id錯誤');return false;}
-  return await dbQuery( `DELETE from ${dataName} WHERE id = ?`,[id] );
+  // return await dbQuery( `DELETE from ${dataName} WHERE id IN (?)`,[id] );
+  return await dbQuery( `DELETE from ${dataName} WHERE FIND_IN_SET (id ,?)`,[id] );
 }
 async function pageFn( count, pageShow, pageNow ) {
   // console.log(`pageObj`)
