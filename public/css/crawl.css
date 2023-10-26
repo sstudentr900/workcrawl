@@ -99,13 +99,17 @@
 .crawl .tableDiv .state{
   width: 7%;
 }
-.crawl .tableDiv .keyword,
-.crawl .tableDiv .nokeyword{
+.crawl .tableDiv .keyword{
   width: 15%;
 }
-.crawl .tableDiv .name,
-.crawl .tableDiv .url{
+.crawl .tableDiv .nokeyword{
   width: 25%;
+}
+.crawl .tableDiv .name{
+  width: 20%;
+}
+.crawl .tableDiv .url{
+  width: 20%;
 }
 .crawl .tableDiv .totle,
 .crawl .tableDiv .amount{

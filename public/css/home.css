@@ -6,7 +6,7 @@
   display: block;
 }
 .home .publicBoxs{
-  column-count: 3;
+  column-count: 4;
   column-gap: 12px;
   /* display: grid; */
   /* grid-template-columns: repeat(3, 1fr);
@@ -57,6 +57,7 @@
   font-size: 13px;
   color: #a7abaf;
   margin-top: -3px;
+  display: inline-block;
 }
 .home .publicBox .topDiv .delete svg{
   fill: #b6b8bb;
