@@ -79,7 +79,7 @@ window.onload=async function(){
       const objs = publicFormInputValue(inputs)
       if(Object.values(objs).some(x => x == '')){return false};
       objs.id = o.dataset.id;
-      console.log('36',objs)
+      // console.log('36',objs)
       getJSON({
         'url': './crawl/'+o.dataset.id,
         'method': 'POST',
@@ -97,7 +97,7 @@ window.onload=async function(){
           // tableDivFlexRemove.call(o)
           // window.location.reload();
           const selects = tableDiv.querySelectorAll('.flex.select')
-          console.log('100',selects.length)
+          // console.log('100',selects.length)
           if(selects.length>0){
             updataFn(selects,objs)
           }else{
