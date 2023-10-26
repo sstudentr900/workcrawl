@@ -5,22 +5,22 @@ window.onload=async function(){
   //   window.location = './';
   //   return false;
   // }
-  function deletFn(id){
-    // console.log('9',id)
-    getJSON({
-      'url': `./home`,
-      'method': 'POST',
-      'body': { 'id': id }
-    }).then(function (json) {
-      if(json['result']=='false'){
-        // alert(json['message'])
-      }else{
-        // o.closest('.publicBox').remove();
-        // alert(json['message'])
-        window.location.reload();
-      }
-    });
-  }
+  // function deletFn(id){
+  //   // console.log('9',id)
+  //   getJSON({
+  //     'url': `./home`,
+  //     'method': 'POST',
+  //     'body': { 'id': id }
+  //   }).then(function (json) {
+  //     if(json['result']=='false'){
+  //       // alert(json['message'])
+  //     }else{
+  //       // o.closest('.publicBox').remove();
+  //       // alert(json['message'])
+  //       window.location.reload();
+  //     }
+  //   });
+  // }
   document.querySelectorAll('.publicBox').forEach(o=>{
     o.addEventListener('click',function(){
       // console.log('click')
@@ -34,7 +34,12 @@ window.onload=async function(){
         let id = [...document.querySelectorAll('.publicBox.active .delete')].map(i=>i.dataset.id).join(',')
         if(!id){id = o.dataset.id}
         // console.log('id',id)
-        deletFn(id)
+        deletFn({
+          'url':'./home',
+          'method':'POST',
+          'body': { 'id': id },
+        })
+        // deletFn(id)
       }
     })
   })

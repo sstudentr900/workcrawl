@@ -203,20 +203,6 @@
     // console.log(this)
     this.closest('.input').insertAdjacentHTML("beforeend",`<span class="error">${t}</span>`)
   }
-  function publicFormInputValue(inputs){
-    const objs = {}
-    document.querySelectorAll('span.error').forEach(o=>o.remove('active'))
-    inputs.forEach(o=>{
-      if(!o.value){
-        // publicFormError(o,'不能為空')
-        publicFormError.call(o,'不能為空')
-      }
-      objs[o.name] = o.value
-      // console.log(o.value)
-    })
-    // console.log(objs)
-    return objs;
-  }
   function publicPopClose(){
     // console.log(this)
     const publicPop = this.closest('.publicPop')

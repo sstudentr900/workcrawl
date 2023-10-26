@@ -5,7 +5,7 @@ async function isValue(req, res, id) {
   const keyword = req.body.keyword
   const nokeyword = req.body.nokeyword
   id = id?id:''
-  // console.log(params,storename,storeurl,keyword,nokeyword)
+  // console.log(8,storename,storeurl,keyword,nokeyword)
   if(!storename || !storeurl || !keyword || !nokeyword){
     // console.log(`來源資料錯誤:${storename}-${storeurl}-${keyword}-${nokeyword}`)
     res.json({result:'false',message:'資料錯誤',name:'storename'})
@@ -62,9 +62,13 @@ async function delet(req, res) {
   }
 }
 async function put(req, res) {
-  const id = req.params.id
+  const id = req.body.id
+  // console.log('65',id)
+  delete req.body.id
+  // console.log('67',req.body)
+  // console.log('69',req)
   const params = req.body
-  const value = await isValue(req, res, id)
+  const value = await isValue(req, res,id)
   if(!value){return false;}
   await dbUpdata('crawlerurl',params,id)
   res.json({result:'true',message: '修改成功'})

@@ -17,6 +17,7 @@
   padding: 6px 24px;
   align-items: center;
 }
+
 .crawl .titleDiv .flex{
   justify-content: space-between;
   padding: 16px 24px;
@@ -76,6 +77,11 @@
 .crawl .tableContent .input input{
   display: none;
   border: 1px solid #e2e6e4;
+}
+.crawl .tableContent .flex.select{
+  /* outline: 1px solid #e2e6e4;
+  color: #e2e6e4; */
+  background: #f9f9f9;
 }
 .crawl .tableContent .flex.active input{
   display: block;
