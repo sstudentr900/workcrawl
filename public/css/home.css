@@ -31,6 +31,7 @@
 .home .publicBox .topDiv .left{
   display: flex;
   align-items: center;
+  width: 90%;
 }
 .home .publicBox .topDiv .img{
   width: 40px;
@@ -44,20 +45,24 @@
   height: auto;
 }
 .home .publicBox .topDiv .text{
-  margin-left: 10px;
+  /* margin-left: 10px; */
+  width: calc(100% - 40px);
+  padding-left: 10px;
   /* max-width: calc( 100% - ( 24px + 24px + 24px + 40px ) ); */
-  max-width: 80%;
+  /* max-width: 80%; */
 }
 .home .publicBox .topDiv .name{
   color: #13ab67;
   font-size: 18px;
   font-weight: bold;
+  line-height: 1.2;
+  margin-bottom: -5px;
 }
 .home .publicBox .topDiv .date{
   font-size: 13px;
   color: #a7abaf;
-  margin-top: -3px;
   display: inline-block;
+  line-height: 1;
 }
 .home .publicBox .topDiv .delete svg{
   fill: #b6b8bb;
@@ -71,7 +76,10 @@
   font-size: 14px;
   padding: 12px 0 24px;
   /* white-space: pre; */
-  white-space: break-spaces;
+  /*連續的空白字元會被合併(collapse)。換行在換行字元*/
+  white-space: pre-line; 
+  /*文字本身斷行*/
+  word-break: break-all;
   line-height: 1.6;
   font-weight: 400;
 }

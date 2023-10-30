@@ -2,6 +2,8 @@ require('dotenv').config(); //載入.env環境檔
 const { initDrive } = require("./initDrive.js");
 const { By, until } = require('selenium-webdriver') // 從套件中取出需要用到的功能
 const { dbQuery,dbInsert,dbUpdata,dbDelete } = require('./db')
+const { createWorker, OEM, PSM } = require('tesseract.js');  //文本識別
+const fs = require('fs');
 async function fbLogin(driver) {
   const fb_username = process.env.FB_USERNAME
   const fb_userpass = process.env.FB_PASSWORD
@@ -30,12 +32,14 @@ async function fbLogin(driver) {
   }
 }
 async function fbGetTime(driver,obj,itemTimeCssName){
-  const timeLink = await obj.findElements(By.css(`${itemTimeCssName} use`))
+  const timeLink = await obj.findElements(By.css(`${itemTimeCssName}`))
+  const timeLink_use = await obj.findElements(By.css(`${itemTimeCssName} use`))
+  const timeLink_canvas = await obj.findElements(By.css(`${itemTimeCssName} canvas`))
   let timeText = ''
   // console.log('fbGetTime_length',timeLink.length)
   // console.log( 'itemTimeCssName',await obj.findElements(By.css(`${itemTimeCssName}`)) )
-  if(timeLink.length>0){
-    let timeId= await timeLink[0].getAttribute("xlink:href");
+  if(timeLink_use.length>0){
+    let timeId= await timeLink_use[0].getAttribute("xlink:href");
     timeText = await driver.findElement(By.css(`${timeId}`)).getAttribute("innerHTML");
     // console.log(`fbGetTime_length_use:${timeText.includes('use')}`)
     if(timeText.includes('use')){
@@ -43,29 +47,43 @@ async function fbGetTime(driver,obj,itemTimeCssName){
       timeText = await driver.findElement(By.css(`${timeId}`)).getAttribute("innerHTML");
     }
     // console.log(`顯示可抓資料(svg):${timeText}`)
+  }else if(timeLink_canvas.length>0){
+    // 等待元素可见
+    // const element = await driver.wait(until.elementIsVisible(driver.findElement(By.css(`${itemTimeCssName} canvas`))), 10000);
+    await driver.sleep(1000)
+    //获取页面的截图
+    const base64CanvasScreenshot = await timeLink_canvas[0].takeScreenshot();
+    // 保存 Canvas 的截图为文件
+    fs.writeFileSync('date.png', base64CanvasScreenshot, 'base64');
+    const worker = await createWorker('chi_sim');
+    const ret = await worker.recognize('date.png');
+    // console.log(ret.data.text);
+    timeText = ret.data.text;
+    await worker.terminate();
+  }else if(timeLink.length>0){
+    timeText = await obj.findElement(By.css(`${itemTimeCssName}`)).getAttribute("textContent");
   }else{
-    let date = await obj.findElements(By.css(`${itemTimeCssName}`))
-    if(date.length>0){
-      timeText = await obj.findElement(By.css(`${itemTimeCssName}`)).getAttribute("textContent");
-    }else{
-      timeText = 'false'; 
-    }
-
+    console.log('找不到時間')
+    // timeText = 'false'; 
   }
   return timeText;
 }
 async function fbShowData(driver,number,itemsCssName,itemTimeCssName){
   // console.log(`顯示資料`)
-  const itemFirst = await driver.findElement(By.css(itemsCssName))
-  const itemFirstY = Math.round((await itemFirst.getRect()).y) //該DIV的高
-  const scrollHeight = itemFirstY+number
-  // console.log(scrollHeight)
-  await driver.actions().scroll(0, 0, 0, scrollHeight).perform()
-  await driver.sleep(1000)
+  // const itemFirst = await driver.findElement(By.css(itemsCssName))
+  // const itemFirstY = Math.round((await itemFirst.getRect()).y) //該DIV的高
+  // const scrollHeight = itemFirstY+number
+  // // console.log(scrollHeight)
+  // await driver.actions().scroll(0, 0, 0, scrollHeight).perform()
+  // await driver.sleep(1000)
   
   //抓最後一筆
   const item = await driver.findElements(By.css(itemsCssName))
   const itemLast = item[item.length-1]
+  //console.log(`滾動到要抓取位置`)
+  await driver.actions().scroll(0, 0, 0, 50, itemLast).perform()
+  await driver.sleep(1000)
+
   //抓最後一筆時間
   // const timeLink=  await itemLast.findElement(By.css(`${itemTimeCssName} use`))
   // let timeId= await timeLink.getAttribute("xlink:href");
@@ -77,7 +95,7 @@ async function fbShowData(driver,number,itemsCssName,itemTimeCssName){
   // if(timeText.includes('日') || timeText.includes('天')){
   const timeText = await fbGetTime(driver,itemLast,itemTimeCssName)
   // console.log(`fbShowData,顯示日期:${timeText},${timeText.includes('日')},${timeText.includes('天')}`)
-  console.log(`fbShowData,顯示日期:${timeText}`)
+  console.log(`fbGetTime,顯示日期:${timeText}`)
   // if(item.length>5){
   //   console.log('fbShowData_大於5個跳出')
   //   return true;
@@ -114,7 +132,8 @@ async function fbGetData(driver,itemsCssName,itemTimeCssName,json) {
   // console.log(`抓取fb資料`)
   const arrays = []
   const items = await driver.findElements(By.css(itemsCssName))
-  console.log(`fbGetData_抓取內容數量:${ items.length }`)
+  let dayNumber = 0
+  console.log(`fbGetData_目前內容數量:${ items.length }`)
   for (const item of items) {
     const obj = {}
     console.log(`fbGetData_一定滾動到要抓取位置---------------------------`)
@@ -124,16 +143,18 @@ async function fbGetData(driver,itemsCssName,itemTimeCssName,json) {
      //console.log(`時間為日或天跳出`)
     const timeText = await fbGetTime(driver,item,itemTimeCssName)
     if(timeText.includes('日') || timeText.includes('天')){ 
-      console.log(`時間為日或天跳出迴圈:${timeText}`);
-      break;
+      if(dayNumber>1){
+        console.log(`時間為日或天2次以上跳出迴圈:${timeText}`);
+        break;
+      }
+      dayNumber++
     }else if(timeText.includes('false')){ 
       console.log(`找不到日期跳出本循環`);
       continue;
     }
+    console.log(`fbGetData,顯示日期:${timeText}`)
 
     // console.log(`名子`)
-    //x1heor9g x1qlqyl8 x1pd3egz x1a2a7pz x1gslohp x1yc453h
-    //x1i10hfl xjbqb8w x6umtig x1b1mbwd xaqea5y xav7gou x9f619 x1ypdohk xt0psk2 xe8uvvx xdj266r x11i5rnm xat24cr x1mh8g0r xexx8yu x4uap5 x18d9i69 xkhd6sd x16tdsg8 x1hl2dhg xggy1nq x1a2a7pz xt0b8zv xzsf02u x1s688f
     const nameObj= await item.findElements(By.css('h3.x1heor9g.x1qlqyl8.x1pd3egz.x1a2a7pz.x1gslohp.x1yc453h a.x1i10hfl.xjbqb8w.x6umtig.x1b1mbwd.xaqea5y.xav7gou.x9f619.x1ypdohk.xt0psk2.xe8uvvx.xdj266r.x11i5rnm.xat24cr.x1mh8g0r.xexx8yu.x4uap5.x18d9i69.xkhd6sd.x16tdsg8.x1hl2dhg.xggy1nq.x1a2a7pz.xt0b8zv.xzsf02u.x1s688f'));
     if(nameObj.length>0){
       obj.name= await nameObj[0].getText();
@@ -142,7 +163,8 @@ async function fbGetData(driver,itemsCssName,itemTimeCssName,json) {
       console.log(`名子:${JSON.stringify(obj.name)}`)
       console.log(`名子href:${obj.namehref}`)
     }else{
-      console.log(`找不到名子跳出`)
+      console.log(`名子:找不到跳出本循環`)
+      continue;
     }
 
     // console.log(`時間`)
@@ -155,7 +177,7 @@ async function fbGetData(driver,itemsCssName,itemTimeCssName,json) {
       console.log(`時間:${obj.time}`)
       console.log(`時間_url:${obj.timeurl}`)
     }else{
-      console.log(`找不到時間跳出`)
+      console.log(`時間:找不到跳出`)
     }
 
     // console.log(`圖片`)
@@ -170,22 +192,28 @@ async function fbGetData(driver,itemsCssName,itemTimeCssName,json) {
       obj.imgsrc= img.join(',')
       console.log(`圖片:${obj.imgsrc}`)
     }else{
-      console.log(`找不到圖片跳出`)
+      console.log(`圖片:找不到跳出`)
     }
 
     // console.log(`頭圖`)
-    const headimgsrc= await item.findElement(By.css('svg.x3ajldb image')).getAttribute("xlink:href");
-    console.log(`頭圖:${headimgsrc}`)
-    obj.headimgsrc= headimgsrc
+    const headimgsrcs= await item.findElements(By.css('svg.x3ajldb image'));
+    if(headimgsrcs.length > 0){
+      obj.headimgsrc = await headimgsrcs[0].getAttribute("xlink:href");
+      console.log(`頭圖:${obj.headimgsrc}`)
+    }else{
+      console.log(`頭圖:找不到跳出`)
+    }
 
     //console.log(`文章`)
-    let articlesTexts=''
+    // let articlesTexts=''
     //<div class="" dir="auto">
     // x1iorvi4 x1pi30zi x1swvt13 xjkvuk6
     // x1swvt13 x1pi30zi xexx8yu x18d9i69
     // x1swvt13 x1pi30zi xexx8yu x18d9i69
     const articlesObjs = await item.findElements(By.css('.x1iorvi4.x1pi30zi'))
-    if(!articlesTexts && articlesObjs.length > 0){
+    const articlesObjs2 = await item.findElements(By.css('.x1swvt13.x1pi30zi.xexx8yu.x18d9i69'))
+    const articlesObjs3 = await item.findElements(By.css('.x5yr21d.xyqdw3p'))
+    if(!obj.articles && articlesObjs.length > 0){
       // console.log(`文章A:${articlesObjs.length}`)
       const articlesMore = await articlesObjs[0].findElements(By.xpath("//div[contains(text(),'顯示更多')]"))
       if(articlesMore.length>0){
@@ -198,31 +226,30 @@ async function fbGetData(driver,itemsCssName,itemTimeCssName,json) {
         await driver.executeScript("arguments[0].click();", articlesMore2[0]);
       }
       // await driver.sleep(3000)
-      articlesTexts = await articlesObjs[0].getText()
-    }
-    // x1swvt13 x1pi30zi
-    const articlesObjs2 = await item.findElements(By.css('.x1swvt13.x1pi30zi.xexx8yu.x18d9i69'))
-    if( !articlesTexts && articlesObjs2.length > 0){
+      obj.articles = await articlesObjs[0].getText()
+      console.log(`文章:${obj.articles}`)
+    }else if( !obj.articles && articlesObjs2.length > 0){
       // console.log(`文章B:${articlesObjs2.length}`)
-      articlesTexts = await item.findElement(By.css('.x1swvt13.x1pi30zi.xexx8yu.x18d9i69')).getText()
-    }
-    const articlesObjs3 = await item.findElements(By.css('.x5yr21d.xyqdw3p'))
-    if(!articlesTexts && articlesObjs3.length > 0){
+      obj.articles = await item.findElement(By.css('.x1swvt13.x1pi30zi.xexx8yu.x18d9i69')).getText()
+      console.log(`文章:${obj.articles}`)
+    }else if(!obj.articles && articlesObjs3.length > 0){
       // console.log(`文章B:${articlesObjs3.length}`)
-      articlesTexts = await item.findElement(By.css('.x5yr21d.xyqdw3p')).getText()
+      obj.articles = await item.findElement(By.css('.x5yr21d.xyqdw3p')).getText()
+      console.log(`文章:${obj.articles}`)
+    }else{
+      console.log(`找不到文章`)
     }
-    obj.articles = articlesTexts
-    console.log(`文章:${obj.articles}`)
+    // obj.articles = articlesTexts
+    // console.log(`文章:${obj.articles}`)
     //console.log(`文章抓取發案,誠徵`)
 
   
     // if(articlesTexts.includes('發案') || articlesTexts.includes('誠徵') || articlesTexts.includes('徵委託')){
-    if(json['keyword'].split(',').find(item=>articlesTexts.includes(item))){
-      console.log(`文章(${json['keyword']})抓取`)
-    // }else if(!articlesTexts || articlesTexts.includes('徵友') || articlesTexts.includes('接案') || articlesTexts.includes('接委') || articlesTexts.includes('無償') || articlesTexts.includes('換圖') || articlesTexts.includes('公告')){
-    }else if(json['nokeyword'].split(',').find(item=>articlesTexts.includes(item))){
-      console.log(`文章(${json['nokeyword']})跳出`)
+    if(obj.articles && json['nokeyword'].split(',').find(item=>obj.articles.includes(item))){
+      console.log(`文章(${json['nokeyword']})跳出本循環`)
       continue;
+    }else if(obj.articles && json['keyword'].split(',').find(item=>obj.articles.includes(item))){
+      console.log(`文章(${json['keyword']})抓取`)
     }else{
       console.log(`文章(其他)抓取`)
       // continue;
@@ -241,13 +268,12 @@ async function fbGetData(driver,itemsCssName,itemTimeCssName,json) {
 }
 async function fbGetTrace(driver,row) {
   // console.log(`跳到該頁`)
-  console.log(`fbGetTrace,row`,row)
+  console.log(`fbGetTrace`,row)
   //來源ID
   const crawlerurl_id = row['id']
   // console.log(`類別名`)
   //x1yztbdb x1n2onr6 xh8yej3 x1ja2u2z
   const itemsCssName = '.x1yztbdb.x1n2onr6.xh8yej3.x1ja2u2z';
-  // x1i10hfl xjbqb8w x6umtig x1b1mbwd xaqea5y xav7gou x9f619 x1ypdohk xt0psk2 xe8uvvx xdj266r x11i5rnm xat24cr x1mh8g0r xexx8yu x4uap5 x18d9i69 xkhd6sd x16tdsg8 x1hl2dhg xggy1nq x1a2a7pz x1heor9g xt0b8zv xo1l8bm
   // x1i10hfl xjbqb8w x6umtig x1b1mbwd xaqea5y xav7gou x9f619 x1ypdohk xt0psk2 xe8uvvx xdj266r x11i5rnm xat24cr x1mh8g0r xexx8yu x4uap5 x18d9i69 xkhd6sd x16tdsg8 x1hl2dhg xggy1nq x1a2a7pz x1heor9g xt0b8zv xo1l8bm
   const itemTimeCssName = 'a.x1i10hfl.xjbqb8w.x6umtig.x1b1mbwd.xaqea5y.xav7gou.x9f619.x1ypdohk.xt0psk2.xe8uvvx.xdj266r.x11i5rnm.xat24cr.x1mh8g0r.xexx8yu.x4uap5.x18d9i69.xkhd6sd.x16tdsg8.x1hl2dhg.xggy1nq.x1a2a7pz.x1heor9g.xt0b8zv.xo1l8bm';
 

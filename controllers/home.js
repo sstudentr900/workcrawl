@@ -25,7 +25,7 @@ async function search(req, res) {
     return false;
   }
   //工作
-  const rows = await dbQuery( 'SELECT * from work LIMIT ?,?',[pageObj['startValue'],pageObj['endValue']] )
+  const rows = await dbQuery( 'SELECT * FROM work ORDER BY time DESC LIMIT ?,?',[pageObj['startValue'],pageObj['endValue']] )
   // console.log('工作',rows.length)
   res.render('home',{
     'active': 'home',
