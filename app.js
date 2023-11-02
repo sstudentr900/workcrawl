@@ -1,5 +1,6 @@
 const express = require('express');
 const home = require('./controllers/home');
+const home2 = require('./controllers/home2');
 const crawl = require('./controllers/crawl');
 const app = express(); //載入express模組
 const port = 3030;//設定port
@@ -30,12 +31,18 @@ app.listen(port,()=>{console.log(`port ${port}`)});
 //home
 app.get('/', function(req, res){
   //重新定向
-  res.redirect('./home/1');
+  res.redirect('./home');
 })
-app.get('/home/:id', home.search)
-//home刪除
-app.post('/home',home.delet)
-// app.delete('/home/:id',home.delet)
+//查詢
+app.get('/home', home.searchget)
+app.post('/home', home.searchpost)
+//刪除
+app.post('/home/delet', home.delet)
+//查詢2
+app.get('/home2/:id', home2.search)
+//刪除2
+app.post('/home2',home.delet)
+// app.delete('/home2/:id',home.delete)
 //項目 crawl
 app.get('/crawl', crawl.search)
 //增加項目

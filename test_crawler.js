@@ -21,7 +21,7 @@
 // aa()
 
 
-const { dbQuery,dbInsert,dbUpdata,dbDelete } = require('./tools/db')
+const { dbQuery,dbInsert,dbUpdata,dbDelete,timeFn } = require('./tools/db')
 const {crawlerFB} = require("./tools/crawlerFB.js"); //爬蟲FB
 const {crawlerOHF} = require("./tools/crawlerOHF.js"); //爬蟲104
 const {crawlerBEAR} = require("./tools/crawlerBEAR.js"); //爬蟲518
@@ -35,7 +35,11 @@ async function aa() { //執行程式
     if(row['storeurl'].includes('facebook')){
       await crawlerFB(row)
     }else if(row['storeurl'].includes('104')){
-      await crawlerOHF(row)
+      let week = await timeFn()
+      week = week['week']
+      if(week!=0 || week!=6){
+        await crawlerOHF(row)
+      }
     }else if(row['storeurl'].includes('518')){
       await crawlerBEAR(row)
     }else if(row['storeurl'].includes('1111')){

@@ -1,5 +1,5 @@
 require('dotenv').config(); //載入.env環境檔
-console.log()
+// console.log()
 const mysql = require('mysql');
 //mysql
 const pool = mysql.createPool({
@@ -96,6 +96,7 @@ async function timeFn(obj){
   const sec = ('0'+(dt.getSeconds())).slice(-2);
   const time = `${hours}:${min}:${sec}`;
   const datetime = `${date} ${time}`;
+  const week = dt.getDay()
   return {
     "year": year,
     "month" :month,
@@ -105,7 +106,8 @@ async function timeFn(obj){
     "min": min,
     "sec": sec,
     "time": time,
-    "datetime": datetime
+    "datetime": datetime,
+    "week": week,
   }
 }
 module.exports = { 

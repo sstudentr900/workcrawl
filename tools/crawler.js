@@ -1,5 +1,5 @@
 const CronJob = require('cron').CronJob;
-const { dbQuery,dbInsert,dbUpdata,dbDelete } = require('./db')
+const { dbQuery,timeFn,dbUpdata,dbDelete } = require('./db')
 const {crawlerFB} = require("./crawlerFB.js"); //爬蟲FB
 const {crawlerOHF} = require("./crawlerOHF.js"); //爬蟲104
 const {crawlerBEAR} = require("./crawlerBEAR.js"); //爬蟲518
@@ -15,7 +15,11 @@ new CronJob({
       if(row['storeurl'].includes('facebook')){
         await crawlerFB(row)
       }else if(row['storeurl'].includes('104')){
-        await crawlerOHF(row)
+        let week = await timeFn()
+        week = week['week']
+        if(week!=0 || week!=6){
+          await crawlerOHF(row)
+        }
       }else if(row['storeurl'].includes('518')){
         await crawlerBEAR(row)
       }else if(row['storeurl'].includes('1111')){

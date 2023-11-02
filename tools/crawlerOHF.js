@@ -137,11 +137,11 @@ async function getTrace(driver,row) {
     console.log('目前抓取資料',obj)
 
     //判斷標題
-    if(row['keyword'].split(',').find(item=>obj.name.includes(item))){
-      console.log(`標題(${row['keyword']})抓取`)
-    }else if(row['nokeyword'].split(',').find(item=>obj.name.includes(item))){
-      console.log(`標題(${row['nokeyword']})跳出`)
+    if(row['nokeyword'].split(',').find(item=>obj.name.includes(item))){
+      console.log(`標題(${row['nokeyword']})跳出本循環`)
       continue;
+    }else if(row['keyword'].split(',').find(item=>obj.name.includes(item))){
+      console.log(`標題(${row['keyword']})抓取`)
     }else{
       console.log(`標題(其他)跳出`)
       continue;
