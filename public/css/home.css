@@ -4,7 +4,7 @@
 }
 .home .publicContent{
   /* min-height: calc(100vh - 57px); */
-  min-height: 100vh;
+  min-height: 200vh;
 }
 .home .publicContent .publicWidth{
   display: block;

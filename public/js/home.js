@@ -111,6 +111,7 @@ const publicBoxsHtml = (r)=>{
                       // window.location.reload();
                       deletBtn.closest('.publicBox').remove()
                       document.querySelectorAll('.publicBox.active').forEach(i=>i.remove())
+                      cascadeDisplay()
                     }
                   });
                 }
@@ -162,7 +163,7 @@ const publicBoxsHtml = (r)=>{
     }
   })
 }
-const cascadeDisplay = ()=>{
+const cascadeDisplay = async (number)=>{
   const gap = 12
   const photosContainer= document.querySelector('.publicBoxs')
   const photos = photosContainer.querySelectorAll('.publicBox')
@@ -171,9 +172,37 @@ const cascadeDisplay = ()=>{
   // 計算一列最多有幾欄
   const columnsCount = parseInt((photosContainerWidth) / ( photoWidth + gap ))
   const fistRowPhotosHeightArray = []
+  const heightArraay = []
+  const loadImage = async (imageUrl)=>{
+    return new Promise((resolve, reject) => {
+      const image = new Image();
+      image.onload = resolve;
+      image.onerror = resolve; // 让加载失败的图片也算作成功
+      image.src = imageUrl;
+    });
+  }
   // 進行照片排序
+  // console.log(184,number)
+  // for (let i = number; i < photos.length; i++) {
   for (let i = 0; i < photos.length; i++) {
+    //等圖片載入
+    // console.log(187,photos[i])
+    const photoImgs = photos[i].querySelectorAll('img')
+    const photoImgsNumber = photoImgs.length
+    if(photoImgsNumber){
+      for (const photoImg of photoImgs) {
+        await loadImage(photoImg.getAttribute('src'));
+        // try {
+        //   const image = await loadImage(photoImg.getAttribute('src'));
+        //   // imageContainer.appendChild(image);
+        //   // totalHeight += image.height;
+        // } catch (error) {
+        //   // 忽略加载失败的图片
+        // }
+      }
+    }
     // 放上第一列的照片
+    // if (i < (columnsCount+number)) {
     if (i < columnsCount) {
       photos[i].style.top = 0
       photos[i].style.left = (photoWidth + gap) * i + 'px'
@@ -184,10 +213,12 @@ const cascadeDisplay = ()=>{
       // 找出第一列的最小高度
       const minHeight = Math.min(...fistRowPhotosHeightArray)
       // 紀錄最小高度的index，以取得對應到第一列的位置，來決定left要移動多少
+      // console.log(fistRowPhotosHeightArray,minHeight)
       const index = fistRowPhotosHeightArray.indexOf(minHeight)
       // 調整接續的photo位置，放到目前最小高度的地方
       photos[i].style.top = minHeight + gap + 'px'
       // 取得對應到第一列photo的left位置
+      // console.log(index,photos[index])
       photos[i].style.left = photos[index].offsetLeft + 'px'
       // 最後!!再把原本儲存在陣列裡面為最小高度的值，更新上最新的高度(原本的高度+新的高度+間隔)
       fistRowPhotosHeightArray[index] = fistRowPhotosHeightArray[index] + photos[i].offsetHeight + gap
@@ -195,38 +226,21 @@ const cascadeDisplay = ()=>{
     //顯示
     photos[i].style.visibility = 'visible'
     photos[i].style.opacity = '1'
+
+    //抓最後6筆比對高度
+    if(i>=(photos.length-6)){
+      heightArraay.push(photos[i].offsetHeight + photos[i].offsetTop + gap)
+    }
   }
-  //高度
-  // const objArray = photos.map((photo,index)=>{
-  //   return {
-  //     index: index,
-  //     height: photo.offsetHeight + photo.offsetTop + gap
-  //   }
-  // })
-  // Math.max.apply(null, objArray.map(function (o) {
-  //   return o.height;
-  // })) 
-  // const maxHeight = Math.max(...photos.map(i => i.offsetHeight + i.offsetTop + gap))
-  // const index = photos.indexOf(maxHeight)
-  
-  const photo = photos[photos.length-1]
-  const height = photo.offsetHeight + photo.offsetTop + gap
-  photosContainer.style.height = height + 'px'
-  // console.log(203,photo,photo.offsetHeight,photo.offsetTop,height)
-  const photoImgs = photo.querySelectorAll('img')
-  if(photoImgs.length){
-    photoImgs.forEach(img=>{
-      img.onload=function(){
-        const height = photo.offsetHeight + photo.offsetTop + gap
-        // console.log('onload',photo,photo.offsetHeight,photo.offsetTop,height)
-        photosContainer.style.height = height + 'px'
-      } 
-    })
-  }
+  //外框最大高度
+  const maxHeight = Math.max(...heightArraay)
+  // console.log('外框最大高度',maxHeight)
+  photosContainer.style.height = maxHeight + 'px'
 }
 const search = (page)=>{
   // console.log(page)
   const publicWidth = document.querySelector('.publicContent .publicWidth')
+  // let afterNumber = publicWidth.querySelectorAll('.publicBox').length
   getJSON({
     'url':'./home',
     'method':'POST',
@@ -251,6 +265,7 @@ const search = (page)=>{
         },
         'addHtml': json['rows'].map(r=>publicBoxsHtml(r))
       }))
+      // afterNumber = 0
     }
     // console.log( 179,page,json['pageTotle'], page<=json['pageTotle'])
     if(page>1 && page <= json['pageTotle']){
@@ -258,7 +273,9 @@ const search = (page)=>{
       json['rows'].map(r=>{
         publicWidth.querySelector('.publicBoxs').append(publicBoxsHtml(r))
       })
+      // afterNumber = afterNumber-4
     }
+    // cascadeDisplay(afterNumber)
     cascadeDisplay()
     console.log('當前數量',publicWidth.querySelectorAll('.publicBox').length)
   });
@@ -287,9 +304,9 @@ const scroll=()=>{
       search(pageIndex)
     };
     throttle(() => {
-      // console.log('throttle')
+      // console.log(window.innerHeight + window.scrollY)
       // if (window.innerHeight + window.scrollY >= document.body.offsetHeight ) {
-      if (window.innerHeight + window.scrollY >= document.body.offsetHeight - (window.innerHeight/2)) {
+      if (window.innerHeight + window.scrollY >= document.body.offsetHeight - (window.innerHeight*1.5)) {
         currentPage = currentPage*1 + 1
         if (currentPage > pageCount) {
           console.log('最後一頁',currentPage,'總頁碼',pageCount,currentPage > pageCount)
@@ -302,10 +319,10 @@ const scroll=()=>{
           addCards(currentPage);
         }
       }
-    }, 1000);
+    }, 500);
   });
 }
 window.onload = function(){
   search(1)
-  // scroll()
+  scroll()
 }

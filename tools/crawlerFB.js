@@ -280,7 +280,7 @@ async function fbGetTrace(driver,row) {
   await driver.get(row['storeurl'])
   // const url = 'https://www.facebook.com/groups/239168157628070'
   // await driver.get(url)
-  await driver.sleep(2000)
+  await driver.sleep(3000)
   // console.log(`選擇新貼文`)
   await fbSelectNewPost(driver)
   // console.log(`顯示fb資料`)
