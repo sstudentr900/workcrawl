@@ -1,7 +1,50 @@
+function creatHtml(o) {
+  let tage = o.tage || '';
+  let text = o.text || '';
+  let cl = o.cl || '';
+  let attr = o.attr || '';
+  let addHtml = o.addHtml || '';
+  let method = o.method || 'click';
+  let handler = o.handler || '';
+  let handler2 = o.handler2 || '';
+  let method2 = o.method2 || method;
+  let html = document.createElement(tage);
+  if (text) {
+    html.innerHTML = text;
+  }
+  if (cl) {
+    html.className = cl;
+  }
+  if (attr) {
+    attr = Array.isArray(attr) ? attr : [attr];
+    attr.forEach(function (element) {
+      Object.keys(element).forEach(function (item, i) {
+        html.setAttribute(item, element[item]);
+      });
+    }); // for(var i=0;i<attr.length;i++){
+    //     html.setAttribute(attr[i]['n'],attr[i]['v'])
+    // }
+  }
+  if (addHtml) {
+    addHtml = Array.isArray(addHtml) ? addHtml : [addHtml]; // console.log(addHtml)
+
+    addHtml.forEach(function (element) {
+      return html.append(element);
+    });
+  }
+  if (handler) {
+    html.addEventListener(method, handler.bind(html), false);
+  }
+  if (handler2) {
+    window.addEventListener(method2, handler2, false);
+  }
+  return html;
+}
 const publicBoxsHtml = (r)=>{
   return creatHtml({
     'tage':'div',
     'cl':'publicBox',
+    'attr':{'style':'visibility:hidden;opacity: 0;'},
     'addHtml': [
       creatHtml({
         'tage':'div',
@@ -48,17 +91,28 @@ const publicBoxsHtml = (r)=>{
               'attr': {'data-id': r.id},
               'text': '<svg clip-rule="evenodd" fill-rule="evenodd" stroke-linejoin="round" stroke-miterlimit="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="m4.015 5.494h-.253c-.413 0-.747-.335-.747-.747s.334-.747.747-.747h5.253v-1c0-.535.474-1 1-1h4c.526 0 1 .465 1 1v1h5.254c.412 0 .746.335.746.747s-.334.747-.746.747h-.254v15.435c0 .591-.448 1.071-1 1.071-2.873 0-11.127 0-14 0-.552 0-1-.48-1-1.071zm14.5 0h-13v15.006h13zm-4.25 2.506c-.414 0-.75.336-.75.75v8.5c0 .414.336.75.75.75s.75-.336.75-.75v-8.5c0-.414-.336-.75-.75-.75zm-4.5 0c-.414 0-.75.336-.75.75v8.5c0 .414.336.75.75.75s.75-.336.75-.75v-8.5c0-.414-.336-.75-.75-.75zm3.75-4v-.5h-3v.5z" fill-rule="nonzero"/></svg>',
               'handler': function(e){
-                // console.log(this)
+                // console.log(this.closest('.publicBox '))
                 e.stopPropagation()
                 if(confirm('你確定你要刪除')){
+                  const deletBtn = this
                   let id = [...document.querySelectorAll('.publicBox.active .delete')].map(i=>i.dataset.id).join(',')
                   if(!id){id = this.dataset.id}
                   // console.log('id',id)
-                  deletFn({
-                    'url':'./home/delet',
-                    'method':'POST',
-                    'body': { 'id': id },
-                  })
+                  getJSON({
+                    'url': './home/delet',
+                    'method': 'POST',
+                    'body': { 'id': id }
+                  }).then(function (json) {
+                    if(json['result']=='false'){
+                      alert(json['message'])
+                    }else{
+                      // o.closest('.publicBox').remove();
+                      // alert(json['message'])
+                      // window.location.reload();
+                      deletBtn.closest('.publicBox').remove()
+                      document.querySelectorAll('.publicBox.active').forEach(i=>i.remove())
+                    }
+                  });
                 }
               },
             }),
@@ -108,6 +162,68 @@ const publicBoxsHtml = (r)=>{
     }
   })
 }
+const cascadeDisplay = ()=>{
+  const gap = 12
+  const photosContainer= document.querySelector('.publicBoxs')
+  const photos = photosContainer.querySelectorAll('.publicBox')
+  const photosContainerWidth = photosContainer.offsetWidth
+  const photoWidth = photos[0].offsetWidth
+  // 計算一列最多有幾欄
+  const columnsCount = parseInt((photosContainerWidth) / ( photoWidth + gap ))
+  const fistRowPhotosHeightArray = []
+  // 進行照片排序
+  for (let i = 0; i < photos.length; i++) {
+    // 放上第一列的照片
+    if (i < columnsCount) {
+      photos[i].style.top = 0
+      photos[i].style.left = (photoWidth + gap) * i + 'px'
+      // 紀錄第一列的照片高
+      fistRowPhotosHeightArray.push(photos[i].offsetHeight)
+    } else {
+      // 放上第二列開始的照片
+      // 找出第一列的最小高度
+      const minHeight = Math.min(...fistRowPhotosHeightArray)
+      // 紀錄最小高度的index，以取得對應到第一列的位置，來決定left要移動多少
+      const index = fistRowPhotosHeightArray.indexOf(minHeight)
+      // 調整接續的photo位置，放到目前最小高度的地方
+      photos[i].style.top = minHeight + gap + 'px'
+      // 取得對應到第一列photo的left位置
+      photos[i].style.left = photos[index].offsetLeft + 'px'
+      // 最後!!再把原本儲存在陣列裡面為最小高度的值，更新上最新的高度(原本的高度+新的高度+間隔)
+      fistRowPhotosHeightArray[index] = fistRowPhotosHeightArray[index] + photos[i].offsetHeight + gap
+    }
+    //顯示
+    photos[i].style.visibility = 'visible'
+    photos[i].style.opacity = '1'
+  }
+  //高度
+  // const objArray = photos.map((photo,index)=>{
+  //   return {
+  //     index: index,
+  //     height: photo.offsetHeight + photo.offsetTop + gap
+  //   }
+  // })
+  // Math.max.apply(null, objArray.map(function (o) {
+  //   return o.height;
+  // })) 
+  // const maxHeight = Math.max(...photos.map(i => i.offsetHeight + i.offsetTop + gap))
+  // const index = photos.indexOf(maxHeight)
+  
+  const photo = photos[photos.length-1]
+  const height = photo.offsetHeight + photo.offsetTop + gap
+  photosContainer.style.height = height + 'px'
+  // console.log(203,photo,photo.offsetHeight,photo.offsetTop,height)
+  const photoImgs = photo.querySelectorAll('img')
+  if(photoImgs.length){
+    photoImgs.forEach(img=>{
+      img.onload=function(){
+        const height = photo.offsetHeight + photo.offsetTop + gap
+        // console.log('onload',photo,photo.offsetHeight,photo.offsetTop,height)
+        photosContainer.style.height = height + 'px'
+      } 
+    })
+  }
+}
 const search = (page)=>{
   // console.log(page)
   const publicWidth = document.querySelector('.publicContent .publicWidth')
@@ -143,6 +259,7 @@ const search = (page)=>{
         publicWidth.querySelector('.publicBoxs').append(publicBoxsHtml(r))
       })
     }
+    cascadeDisplay()
     console.log('當前數量',publicWidth.querySelectorAll('.publicBox').length)
   });
 }
@@ -171,6 +288,7 @@ const scroll=()=>{
     };
     throttle(() => {
       // console.log('throttle')
+      // if (window.innerHeight + window.scrollY >= document.body.offsetHeight ) {
       if (window.innerHeight + window.scrollY >= document.body.offsetHeight - (window.innerHeight/2)) {
         currentPage = currentPage*1 + 1
         if (currentPage > pageCount) {
@@ -189,5 +307,5 @@ const scroll=()=>{
 }
 window.onload = function(){
   search(1)
-  scroll()
+  // scroll()
 }

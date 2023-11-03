@@ -97,6 +97,7 @@ body {
     position: relative;
     background: #f8f8f8;
     user-select: none;
+    overflow-x: hidden;
 }
 
 *,

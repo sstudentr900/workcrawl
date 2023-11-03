@@ -2,19 +2,29 @@
 .home a{
   cursor: pointer;
 }
+.home .publicContent{
+  /* min-height: calc(100vh - 57px); */
+  min-height: 100vh;
+}
 .home .publicContent .publicWidth{
   display: block;
 }
-.home .publicBoxs{
+/* .home .publicBoxs{
   column-count: 4;
   column-gap: 12px;
-  /* display: grid; */
-  /* grid-template-columns: repeat(3, 1fr);
-  gap: 20px;
-  grid-template-rows: masonry; */
-}
-.home .publicBox+.publicBox{
+} */
+/* .home .publicBox+.publicBox{
   margin-top: 12px;
+} */
+.home .publicBoxs{
+  position: relative;
+  width: 1340px;
+}
+.home .publicBox{
+  width: 323px;
+  height: auto;
+  position: absolute;
+  transition: opacity 1s;
 }
 .home .publicBox{
   outline: 1px solid #e2e6e4;

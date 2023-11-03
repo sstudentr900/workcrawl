@@ -1,4 +1,23 @@
 window.onload=async function(){
+  function deletFn(o){
+    const url = o.url?o.url:false
+    const method = o.method?o.method:'POST'
+    const body = o.body?o.body:false
+    // console.log('9',id)
+    getJSON({
+      'url': url,
+      'method': method,
+      'body': body
+    }).then(function (json) {
+      if(json['result']=='false'){
+        // alert(json['message'])
+      }else{
+        // o.closest('.publicBox').remove();
+        // alert(json['message'])
+        window.location.reload();
+      }
+    });
+  }
   // console.log(pageJson)
   // if(!pageJson){
   //   alert('找不到資料')

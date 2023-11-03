@@ -10,6 +10,20 @@ window.onload=async function(){
   //     o.classList.remove('active')
   //   })
   // }
+  function publicFormInputValue(inputs){
+    const objs = {}
+    document.querySelectorAll('span.error').forEach(o=>o.remove('active'))
+    inputs.forEach(o=>{
+      if(!o.value){
+        // publicFormError(o,'不能為空')
+        publicFormError.call(o,'不能為空')
+      }
+      objs[o.name] = o.value
+      // console.log(o.value)
+    })
+    // console.log(objs)
+    return objs;
+  }
   function updataFn(selects,objs){
     for (let i = 0; i < selects.length; ++i) {
       // console.log(selects[i].querySelector('.ok').dataset.id)
