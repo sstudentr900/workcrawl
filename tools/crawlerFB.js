@@ -308,7 +308,7 @@ async function fbGetTrace(driver,row) {
 async function crawlerFB(row) {    
   const driver = await initDrive();
   //螢幕寬度
-  await driver.manage().window().setRect({ width: 1380, height: 800, x: 0, y: 0 });
+  await driver.manage().window().setRect({ width: 1420, height: 1200 });
   await fbLogin(driver)
   await fbGetTrace(driver,row)
   // const rows = await dbQuery( 'SELECT * from crawlerurl where deletes = ?',['n'])

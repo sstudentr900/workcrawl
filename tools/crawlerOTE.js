@@ -37,7 +37,7 @@ async function showData(driver,date){
 }
 async function getTrace(driver,row) {
   // console.log(`跳到該頁`)
-  console.log(`getTrace`,row)
+  console.log('getTrace 執行內容',row)
 
   //搜尋
   const serch = await driver.wait(until.elementLocated(By.css('.notification-topbar-button.d-flex')), 3000)
@@ -74,13 +74,19 @@ async function getTrace(driver,row) {
     await driver.executeScript("arguments[0].click();", input);
     await driver.sleep(2000)
   }
-
   //確定
   const jobBtn = await driver.wait(until.elementLocated(By.css('.tcode__btn.tcode__btn-outline-primary.tcode__btn-enter.tcode__btn--active')),3000)
   await driver.executeScript("arguments[0].click();", jobBtn);
   await driver.sleep(2000)
   const jobBtn2 = await driver.wait(until.elementLocated(By.css('.fm-bt.bt-oli-pm.condition-btn.CustomDialog__footer-btn-search')),3000)
   await driver.executeScript("arguments[0].click();", jobBtn2);
+  await driver.sleep(4000)
+  //排序 更新
+  const sortBtn = await driver.wait(until.elementLocated(By.css('.data_nav_dropdown_toggle_group.d-flex .dropdown_toggle_item.body_3:nth-child(2)')),3000)
+  await driver.executeScript("arguments[0].click();", sortBtn);
+  await driver.sleep(2000)
+  const sortBtn2 = await driver.wait(until.elementLocated(By.css('.filterpopup__content .filterpopup__label:nth-child(3)')),3000)
+  await driver.executeScript("arguments[0].click();", sortBtn2);
   await driver.sleep(4000)
   //抓取今天日期
   let date = await timeFn()
@@ -116,16 +122,16 @@ async function getTrace(driver,row) {
       obj.articles = articles
     }
 
-    console.log('目前抓取資料',obj)
+    console.log('目前抓取資料',obj,row['keyword'].split(',').find(item=>obj.name.includes(item)))
 
     //判斷標題
     if(row['nokeyword'].split(',').find(item=>obj.name.includes(item))){
-      console.log(`標題(${row['nokeyword']})跳出本循環`)
+      console.log(`標題排除(${row['nokeyword']})跳出本循環`)
       continue;
     }else if(row['keyword'].split(',').find(item=>obj.name.includes(item))){
-      console.log(`標題(${row['keyword']})抓取`)
+      console.log(`標題關鍵字有(${row['keyword']})抓取`)
     }else{
-      console.log(`標題(其他)跳出`)
+      console.log(`標題查無關鍵字-跳出`)
       continue;
     }
   
