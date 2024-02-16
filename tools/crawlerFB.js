@@ -156,7 +156,7 @@ async function fbGetData(driver,itemsCssName,itemTimeCssName,json) {
 
     // console.log(`名子`)
     // const nameObj= await item.findElements(By.css('h3.x1heor9g.x1qlqyl8.x1pd3egz.x1a2a7pz.x1gslohp.x1yc453h a.x1i10hfl.xjbqb8w.x6umtig.x1b1mbwd.xaqea5y.xav7gou.x9f619.x1ypdohk.xt0psk2.xe8uvvx.xdj266r.x11i5rnm.xat24cr.x1mh8g0r.xexx8yu.x4uap5.x18d9i69.xkhd6sd.x16tdsg8.x1hl2dhg.xggy1nq.x1a2a7pz.xt0b8zv.xzsf02u.x1s688f'));
-    const nameObj= await item.findElements(By.css('h3.x1heor9g.x1qlqyl8.x1pd3egz.x1a2a7pz.x1gslohp.x1yc453h strong span'));
+    const nameObj= await item.findElements(By.css('h3.x1heor9g.x1qlqyl8.x1pd3egz.x1a2a7pz.x1gslohp.x1yc453h a'));
     if(nameObj.length>0){
       obj.name= await nameObj[0].getText();
       // obj.name= await nameObj.findElement(By.css('strong span')).getText();
@@ -278,18 +278,21 @@ async function fbGetTrace(driver,row) {
   // x1i10hfl xjbqb8w x6umtig x1b1mbwd xaqea5y xav7gou x9f619 x1ypdohk xt0psk2 xe8uvvx xdj266r x11i5rnm xat24cr x1mh8g0r xexx8yu x4uap5 x18d9i69 xkhd6sd x16tdsg8 x1hl2dhg xggy1nq x1a2a7pz x1heor9g xt0b8zv xo1l8bm
   // const itemTimeCssName = 'a.x1i10hfl.xjbqb8w.x6umtig.x1b1mbwd.xaqea5y.xav7gou.x9f619.x1ypdohk.xt0psk2.xe8uvvx.xdj266r.x11i5rnm.xat24cr.x1mh8g0r.xexx8yu.x4uap5.x18d9i69.xkhd6sd.x16tdsg8.x1hl2dhg.xggy1nq.x1a2a7pz.x1heor9g.xt0b8zv.xo1l8bm';
   const itemTimeCssName = 'a.x1i10hfl.xjbqb8w.x1ejq31n.xd10rxx.x1sy0etr.x17r0tee.x972fbf.xcfux6l.x1qhh985.xm0m39n.x9f619.x1ypdohk.xt0psk2.xe8uvvx.xdj266r.x11i5rnm.xat24cr.x1mh8g0r.xexx8yu.x4uap5.x18d9i69.xkhd6sd.x16tdsg8.x1hl2dhg.xggy1nq.x1a2a7pz.x1heor9g.xt0b8zv.xo1l8bm';
- 
 
   await driver.get(row['storeurl'])
   // const url = 'https://www.facebook.com/groups/239168157628070'
   // await driver.get(url)
   await driver.sleep(3000)
+
   // console.log(`選擇新貼文`)
-  await fbSelectNewPost(driver)
+  // await fbSelectNewPost(driver)
+
   // console.log(`顯示fb資料`)
   await fbShowData(driver,200,itemsCssName,itemTimeCssName)
+
   // console.log(`抓取fb資料`)
   const arrays = await fbGetData(driver,itemsCssName,itemTimeCssName,row)
+
   console.log('fbGetTrace_抓取資料數量',arrays.length)
   if(!arrays.length){return false;}
   // console.log(`存fb資料`)
