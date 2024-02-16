@@ -5,7 +5,7 @@ const {crawlerOHF} = require("./crawlerOHF.js"); //爬蟲104
 const {crawlerBEAR} = require("./crawlerBEAR.js"); //爬蟲518
 const {crawlerOTE} = require("./crawlerOTE.js"); //爬蟲1111
 new CronJob({
-  cronTime: '1 00 17 * * *',//時段(秒/分/時)
+  cronTime: '1 35 17 * * *',//時段(秒/分/時)
   onTick: async function () { //執行程式
     console.log(`開始執行爬蟲排程作業： ${new Date()}`);
     const rows = await dbQuery( 'SELECT * from crawlerurl where deletes = ?',['n'])
