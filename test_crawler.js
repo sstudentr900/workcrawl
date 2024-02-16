@@ -28,8 +28,8 @@ const {crawlerBEAR} = require("./tools/crawlerBEAR.js"); //爬蟲518
 const {crawlerOTE} = require("./tools/crawlerOTE.js"); //爬蟲1111
 async function aa() { //執行程式
   console.log(`開始執行爬蟲排程作業： ${new Date()}`);
-  // const rows = await dbQuery( 'SELECT * from crawlerurl where deletes = ?',['n'])
-  const rows = await dbQuery( 'SELECT * from crawlerurl where id= 6')
+  const rows = await dbQuery( 'SELECT * from crawlerurl where deletes = ?',['n'])
+  // const rows = await dbQuery( 'SELECT * from crawlerurl where id= 6')
   // console.log(rows.length)
   if(!rows.length){console.log(`cronJob_rows沒有資料跳出`);return false;}
   for (const row of rows) {
