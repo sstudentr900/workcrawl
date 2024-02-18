@@ -61,7 +61,7 @@ async function initDrive() {
   // options.addArguments("--incognito")
 
   //
-  // options.addArguments('--user-data-dir=C:\Users\sstud\AppData\Local\Google\Chrome\User Data')
+  options.addArguments('--user-data-dir=C:\Users\sstud\AppData\Local\Google\Chrome')
 
 
   return await new webdriver.Builder()
