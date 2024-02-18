@@ -60,8 +60,10 @@ async function initDrive() {
   // 無痕模式
   // options.addArguments("--incognito")
 
-  //
-  options.addArguments('--user-data-dir=C:\Users\sstud\AppData\Local\Google\Chrome')
+  //使用者的資料
+  options.addArguments('--user-data-dir=C:/Users/sstud/AppData/Local/Google/Chrome/User Data/')
+  //chrom使用者
+  options.addArguments('--profile-directory=Profile 4')
 
 
   return await new webdriver.Builder()
