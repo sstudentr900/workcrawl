@@ -38,21 +38,21 @@ async function showData(driver,date){
 async function getTrace(driver,row) {
   // console.log(`跳到該頁`)
   console.log('getTrace 執行內容',row)
-  await driver.get('https://www.1111.com.tw/search/job')
+  // await driver.get('https://www.1111.com.tw/search/job')
   //搜尋
-  // const serch = await driver.wait(until.elementLocated(By.css('.notification-topbar-button.d-flex')), 3000)
-  // await driver.executeScript("arguments[0].click();", serch);
+  const serch = await driver.wait(until.elementLocated(By.css('.notification-topbar-button.d-flex')), 3000)
+  await driver.executeScript("arguments[0].click();", serch);
   //關鍵字
   const ikeywordInput = await driver.wait(until.elementLocated(By.css('._job_ks.UISearchbarInput')), 3000)
   //關鍵字確定
-  ikeywordInput.sendKeys(row['keyword'],Key.RETURN)
+  // ikeywordInput.sendKeys(row['keyword'],Key.RETURN)
+  ikeywordInput.sendKeys('外包',Key.RETURN)
   await driver.sleep(2000)
   //進階搜尋
   const notifiBtn = await driver.wait(until.elementLocated(By.css('.config .notification-topbar-button.d-flex a')), 3000)
   await driver.executeScript("arguments[0].click();", notifiBtn);
   //職務
-  // const jobInput = await driver.wait(until.elementLocated(By.css('input.fm-ct._job_d0')), 3000)
-  const jobInput = await driver.wait(until.elementLocated(By.xpath("//a[contains(text(),'職務')]")), 3000)
+  const jobInput = await driver.wait(until.elementLocated(By.css('input.fm-ct._job_d0')), 3000)
   await driver.executeScript("arguments[0].click();", jobInput);
   //資訊
   const informationBtn = await driver.wait(until.elementLocated(By.css('.tcode-col-1.tcode-md-3.tcode__panel-item:nth-child(5)')),3000)
@@ -95,7 +95,7 @@ async function getTrace(driver,row) {
   await showData(driver,date)
   //抓取內容
   const lis = await driver.findElements(By.css('.item__job.job_item'))
-  console.log(`抓取1111內容數量:${ lis.length } error`)
+  console.log(`抓取1111內容數量:${ lis.length }`)
   for (let li of lis) {
     const obj = {}
     const time = await li.findElement(By.css('.item_data small.text-muted.job_item_date')).getText()

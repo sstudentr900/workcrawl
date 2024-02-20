@@ -312,7 +312,7 @@ async function crawlerFB(row) {
   const driver = await initDrive();
   //螢幕寬度
   await driver.manage().window().setRect({ width: 1420, height: 1200 });
-  await fbLogin(driver)
+  // await fbLogin(driver)
   await fbGetTrace(driver,row)
   // const rows = await dbQuery( 'SELECT * from crawlerurl where deletes = ?',['n'])
   // if(!rows){console.log(`crawlerFB沒有資料跳出`);return false;}

@@ -58,7 +58,7 @@ async function showData(driver,date){
   await driver.sleep(1000)
   //console.log(`判斷日期`)
   const time = await lisLast.findElement(By.css('h2.b-tit span')).getAttribute("innerHTML")
-  console.log(`今天日期:${date}-來源日期:${time}-${!(date<= time)}`)
+  console.log(`今天日期:${date}-來源日期:${time}`)
   if(!(date<=time)){
     return true;
   }else{
@@ -68,7 +68,7 @@ async function showData(driver,date){
 async function getTrace(driver,row) {
   // console.log(`跳到該頁`)
   console.log(`getTrace`,row)
-  await driver.get(row['storeurl'])
+
   //關鍵字
   const ikeywordInput = await driver.wait(until.elementLocated(By.css('.input-group.input-group--search input.form-control')), 3000)
   ikeywordInput.sendKeys(row['keyword'].replaceAll(',',' '))
@@ -103,8 +103,7 @@ async function getTrace(driver,row) {
   //抓取今天日期
   let date = await timeFn()
   const year = `${date['year']}`
-  date = `${Number(date['month'])}/${Number(date['day'])}`
-
+  date = `${date['month']}/${date['day']}`
   //顯示要抓取內容
   await showData(driver,date)
   //抓取內容
@@ -114,7 +113,7 @@ async function getTrace(driver,row) {
     const obj = {}
     // let time = await li.findElement(By.css('h2.b-tit span')).getText()
     const time = await li.findElement(By.css('h2.b-tit span')).getAttribute("innerHTML")
-
+    console.log(`判斷日期:${ date }-${ time }`)
     if(!(date<= time)){console.log(`***日期小於今天跳出***`);break;}
     obj.time = `${year}-${time.replaceAll('/','-')}`
 
@@ -160,7 +159,7 @@ async function getTrace(driver,row) {
 async function crawlerOHF(row) {    
   const driver = await initDrive();
   await driver.manage().window().setRect({ width: 1420, height: 1200 });
-  // await login(driver)
+  await login(driver)
   await getTrace(driver,row)
   driver.quit();
 }
