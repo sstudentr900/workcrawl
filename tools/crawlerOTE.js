@@ -38,56 +38,13 @@ async function showData(driver,date){
 async function getTrace(driver,row) {
   // console.log(`跳到該頁`)
   console.log('getTrace 執行內容',row)
-  await driver.get('https://www.1111.com.tw/search/job')
-  //搜尋
-  // const serch = await driver.wait(until.elementLocated(By.css('.notification-topbar-button.d-flex')), 3000)
-  // await driver.executeScript("arguments[0].click();", serch);
-  //關鍵字
-  const ikeywordInput = await driver.wait(until.elementLocated(By.css('._job_ks.UISearchbarInput')), 3000)
-  //關鍵字確定
-  ikeywordInput.sendKeys(row['keyword'],Key.RETURN)
-  await driver.sleep(2000)
-  //進階搜尋
-  const notifiBtn = await driver.wait(until.elementLocated(By.css('.config .notification-topbar-button.d-flex a')), 3000)
-  await driver.executeScript("arguments[0].click();", notifiBtn);
-  //職務
-  // const jobInput = await driver.wait(until.elementLocated(By.css('input.fm-ct._job_d0')), 3000)
-  const jobInput = await driver.wait(until.elementLocated(By.xpath("//a[contains(text(),'職務')]")), 3000)
-  await driver.executeScript("arguments[0].click();", jobInput);
-  //資訊
-  const informationBtn = await driver.wait(until.elementLocated(By.css('.tcode-col-1.tcode-md-3.tcode__panel-item:nth-child(5)')),3000)
-  await driver.executeScript("arguments[0].click();", informationBtn);
-  await driver.sleep(2000)
-  const informationBtn2s = await driver.findElements(By.css('.tcode__panel.tcode__panel--active .tcode__panel-item.m100'))
-  for (let informationBtn2 of informationBtn2s) {
-    const input = informationBtn2.findElement(By.css('input'))
-    await driver.executeScript("arguments[0].click();", input);
-    await driver.sleep(2000)
+  if(row['keyword']=='論件'){
+    // await driver.get(`https://www.1111.com.tw/search/job?col=da&d0=140100%2C140200%2C140300%2C140400%2C140500%2C140600%2C140700%2C140800%2C230100&fks=${row['keyword']}&ks=${row['keyword']}&page=1&sort=desc`)
+    await driver.get(`https://www.1111.com.tw/search/job?col=da&d0=140100%2C140200%2C140300%2C140400%2C140500%2C140600%2C140700%2C140800%2C230100&ks=論件&page=1&sort=desc`)
+  }else{
+    await driver.get(`https://www.1111.com.tw/search/job?col=da&d0=140100%2C140200%2C140300%2C140400%2C140500%2C140600%2C140700%2C140800%2C230100&ks=外包%2C遠端%2C兼職&&page=1&sort=desc`)
   }
-  //設計
-  const designBtn = await driver.wait(until.elementLocated(By.css('.tcode-col-1.tcode-md-3.tcode__panel-item:nth-child(14)')),3000)
-  await driver.executeScript("arguments[0].click();", designBtn);
-  await driver.sleep(2000)
-  const designBtn2s = await driver.findElements(By.css('.tcode__panel.tcode__panel--active .tcode__panel-item.m100'))
-  for (let designBtn2 of designBtn2s) {
-    const input = designBtn2.findElement(By.css('input'))
-    await driver.executeScript("arguments[0].click();", input);
-    await driver.sleep(2000)
-  }
-  //確定
-  const jobBtn = await driver.wait(until.elementLocated(By.css('.tcode__btn.tcode__btn-outline-primary.tcode__btn-enter.tcode__btn--active')),3000)
-  await driver.executeScript("arguments[0].click();", jobBtn);
-  await driver.sleep(2000)
-  const jobBtn2 = await driver.wait(until.elementLocated(By.css('.fm-bt.bt-oli-pm.condition-btn.CustomDialog__footer-btn-search')),3000)
-  await driver.executeScript("arguments[0].click();", jobBtn2);
-  await driver.sleep(4000)
-  //排序 更新
-  const sortBtn = await driver.wait(until.elementLocated(By.css('.data_nav_dropdown_toggle_group.d-flex .dropdown_toggle_item.body_3:nth-child(2)')),3000)
-  await driver.executeScript("arguments[0].click();", sortBtn);
-  await driver.sleep(2000)
-  const sortBtn2 = await driver.wait(until.elementLocated(By.css('.filterpopup__content .filterpopup__label:nth-child(3)')),3000)
-  await driver.executeScript("arguments[0].click();", sortBtn2);
-  await driver.sleep(4000)
+  
   //抓取今天日期
   let date = await timeFn()
   date = date['date'].replaceAll('-','/')
@@ -95,7 +52,7 @@ async function getTrace(driver,row) {
   await showData(driver,date)
   //抓取內容
   const lis = await driver.findElements(By.css('.item__job.job_item'))
-  console.log(`抓取1111內容數量:${ lis.length } error`)
+  console.log(`抓取1111內容數量:${ lis.length }`)
   for (let li of lis) {
     const obj = {}
     const time = await li.findElement(By.css('.item_data small.text-muted.job_item_date')).getText()
@@ -110,9 +67,7 @@ async function getTrace(driver,row) {
     //來源ID
     obj.crawlerurl_id = row['id']
     obj.name = await li.findElement(By.css('.job_item_info h5.card-title.title_6')).getText()
-    // let namehref = 'https://www.1111.com.tw'
     obj.namehref = await li.findElement(By.css('.job_item_info>a')).getAttribute('href')
-    // obj.namehref = namehref
     //文章
     let articles = await li.findElements(By.css('p.card-text.job_item_description.body_4'))
     if(articles.length>0){
@@ -121,15 +76,17 @@ async function getTrace(driver,row) {
       articles += await li.findElement(By.css('div.job_item_detail.d-flex.body_4')).getText()
       obj.articles = articles
     }
+    //論件
+    const essay = await li.findElement(By.css('.job_item_detail_salary.ml-3.font-weight-style.digit_6')).getText()
 
-    console.log('目前抓取資料',obj,row['keyword'].split(',').find(item=>obj.name.includes(item)))
+    console.log('目前抓取資料',obj)
 
     //判斷標題
     if(row['nokeyword'].split(',').find(item=>obj.name.includes(item))){
       console.log(`標題排除(${row['nokeyword']})跳出本循環`)
       continue;
-    }else if(row['keyword'].split(',').find(item=>obj.name.includes(item))){
-      console.log(`標題關鍵字有(${row['keyword']})抓取`)
+    }else if(row['keyword'].split(',').find(item=>obj.name.includes(item) || essay.includes('論件計酬'))){
+      console.log(`標題關鍵字有(${row['keyword']})或${essay}是論件計酬抓取`)
     }else{
       console.log(`標題查無關鍵字-跳出`)
       continue;

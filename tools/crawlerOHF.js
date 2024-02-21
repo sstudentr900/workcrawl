@@ -57,7 +57,7 @@ async function showData(driver,date){
   await driver.actions().scroll(0, 0, 0, 0, lisLast).perform()
   await driver.sleep(1000)
   //console.log(`判斷日期`)
-  const time = await lisLast.findElement(By.css('h2.b-tit span')).getAttribute("innerHTML")
+  const time = await lisLast.findElement(By.css('h2.b-tit span')).getText()
   console.log(`今天日期:${date}-來源日期:${time}-${!(date<= time)}`)
   if(!(date<=time)){
     return true;
@@ -68,38 +68,40 @@ async function showData(driver,date){
 async function getTrace(driver,row) {
   // console.log(`跳到該頁`)
   console.log(`getTrace`,row)
-  await driver.get(row['storeurl'])
+  // await driver.get(row['storeurl'])
   //關鍵字
-  const ikeywordInput = await driver.wait(until.elementLocated(By.css('.input-group.input-group--search input.form-control')), 3000)
-  ikeywordInput.sendKeys(row['keyword'].replaceAll(',',' '))
+  // const ikeywordInput = await driver.wait(until.elementLocated(By.css('.input-group.input-group--search input.form-control')), 3000)
+  // ikeywordInput.sendKeys(row['keyword'].replaceAll(',',' '))
   //職務類別
-  const jobInput = await driver.wait(until.elementLocated(By.css('.input-group-append+.input-group-append button')), 3000)
-  await driver.executeScript("arguments[0].click();", jobInput);
+  // const jobInput = await driver.wait(until.elementLocated(By.css('.input-group-append+.input-group-append button')), 3000)
+  // await driver.executeScript("arguments[0].click();", jobInput);
   //資訊
-  const informationBtn = await driver.wait(until.elementLocated(By.css('.category-picker__modal-body li:nth-child(7) a')),3000)
-  await driver.executeScript("arguments[0].click();", informationBtn);
-  await driver.sleep(2000)
-  const informationBtn2 = await driver.wait(until.elementLocated(By.css('.category-item.category-item--title input.checkbox-input')),3000)
-  await driver.executeScript("arguments[0].click();", informationBtn2);
+  // const informationBtn = await driver.wait(until.elementLocated(By.css('.category-picker__modal-body li:nth-child(7) a')),3000)
+  // await driver.executeScript("arguments[0].click();", informationBtn);
+  // await driver.sleep(2000)
+  // const informationBtn2 = await driver.wait(until.elementLocated(By.css('.category-item.category-item--title input.checkbox-input')),3000)
+  // await driver.executeScript("arguments[0].click();", informationBtn2);
   //設計
-  const designBtn = await driver.wait(until.elementLocated(By.css('.category-picker__modal-body li:nth-child(11) a')),3000)
-  await driver.executeScript("arguments[0].click();", designBtn);
-  await driver.sleep(2000)
-  const designBtn2 = await driver.wait(until.elementLocated(By.css('.category-item.category-item--title input.checkbox-input')),3000)
-  await driver.executeScript("arguments[0].click();", designBtn2);
+  // const designBtn = await driver.wait(until.elementLocated(By.css('.category-picker__modal-body li:nth-child(11) a')),3000)
+  // await driver.executeScript("arguments[0].click();", designBtn);
+  // await driver.sleep(2000)
+  // const designBtn2 = await driver.wait(until.elementLocated(By.css('.category-item.category-item--title input.checkbox-input')),3000)
+  // await driver.executeScript("arguments[0].click();", designBtn2);
   //確定
-  const jobBtn = await driver.wait(until.elementLocated(By.css('.category-picker-btn-primary')),3000)
-  await driver.executeScript("arguments[0].click();", jobBtn);
-  await driver.sleep(2000)
+  // const jobBtn = await driver.wait(until.elementLocated(By.css('.category-picker-btn-primary')),3000)
+  // await driver.executeScript("arguments[0].click();", jobBtn);
+  // await driver.sleep(2000)
   //搜尋
-  const ikeywordBtn = await driver.wait(until.elementLocated(By.css('button.btn.btn-secondary.btn-block.btn-lg')), 3000)
-  await driver.executeScript("arguments[0].click();", ikeywordBtn);
-  await driver.sleep(3000)
+  // const ikeywordBtn = await driver.wait(until.elementLocated(By.css('button.btn.btn-secondary.btn-block.btn-lg')), 3000)
+  // await driver.executeScript("arguments[0].click();", ikeywordBtn);
+  // await driver.sleep(3000)
   //選日期排序
-  const selectInput = await driver.wait(until.elementLocated(By.xpath(`//*[@id="js-sort"]`)), 3000)
-  const selects = new Select(selectInput)
-  await selects.selectByIndex(1)
-  await driver.sleep(3000)
+  // const selectInput = await driver.wait(until.elementLocated(By.xpath(`//*[@id="js-sort"]`)), 3000)
+  // const selects = new Select(selectInput)
+  // await selects.selectByIndex(1)
+  // await driver.sleep(3000)
+
+  await driver.get(`https://www.104.com.tw/jobs/search/?ro=0&jobcat=2007000000%2C2013000000&kwop=7&keyword=外包%20遠端%20兼職%20論件&expansionType=area%2Cspec%2Ccom%2Cjob%2Cwf%2Cwktm&order=16&asc=0&page=1&mode=s&jobsource=index_s&langFlag=0&langStatus=0&recommendJob=1&hotJob=1`)
   //抓取今天日期
   let date = await timeFn()
   const year = `${date['year']}`
@@ -112,8 +114,7 @@ async function getTrace(driver,row) {
   console.log(`抓取104內容數量:${ lis.length }`)
   for (let li of lis) {
     const obj = {}
-    // let time = await li.findElement(By.css('h2.b-tit span')).getText()
-    const time = await li.findElement(By.css('h2.b-tit span')).getAttribute("innerHTML")
+    const time = await li.findElement(By.css('h2.b-tit span')).getText()
 
     if(!(date<= time)){console.log(`***日期小於今天跳出***`);break;}
     obj.time = `${year}-${time.replaceAll('/','-')}`

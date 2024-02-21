@@ -34,9 +34,8 @@ async function showData(driver,date){
   await driver.sleep(1000)
   //console.log(`判斷日期`)
   const time = await lisLast.findElement(By.css('span.job__date')).getText()
-  // console.log(`今天日期:${date}-來源日期:${time}-${!(Number(date.replaceAll('/',''))<=Number(time.replaceAll('/','')))}`)
-  console.log(`今天日期:${date}-來源日期:${time}-${!(date<=time)}`)
-  if(!(date<=time) || date<time){
+  console.log(`今天日期:${date}-來源日期:${time}`)
+  if(!(date<=time)){
     return true;
   }else{
     await showData(driver,date)
@@ -45,17 +44,45 @@ async function showData(driver,date){
 async function getTrace(driver,row) {
   // console.log(`跳到該頁`)
   console.log(`getTrace`,row)
-  if(row['keyword']=='論件'){
-    //找論件計酬
-    await driver.get(`https://www.518.com.tw/job-index-P-1.html?gtm_ls=1&ab=2027001,2027003,2027004,2024001,2024002&orderType=1&orderField=8&ak=86`)
-  }else{
-    //找關鍵字(外包,遠端)
-    // await driver.get(`https://www.518.com.tw/job-index-P-1.html?gtm_ls=1&ab=2027001,2027003,2027004,2024001,2024002&orderType=1&orderField=8&ad=${row['keyword']}`)
-    await driver.get(`https://www.518.com.tw/job-index-P-1.html?gtm_ls=1&ab=2027001,2027003,2027004,2024001,2024002&orderType=1&orderField=8&ad=外包%20遠端`)
+
+  //關鍵字
+  const ikeywordInput = await driver.wait(until.elementLocated(By.css('#kwds')), 3000)
+  ikeywordInput.sendKeys(row['keyword'].replaceAll(',',' '))
+  //職務類別
+  const jobInput = await driver.wait(until.elementLocated(By.css('#j_open')), 3000)
+  await driver.executeScript("arguments[0].click();", jobInput);
+  //資訊
+  const informationBtn = await driver.wait(until.elementLocated(By.css('.mask.blocker.current .list_content li:nth-child(13) a')),3000)
+  await driver.executeScript("arguments[0].click();", informationBtn);
+  await driver.sleep(2000)
+  const informationBtn2s = await driver.findElements(By.css('.mask.blocker.current .next-all-job-name-content a input'))
+  for (let informationBtn2 of informationBtn2s) {
+    await driver.executeScript("arguments[0].click();", informationBtn2);
   }
-
-
-
+  await driver.sleep(2000)
+  //設計
+  const designBtn = await driver.wait(until.elementLocated(By.css('.mask.blocker.current .list_content li:nth-child(14) a')),3000)
+  await driver.executeScript("arguments[0].click();", designBtn);
+  await driver.sleep(2000)
+  const designBtn2s = await driver.findElements(By.css('.mask.blocker.current .next-all-job-name-content a input'))
+  for (let designBtn2 of designBtn2s) {
+    await driver.executeScript("arguments[0].click();", designBtn2);
+  }
+  await driver.sleep(2000)
+  //確定
+  const jobBtn = await driver.wait(until.elementLocated(By.css('.mask.blocker.current .btn.org_btn')),3000)
+  await driver.executeScript("arguments[0].click();", jobBtn);
+  await driver.sleep(2000)
+  //搜尋
+  const ikeywordBtn = await driver.wait(until.elementLocated(By.css('#gtm_search_job_web')), 3000)
+  await driver.executeScript("arguments[0].click();", ikeywordBtn);
+  await driver.sleep(3000)
+  //選日期排序
+  const selectInput = await driver.wait(until.elementLocated(By.css('#tableItem .datet a')), 3000)
+  await driver.executeScript("arguments[0].click();", selectInput);
+  // const selects = new Select(selectInput)
+  // await selects.selectByIndex(1)
+  await driver.sleep(5000)
   //抓取今天日期
   let date = await timeFn()
   const year = `${date['year']}`
@@ -67,14 +94,11 @@ async function getTrace(driver,row) {
   console.log(`抓取內容數量:${ lis.length }`)
   for (let li of lis) {
     const obj = {}
-    // let time = await li.findElement(By.css('span.job__date')).getText()
-    let time = await li.findElements(By.css('span.job__date'))
-    if(time.length<=0){continue;}
-    time = await time[0].getText()
+    // let time = await li.findElement(By.css('h2.b-tit span')).getText()
+    const time = await li.findElement(By.css('span.job__date')).getText()
     console.log(`判斷日期:${ date }-${ time }`)
-    if(!(date<=time) || date<time){console.log(`***日期小於今天跳出***`);break;}
+    if(!(date<= time)){console.log(`***日期小於今天跳出***`);break;}
     obj.time = `${year}-${time.replaceAll('/','-')}`
-
 
     // console.log(`滾動到要抓取位置`)
     await driver.actions().scroll(0, 0, 0, 0, li).perform()
@@ -117,8 +141,8 @@ async function getTrace(driver,row) {
 }
 async function crawlerBEAR(row) {    
   const driver = await initDrive()
-  await driver.manage().window().setRect({ width: 1420, height: 1200 });
-  // await login(driver)
+  await driver.manage().window().setRect({width: 1200, height: 880});
+  await login(driver)
   await getTrace(driver,row)
   driver.quit();
 }
