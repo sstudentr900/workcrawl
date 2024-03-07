@@ -257,6 +257,8 @@ async function fbGetData(driver,itemsCssName,itemTimeCssName,json) {
     }
 
 
+    //等10秒
+    await driver.sleep(10000)
     //push arrays
     // if(arrays.length>5){
     //   console.log('fbGetData_大於5個跳出')
