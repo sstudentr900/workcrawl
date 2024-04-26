@@ -221,6 +221,7 @@ async function fbGetData(driver,itemsCssName,itemTimeCssName,json) {
         // console.log(`文章A_顯示更多:${articlesMore.length}`)
         await driver.executeScript("arguments[0].click();", articlesMore[0]);
       }
+      await driver.sleep(1000)
       const articlesMore2 = await articlesObjs[0].findElements(By.xpath("//div[contains(text(),'查看更多')]"))
       if(articlesMore2.length>0){
         // console.log(`文章A_查看更多:${articlesMore2.length}`)
@@ -258,7 +259,7 @@ async function fbGetData(driver,itemsCssName,itemTimeCssName,json) {
 
 
     //等10秒
-    await driver.sleep(40000)
+    await driver.sleep(10000)
     //push arrays
     // if(arrays.length>5){
     //   console.log('fbGetData_大於5個跳出')
@@ -279,8 +280,11 @@ async function fbGetTrace(driver,row) {
   const itemsCssName = '.x1yztbdb.x1n2onr6.xh8yej3.x1ja2u2z';
   // x1i10hfl xjbqb8w x6umtig x1b1mbwd xaqea5y xav7gou x9f619 x1ypdohk xt0psk2 xe8uvvx xdj266r x11i5rnm xat24cr x1mh8g0r xexx8yu x4uap5 x18d9i69 xkhd6sd x16tdsg8 x1hl2dhg xggy1nq x1a2a7pz x1heor9g xt0b8zv xo1l8bm
   // const itemTimeCssName = 'a.x1i10hfl.xjbqb8w.x6umtig.x1b1mbwd.xaqea5y.xav7gou.x9f619.x1ypdohk.xt0psk2.xe8uvvx.xdj266r.x11i5rnm.xat24cr.x1mh8g0r.xexx8yu.x4uap5.x18d9i69.xkhd6sd.x16tdsg8.x1hl2dhg.xggy1nq.x1a2a7pz.x1heor9g.xt0b8zv.xo1l8bm';
-  const itemTimeCssName = 'a.x1i10hfl.xjbqb8w.x1ejq31n.xd10rxx.x1sy0etr.x17r0tee.x972fbf.xcfux6l.x1qhh985.xm0m39n.x9f619.x1ypdohk.xt0psk2.xe8uvvx.xdj266r.x11i5rnm.xat24cr.x1mh8g0r.xexx8yu.x4uap5.x18d9i69.xkhd6sd.x16tdsg8.x1hl2dhg.xggy1nq.x1a2a7pz.x1heor9g.xt0b8zv.xo1l8bm';
-
+  // const itemTimeCssName = 'a.x1i10hfl.xjbqb8w.x1ejq31n.xd10rxx.x1sy0etr.x17r0tee.x972fbf.xcfux6l.x1qhh985.xm0m39n.x9f619.x1ypdohk.xt0psk2.xe8uvvx.xdj266r.x11i5rnm.xat24cr.x1mh8g0r.xexx8yu.x4uap5.x18d9i69.xkhd6sd.x16tdsg8.x1hl2dhg.xggy1nq.x1a2a7pz.x1heor9g.xt0b8zv.xo1l8bm';
+  const itemTimeCssName = 'a span.x1rg5ohu.x6ikm8r.x10wlt62.x16dsc37.xt0b8zv';
+  // x1rg5ohu x6ikm8r x10wlt62 x16dsc37 xt0b8zv
+  // x1rg5ohu x6ikm8r x10wlt62 x16dsc37 xt0b8zv
+  // x1rg5ohu x6ikm8r x10wlt62 x16dsc37 xt0b8zv
   await driver.get(row['storeurl'])
   // const url = 'https://www.facebook.com/groups/239168157628070'
   // await driver.get(url)
