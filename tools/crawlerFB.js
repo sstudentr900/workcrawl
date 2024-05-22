@@ -82,7 +82,7 @@ async function fbShowData(driver,number,itemsCssName,itemTimeCssName){
   const itemLast = item[item.length-1]
   //console.log(`滾動到要抓取位置`)
   await driver.actions().scroll(0, 0, 0, 50, itemLast).perform()
-  await driver.sleep(1000)
+  await driver.sleep(2000)
 
   //抓最後一筆時間
   // const timeLink=  await itemLast.findElement(By.css(`${itemTimeCssName} use`))
@@ -138,7 +138,7 @@ async function fbGetData(driver,itemsCssName,itemTimeCssName,json) {
     const obj = {}
     console.log(`fbGetData_一定滾動到要抓取位置---------------------------`)
     await driver.actions().scroll(0, 0, 0, 0, item).perform()
-    await driver.sleep(1000)
+    await driver.sleep(2000)
 
      //console.log(`時間為日或天跳出`)
     const timeText = await fbGetTime(driver,item,itemTimeCssName)
@@ -281,7 +281,9 @@ async function fbGetTrace(driver,row) {
   // x1i10hfl xjbqb8w x6umtig x1b1mbwd xaqea5y xav7gou x9f619 x1ypdohk xt0psk2 xe8uvvx xdj266r x11i5rnm xat24cr x1mh8g0r xexx8yu x4uap5 x18d9i69 xkhd6sd x16tdsg8 x1hl2dhg xggy1nq x1a2a7pz x1heor9g xt0b8zv xo1l8bm
   // const itemTimeCssName = 'a.x1i10hfl.xjbqb8w.x6umtig.x1b1mbwd.xaqea5y.xav7gou.x9f619.x1ypdohk.xt0psk2.xe8uvvx.xdj266r.x11i5rnm.xat24cr.x1mh8g0r.xexx8yu.x4uap5.x18d9i69.xkhd6sd.x16tdsg8.x1hl2dhg.xggy1nq.x1a2a7pz.x1heor9g.xt0b8zv.xo1l8bm';
   // const itemTimeCssName = 'a.x1i10hfl.xjbqb8w.x1ejq31n.xd10rxx.x1sy0etr.x17r0tee.x972fbf.xcfux6l.x1qhh985.xm0m39n.x9f619.x1ypdohk.xt0psk2.xe8uvvx.xdj266r.x11i5rnm.xat24cr.x1mh8g0r.xexx8yu.x4uap5.x18d9i69.xkhd6sd.x16tdsg8.x1hl2dhg.xggy1nq.x1a2a7pz.x1heor9g.xt0b8zv.xo1l8bm';
-  const itemTimeCssName = 'a span.x1rg5ohu.x6ikm8r.x10wlt62.x16dsc37.xt0b8zv';
+  // const itemTimeCssName = 'a span.x1rg5ohu.x6ikm8r.x10wlt62.x16dsc37.xt0b8zv';
+  const itemTimeCssName = '.xu06os2.x1ok221b+.xu06os2.x1ok221b a span';
+
   // x1rg5ohu x6ikm8r x10wlt62 x16dsc37 xt0b8zv
   // x1rg5ohu x6ikm8r x10wlt62 x16dsc37 xt0b8zv
   // x1rg5ohu x6ikm8r x10wlt62 x16dsc37 xt0b8zv
