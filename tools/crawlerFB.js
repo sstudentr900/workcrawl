@@ -95,7 +95,7 @@ async function fbShowData(driver,number,itemsCssName,itemTimeCssName){
   // if(timeText.includes('日') || timeText.includes('天')){
   const timeText = await fbGetTime(driver,itemLast,itemTimeCssName)
   // console.log(`fbShowData,顯示日期:${timeText},${timeText.includes('日')},${timeText.includes('天')}`)
-  console.log(`fbGetTime,顯示日期:${timeText}`)
+  console.log(`fbGetTime-fb---,顯示日期:${timeText}`)
   // if(item.length>5){
   //   console.log('fbShowData_大於5個跳出')
   //   return true;
@@ -156,18 +156,17 @@ async function fbGetData(driver,itemsCssName,itemTimeCssName,json) {
 
     // console.log(`名子`)
     // const nameObj= await item.findElements(By.css('h3.x1heor9g.x1qlqyl8.x1pd3egz.x1a2a7pz.x1gslohp.x1yc453h a.x1i10hfl.xjbqb8w.x6umtig.x1b1mbwd.xaqea5y.xav7gou.x9f619.x1ypdohk.xt0psk2.xe8uvvx.xdj266r.x11i5rnm.xat24cr.x1mh8g0r.xexx8yu.x4uap5.x18d9i69.xkhd6sd.x16tdsg8.x1hl2dhg.xggy1nq.x1a2a7pz.xt0b8zv.xzsf02u.x1s688f'));
-    const nameObj= await item.findElements(By.css('h3.x1heor9g.x1qlqyl8.x1pd3egz.x1a2a7pz.x1gslohp.x1yc453h a'));
+    const nameObj= await item.findElements(By.css('a.x1i10hfl.xjbqb8w'));
     if(nameObj.length>0){
-      obj.name= await nameObj[0].getText();
-      // obj.name= await nameObj.findElement(By.css('strong span')).getText();
+      //console.log(await item.findElement(By.css('a.x1i10hfl.xjbqb8w span')).getText())
+      obj.name= await item.findElement(By.css('a.x1i10hfl.xjbqb8w span')).getText()
       obj.namehref= await nameObj[0].getAttribute('href');
-      console.log(`名子:${JSON.stringify(obj.name)}`)
+      console.log(`名子:${obj.name}`)
       console.log(`名子href:${obj.namehref}`)
     }else{
       console.log(`名子:找不到跳出本循環`)
       continue;
     }
-
     // console.log(`時間`)
     const timeLink= await item.findElements(By.css(itemTimeCssName))
     // const time= await timeLink.getText()
@@ -217,27 +216,32 @@ async function fbGetData(driver,itemsCssName,itemTimeCssName,json) {
     if(!obj.articles && articlesObjs.length > 0){
       // console.log(`文章A:${articlesObjs.length}`)
       const articlesMore = await articlesObjs[0].findElements(By.xpath("//div[contains(text(),'顯示更多')]"))
+      //console.log('顯示更多',articlesMore.length)
       if(articlesMore.length>0){
         // console.log(`文章A_顯示更多:${articlesMore.length}`)
         await driver.executeScript("arguments[0].click();", articlesMore[0]);
+        // articlesMore.forEach(async(element) => {
+        //   await driver.executeScript("arguments[0].click();", element);
+        //   await driver.sleep(2000)
+        // });
       }
-      await driver.sleep(1000)
       const articlesMore2 = await articlesObjs[0].findElements(By.xpath("//div[contains(text(),'查看更多')]"))
+      //console.log('查看更多',articlesMore2.length)
       if(articlesMore2.length>0){
         // console.log(`文章A_查看更多:${articlesMore2.length}`)
         await driver.executeScript("arguments[0].click();", articlesMore2[0]);
       }
       // await driver.sleep(3000)
       obj.articles = await articlesObjs[0].getText()
-      console.log(`文章:${obj.articles}`)
+      console.log(`文章1:${obj.articles}`)
     }else if( !obj.articles && articlesObjs2.length > 0){
       // console.log(`文章B:${articlesObjs2.length}`)
       obj.articles = await item.findElement(By.css('.x1swvt13.x1pi30zi.xexx8yu.x18d9i69')).getText()
-      console.log(`文章:${obj.articles}`)
+      console.log(`文章2:${obj.articles}`)
     }else if(!obj.articles && articlesObjs3.length > 0){
       // console.log(`文章B:${articlesObjs3.length}`)
       obj.articles = await item.findElement(By.css('.x5yr21d.xyqdw3p')).getText()
-      console.log(`文章:${obj.articles}`)
+      console.log(`文章3:${obj.articles}`)
     }else{
       console.log(`找不到文章`)
     }
@@ -308,7 +312,7 @@ async function fbGetTrace(driver,row) {
     if(array['articles']){
       const articles = await dbQuery( 'SELECT * from work where articles = ?',[array['articles']])
       if(articles.length>0){
-        // console.log(`fbGetTrace文章重複跳出`);
+        console.log(`fbGetTrace end文章重複跳出`);
         continue;
       }
     }

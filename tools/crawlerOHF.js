@@ -1,3 +1,4 @@
+//104
 require('dotenv').config(); //載入.env環境檔
 const { initDrive } = require("./initDrive.js");
 const { By, until,Select } = require('selenium-webdriver') // 從套件中取出需要用到的功能
@@ -54,54 +55,22 @@ async function showData(driver,date){
   const lis = await driver.findElements(By.css('#js-job-content article'))
   const lisLast = lis[lis.length-1]
   //console.log(`滾動到要抓取位置`)
-  await driver.actions().scroll(0, 0, 0, 0, lisLast).perform()
-  await driver.sleep(1000)
+  await driver.actions().scroll(0, 0, 0, 200, lisLast).perform()
+  await driver.sleep(2000)
   //console.log(`判斷日期`)
   const time = await lisLast.findElement(By.css('h2.b-tit span')).getText()
-  console.log(`今天日期:${date}-來源日期:${time}-${!(date<= time)}`)
-  if(!(date<=time)){
+  const title = await lisLast.findElement(By.css('h2.b-tit a')).getText()
+  console.log(`今天日期:${date}-來源日期:${time}-日期判斷${time && !(date<=time)}-標題:${title}`)
+  if(time && !(date<=time)){
     return true;
   }else{
     await showData(driver,date)
   }
 }
 async function getTrace(driver,row) {
-  // console.log(`跳到該頁`)
-  console.log(`getTrace`,row)
-  // await driver.get(row['storeurl'])
-  //關鍵字
-  // const ikeywordInput = await driver.wait(until.elementLocated(By.css('.input-group.input-group--search input.form-control')), 3000)
-  // ikeywordInput.sendKeys(row['keyword'].replaceAll(',',' '))
-  //職務類別
-  // const jobInput = await driver.wait(until.elementLocated(By.css('.input-group-append+.input-group-append button')), 3000)
-  // await driver.executeScript("arguments[0].click();", jobInput);
-  //資訊
-  // const informationBtn = await driver.wait(until.elementLocated(By.css('.category-picker__modal-body li:nth-child(7) a')),3000)
-  // await driver.executeScript("arguments[0].click();", informationBtn);
-  // await driver.sleep(2000)
-  // const informationBtn2 = await driver.wait(until.elementLocated(By.css('.category-item.category-item--title input.checkbox-input')),3000)
-  // await driver.executeScript("arguments[0].click();", informationBtn2);
-  //設計
-  // const designBtn = await driver.wait(until.elementLocated(By.css('.category-picker__modal-body li:nth-child(11) a')),3000)
-  // await driver.executeScript("arguments[0].click();", designBtn);
-  // await driver.sleep(2000)
-  // const designBtn2 = await driver.wait(until.elementLocated(By.css('.category-item.category-item--title input.checkbox-input')),3000)
-  // await driver.executeScript("arguments[0].click();", designBtn2);
-  //確定
-  // const jobBtn = await driver.wait(until.elementLocated(By.css('.category-picker-btn-primary')),3000)
-  // await driver.executeScript("arguments[0].click();", jobBtn);
-  // await driver.sleep(2000)
-  //搜尋
-  // const ikeywordBtn = await driver.wait(until.elementLocated(By.css('button.btn.btn-secondary.btn-block.btn-lg')), 3000)
-  // await driver.executeScript("arguments[0].click();", ikeywordBtn);
-  // await driver.sleep(3000)
-  //選日期排序
-  // const selectInput = await driver.wait(until.elementLocated(By.xpath(`//*[@id="js-sort"]`)), 3000)
-  // const selects = new Select(selectInput)
-  // await selects.selectByIndex(1)
-  // await driver.sleep(3000)
+  console.log('start,104,執行內容',row)
+  await driver.get(row.storeurl)
 
-  await driver.get(`https://www.104.com.tw/jobs/search/?ro=0&jobcat=2007000000%2C2013000000&kwop=7&keyword=外包%20遠端%20兼職%20論件&expansionType=area%2Cspec%2Ccom%2Cjob%2Cwf%2Cwktm&order=16&asc=0&page=1&mode=s&jobsource=index_s&langFlag=0&langStatus=0&recommendJob=1&hotJob=1`)
   //抓取今天日期
   let date = await timeFn()
   const year = `${date['year']}`
@@ -109,23 +78,33 @@ async function getTrace(driver,row) {
 
   //顯示要抓取內容
   await showData(driver,date)
+
   //抓取內容
   const lis = await driver.findElements(By.css('#js-job-content article'))
   console.log(`抓取104內容數量:${ lis.length }`)
-  for (let li of lis) {
+  for (const [index,li] of lis.entries()) {
     const obj = {}
     const time = await li.findElement(By.css('h2.b-tit span')).getText()
-
-    if(!(date<= time)){console.log(`***日期小於今天跳出***`);break;}
-    obj.time = `${year}-${time.replaceAll('/','-')}`
+    const time1 = new Date(date)
+    const time2 = new Date(time)
+    console.log(`start,104,index:${index}`)
+    console.log('今天日期',time1,'來源日期',time2)
+    if(time && time1>time2){
+      console.log(`end,日期小於${date}跳出--------------`);
+      break;
+    }else if(!time){
+      console.log(`來源日期沒有繼續..`);
+    }
+    obj.time = time?`${year}-${time.replaceAll('/','-')}`:`${year}-${date.replaceAll('/','-')}`
 
     // console.log(`滾動到要抓取位置`)
-    await driver.actions().scroll(0, 0, 0, 0, li).perform()
-    await driver.sleep(1000)
+    await driver.actions().scroll(0, 0, 0, 200, li).perform()
+    await driver.sleep(2000)
 
     //來源ID
     obj.crawlerurl_id = row['id']
-    obj.name = await li.getAttribute('data-job-name')
+    //標題
+    obj.name = await li.findElement(By.css('h2.b-tit a')).getText()
     obj.namehref = await li.findElement(By.css('h2.b-tit a')).getAttribute('href')
     //文章
     let articles = await li.findElements(By.css('.job-list-item__info.b-clearfix.b-content'))
@@ -135,27 +114,28 @@ async function getTrace(driver,row) {
       articles += await li.findElement(By.css('.job-list-tag.b-content')).getText()
       obj.articles = articles
     }
+    //類別
+    const classlist = await li.findElement(By.css('.job-list-tag.b-content')).getText()
 
     console.log('目前抓取資料',obj)
 
-    //判斷標題
-    if(row['nokeyword'].split(',').find(item=>obj.name.includes(item))){
-      console.log(`標題(${row['nokeyword']})跳出本循環`)
-      continue;
-    }else if(row['keyword'].split(',').find(item=>obj.name.includes(item))){
-      console.log(`標題(${row['keyword']})抓取`)
-    }else{
-      console.log(`標題(其他)跳出`)
+    //判斷關鍵字
+    const titleKeyWord = row['nokeyword'].split(',').find(item=>obj.name.includes(item))
+    if(titleKeyWord){
+      console.log(`end,標題排除(${titleKeyWord})跳出----------------`)
       continue;
     }
+
   
     //判斷標題
     const nameValue = await dbQuery( 'SELECT * from work where name = ?',[obj.name])
-    if(nameValue.length>0){console.log(`***標題重複跳出***`);continue;}
-
-    //save
-    await dbInsert('work',obj)
-    console.log('end----------------------------------')
+    if(nameValue.length>0){
+      console.log(`end,標題重複跳出----------------`);
+    }else{
+      //save
+      await dbInsert('work',obj)
+      console.log('end,儲存資料庫----------------')
+    }
   }
 }
 async function crawlerOHF(row) {    
