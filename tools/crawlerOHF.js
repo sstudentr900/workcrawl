@@ -99,7 +99,7 @@ async function getTrace(driver,row) {
 
     // console.log(`滾動到要抓取位置`)
     await driver.actions().scroll(0, 0, 0, 200, li).perform()
-    await driver.sleep(2000)
+    await driver.sleep(3000)
 
     //來源ID
     obj.crawlerurl_id = row['id']
