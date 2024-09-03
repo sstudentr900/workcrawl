@@ -68,7 +68,7 @@ async function showData(driver,date){
   }
 }
 async function getTrace(driver,row) {
-  console.log('start,104,執行內容',row)
+  console.log('104,頁面抓取內容',row)
   await driver.get(row.storeurl)
 
   //抓取今天日期
@@ -81,19 +81,19 @@ async function getTrace(driver,row) {
 
   //抓取內容
   const lis = await driver.findElements(By.css('#js-job-content article'))
-  console.log(`抓取104內容數量:${ lis.length }`)
+  console.log(`抓取總數:${ lis.length }筆`)
   for (const [index,li] of lis.entries()) {
     const obj = {}
     const time = await li.findElement(By.css('h2.b-tit span')).getText()
     const time1 = new Date(date)
     const time2 = new Date(time)
-    console.log(`start,104,index:${index}`)
+    console.log(`start,104,index:${index}-------------------`);
     console.log('今天日期',time1,'來源日期',time2)
     if(time && time1>time2){
-      console.log(`end,日期小於${date}跳出--------------`);
+      console.log(`end,日期小於${date}跳出-------------------`);
       break;
     }else if(!time){
-      console.log(`來源日期沒有繼續..`);
+      //console.log(`來源日期有錯但繼續執行..`);
     }
     obj.time = time?`${year}-${time.replaceAll('/','-')}`:`${year}-${date.replaceAll('/','-')}`
 
@@ -122,7 +122,7 @@ async function getTrace(driver,row) {
     //判斷關鍵字
     const titleKeyWord = row['nokeyword'].split(',').find(item=>obj.name.includes(item))
     if(titleKeyWord){
-      console.log(`end,標題排除(${titleKeyWord})跳出----------------`)
+      console.log(`end,標題排除(${titleKeyWord})跳出-------------------`)
       continue;
     }
 
@@ -130,11 +130,11 @@ async function getTrace(driver,row) {
     //判斷標題
     const nameValue = await dbQuery( 'SELECT * from work where name = ?',[obj.name])
     if(nameValue.length>0){
-      console.log(`end,標題重複跳出----------------`);
+      console.log(`end,標題重複跳出-------------------`);
     }else{
       //save
       await dbInsert('work',obj)
-      console.log('end,儲存資料庫----------------')
+      console.log('end,儲存資料庫-------------------')
     }
   }
 }

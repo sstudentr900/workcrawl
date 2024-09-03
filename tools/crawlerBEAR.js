@@ -4,7 +4,7 @@ const { initDrive } = require("./initDrive.js");
 const { By, until,Select } = require('selenium-webdriver') // 從套件中取出需要用到的功能
 const { dbQuery,dbInsert,dbUpdata,dbDelete,timeFn } = require('./db.js')
 const itemsClassName = '#listContent .all_job_hover';//欄
-const dataClaccName = 'span.job__date';//日期
+const dataClaccName = '.job__card span.job__date';//日期
 async function login(driver) {
   const username = process.env.BEAR_USERNAME
   const userpass = process.env.BEAR_PASSWORD
@@ -66,10 +66,10 @@ async function getTrace(driver,row) {
     let time = await li.findElements(By.css('span.job__date'))
     if(time.length<=0){continue;}
     time = await time[0].getText()
-    console.log(`start,518,index:${index}`)
+    console.log(`start,518,index:${index}---------------`)
     console.log('今天日期',date,'來源日期',time)
     if(time && !(date<=time)){
-      console.log(`***日期小於今天跳出***`);
+      console.log(`end,日期小於今天跳出---------------`);
       break;
     }else if(!time){
       console.log(`來源日期沒有繼續..`);

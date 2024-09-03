@@ -36,11 +36,12 @@ async function aa() { //執行程式
     if(row['storeurl'].includes('facebook')){
       await crawlerFB(row)
     }else if(row['storeurl'].includes('104')){
-      let week = await timeFn()
-      week = week['week']
-      if(week!=0 || week!=6){
-        await crawlerOHF(row)
-      }
+      // let week = await timeFn()
+      // week = week['week']
+      // if(week!=0 || week!=6){
+      //   await crawlerOHF(row)
+      // }
+      await crawlerOHF(row)
     }else if(row['storeurl'].includes('518')){
       await crawlerBEAR(row)
     }else if(row['storeurl'].includes('1111')){

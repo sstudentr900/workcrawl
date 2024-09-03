@@ -61,7 +61,7 @@ async function getTrace(driver,row) {
   for (const [index,li] of lis.entries()) {
     const obj = {}
     const time = await li.findElement(By.css(dataClaccName)).getText()
-    console.log(`start,1111,index:${index}`)
+    console.log(`start,1111,index:${index}-----------`)
     console.log('今天日期',date,'來源日期',time)
     if(time && !(date<= time)){
       console.log(`end,日期小於${date}跳出--------------`);
