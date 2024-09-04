@@ -85,7 +85,7 @@ async function fbGetTime(driver,obj,itemTimeCssName){
   }else if(timeLink.length>0){
     timeText = await obj.findElement(By.css(`${itemTimeCssName}`)).getAttribute("textContent");
   }else{
-    console.log('找不到時間')
+    console.log('fbGetTime,找不到時間')
     timeText = false; 
   }
   return timeText;
@@ -102,29 +102,24 @@ async function fbShowData(driver,number,itemsCssName,itemTimeCssName){
   //抓最後一筆
   const item = await driver.findElements(By.css(itemsCssName))
   const itemLast = item[item.length-1]
-  //console.log(`滾動到要抓取位置`)
+  if(!itemLast){
+    console.log(`fbShowData,抓不到最後一筆:${itemLast}`)
+    return true;
+  }
+
+  //console.log(`滾動到最後一筆位置`)
   await driver.actions().scroll(0, 0, 0, 50, itemLast).perform()
   await driver.sleep(2000)
 
   //抓最後一筆時間
-  // const timeLink=  await itemLast.findElement(By.css(`${itemTimeCssName} use`))
-  // let timeId= await timeLink.getAttribute("xlink:href");
-  // await driver.sleep(1000)
-  // timeId = await driver.findElement(By.css(`${timeId} use`)).getAttribute("xlink:href");
-  // // await driver.sleep(1000)
-  // let timeText = await driver.findElement(By.css(`${timeId}`)).getAttribute("innerHTML");
-  // console.log(`timeText:${timeText},${timeText.includes('日')},${timeText.includes('天')}`)
-  // if(timeText.includes('日') || timeText.includes('天')){
   const timeText = await fbGetTime(driver,itemLast,itemTimeCssName)
-  // console.log(`fbShowData,顯示日期:${timeText},${timeText.includes('日')},${timeText.includes('天')}`)
   console.log(`fbShowData,顯示日期:${timeText}`)
-  // if(item.length>5){
-  //   console.log('fbShowData_大於5個跳出')
-  //   return true;
-  // }
+
   if(!timeText){
+    console.log(`fbShowData,timeText:${timeText}`)
     return true;
   }else if(timeText.includes('日') || timeText.includes('天')){
+    console.log(`fbShowData,有日或天:${timeText}`)
     return true;
   }else{
     await fbShowData(driver,number,itemsCssName,itemTimeCssName)
@@ -139,12 +134,13 @@ async function fbGetData(driver,itemsCssName,itemTimeCssName,json) {
   //for (const item of items) {
   for (const [index,item] of items.entries()) {
     const obj = {}
-    console.log(`start,id:${json['id']},index:${index},totle:${items.length}----------------------------------`)
+    console.log(`start,id:${json['id']},index:${index},totle:${items.length}----------------------------------------------------`)
     //console.log(`一定滾動到要抓取位置`)
     await driver.actions().scroll(0, 0, 0, 0, item).perform()
     await driver.sleep(4000)
 
-     //console.log(`時間為日或天跳出`)
+
+    //console.log(`時間為日或天跳出`)
     const timeText = await fbGetTime(driver,item,itemTimeCssName)
     if(!timeText){
       console.log(`end,找不到日期跳出本循環------------------------------------------------`);
@@ -152,46 +148,46 @@ async function fbGetData(driver,itemsCssName,itemTimeCssName,json) {
     }
     else if(timeText.includes('日') || timeText.includes('天')){ 
       if(dayNumber>1){
-        console.log(`end,時間日或天2次以上跳出迴圈:${timeText}------------------------------------------------`);
+        console.log(`end,時間日或天2次以上跳出迴圈:${timeText}-------------------------------------------`);
         break;
       }
       dayNumber++
     }
-    console.log(`顯示日期:${timeText}`)
+    console.log(`日期:${timeText}`)
 
 
     // console.log(`名子`)
-    const nameObj= await item.findElements(By.css('h2 a'));
     obj.name= '匿名成員'
     obj.namehref= '';
+    const nameObj= await item.findElements(By.css('h2 a'));
+    const nameObj2= await item.findElements(By.css('h3 a'));
     if(nameObj.length>0){
       //console.log(await item.findElement(By.css('a.x1i10hfl.xjbqb8w span')).getText())
       obj.name= await nameObj[0].findElement(By.css('span')).getText()
       obj.namehref= await nameObj[0].getAttribute('href');
-      console.log(`名子:${obj.name}`)
-      console.log(`名子href:${obj.namehref}`)
+    }else if(nameObj2.length>0){
+      obj.name= await nameObj2[0].findElement(By.css('span')).getText()
+      obj.namehref= await nameObj2[0].getAttribute('href');
     }
-    else{
-      console.log(`名子:找不到`)
-      // continue;
-    }
+    console.log(`名子:${obj.name}`)
+    console.log(`名子href:${obj.namehref}`)
 
 
     // console.log(`時間`)
+    obj.time= ''
+    obj.timeurl= ''
     const timeLink= await item.findElements(By.css(itemTimeCssName))
-    // const time= await timeLink.getText()
     if(timeLink.length > 0){
       obj.timeurl= await timeLink[0].getAttribute("href");
       const dt= new Date();
       obj.time= `${dt.getFullYear()}-${('0'+(dt.getMonth()+1)).slice(-2)}-${('0'+dt.getDate()).slice(-2)}`
-      console.log(`時間:${obj.time}`)
-      console.log(`時間_url:${obj.timeurl}`)
-    }else{
-      console.log(`時間:找不到`)
     }
+    console.log(`時間:${obj.time}`)
+    console.log(`時間_url:${obj.timeurl}`)
 
 
     // console.log(`圖片`)
+    obj.imgsrc=''
     const imgsrcdivs= await item.findElements(By.css('img.x1ey2m1c.xds687c.x5yr21d.x10l6tqk.x17qophe.x13vifvy.xh8yej3'));
     if(imgsrcdivs.length > 0){
       const img = [];
@@ -199,22 +195,20 @@ async function fbGetData(driver,itemsCssName,itemTimeCssName,json) {
         img.push(await imgsrcdiv.getAttribute("src"))
       }
       obj.imgsrc= img.join(',')
-      console.log(`圖片:${obj.imgsrc}`)
-    }else{
-      console.log(`圖片:找不到`)
     }
+    console.log(`圖片:${obj.imgsrc}`)
 
 
     // console.log(`頭圖`)
+    obj.headimgsrc=''
     const headimgsrcs= await item.findElements(By.css('svg.x3ajldb image'));
     if(headimgsrcs.length > 0){
       obj.headimgsrc = await headimgsrcs[0].getAttribute("xlink:href");
-      console.log(`頭圖:${obj.headimgsrc}`)
-    }else{
-      console.log(`頭圖:找不到`)
-    }
+    } 
+    console.log(`頭圖:${obj.headimgsrc}`)
 
     //console.log(`文章`)
+    obj.articles=''
     const articlesObjs = await item.findElements(By.css('.x1iorvi4.x1pi30zi'))
     const articlesObjs2 = await item.findElements(By.css('.x1swvt13.x1pi30zi.xexx8yu.x18d9i69'))
     const articlesObjs3 = await item.findElements(By.css('.x5yr21d.xyqdw3p'))
@@ -238,18 +232,16 @@ async function fbGetData(driver,itemsCssName,itemTimeCssName,json) {
       }
       // await driver.sleep(3000)
       obj.articles = await articlesObjs[0].getText()
-      console.log(`文章1:${obj.articles}`)
+      //console.log(`文章1:${obj.articles}`)
     }else if( !obj.articles && articlesObjs2.length > 0){
       // console.log(`文章B:${articlesObjs2.length}`)
       obj.articles = await item.findElement(By.css('.x1swvt13.x1pi30zi.xexx8yu.x18d9i69')).getText()
-      console.log(`文章2:${obj.articles}`)
+      //console.log(`文章2:${obj.articles}`)
     }else if(!obj.articles && articlesObjs3.length > 0){
       // console.log(`文章B:${articlesObjs3.length}`)
       obj.articles = await item.findElement(By.css('.x5yr21d.xyqdw3p')).getText()
-      console.log(`文章3:${obj.articles}`)
-    }else{
-      console.log(`文章:找不到`)
     }
+    console.log(`文章:${obj.articles}`)
     
 
   
