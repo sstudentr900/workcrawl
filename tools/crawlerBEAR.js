@@ -4,7 +4,8 @@ const { initDrive } = require("./initDrive.js");
 const { By, until,Select } = require('selenium-webdriver') // 從套件中取出需要用到的功能
 const { dbQuery,dbInsert,dbUpdata,dbDelete,timeFn } = require('./db.js')
 const itemsClassName = '#listContent .all_job_hover';//欄
-const dataClaccName = '.job__card span.job__date';//日期
+const dataClaccName = 'span.job__date';//日期
+const titleClaccName = 'h2.job__title__inner a';//日期
 async function login(driver) {
   const username = process.env.BEAR_USERNAME
   const userpass = process.env.BEAR_PASSWORD
@@ -35,9 +36,10 @@ async function showData(driver,date){
   // console.log(`滾動到要抓取位置`,lisLast)
   await driver.actions().scroll(0, 0, 0, 200, lisLast).perform()
   await driver.sleep(2000)
-  //console.log(`判斷日期`,lisLast,await lisLast)
-  const time = await lisLast.findElement(By.css(dataClaccName)).getText()
-  const title = await lisLast.findElement(By.css('h2.job__title__inner a')).getText()
+  //console.log(`showData 判斷日期`,await lisLast.getText())
+  let time = await lisLast.findElements(By.css(dataClaccName))
+  if(time.length<=0){return true;}else{ time = time[0].getText(); }
+  const title = await lisLast.findElement(By.css(titleClaccName)).getText()
   console.log(`今天日期:${date}-來源日期:${time}-日期判斷${time && !(date<=time)}-標題:${title}`)
   if(!(date<=time) || date<time){
     return true;
@@ -63,7 +65,7 @@ async function getTrace(driver,row) {
   for (const [index,li] of lis.entries()) {
     const obj = {}
     // let time = await li.findElement(By.css('span.job__date')).getText()
-    let time = await li.findElements(By.css('span.job__date'))
+    let time = await li.findElements(By.css(dataClaccName))
     if(time.length<=0){continue;}
     time = await time[0].getText()
     console.log(`start,518,index:${index}---------------`)
@@ -117,7 +119,7 @@ async function getTrace(driver,row) {
 }
 async function crawlerBEAR(row) {    
   const driver = await initDrive()
-  await driver.manage().window().setRect({ width: 1420, height: 1200 });
+  await driver.manage().window().setRect({ width: 1420, height: 1000 });
   // await login(driver)
   await getTrace(driver,row)
   driver.quit();

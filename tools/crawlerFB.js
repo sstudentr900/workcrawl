@@ -1,3 +1,4 @@
+//fb
 require('dotenv').config(); //載入.env環境檔
 const { initDrive } = require("./initDrive.js");
 const { By, until } = require('selenium-webdriver') // 從套件中取出需要用到的功能
@@ -134,7 +135,7 @@ async function fbGetData(driver,itemsCssName,itemTimeCssName,json) {
   //for (const item of items) {
   for (const [index,item] of items.entries()) {
     const obj = {}
-    console.log(`start,id:${json['id']},index:${index},totle:${items.length}----------------------------------------------------`)
+    console.log(`start,fb,id:${json['id']},index:${index},totle:${items.length}----------------------------------------------------`)
     //console.log(`一定滾動到要抓取位置`)
     await driver.actions().scroll(0, 0, 0, 0, item).perform()
     await driver.sleep(4000)
@@ -230,8 +231,13 @@ async function fbGetData(driver,itemsCssName,itemTimeCssName,json) {
         // console.log(`文章A_查看更多:${articlesMore2.length}`)
         await driver.executeScript("arguments[0].click();", articlesMore2[0]);
       }
-      // await driver.sleep(3000)
-      obj.articles = await articlesObjs[0].getText()
+      await driver.sleep(2000)
+      if(articlesObjs.length>0){
+        obj.articles = await articlesObjs[0].getText()
+      }else{
+        console.log(`end,文章找不到跳出本循環------------------------------------------------`)
+        continue;
+      }
       //console.log(`文章1:${obj.articles}`)
     }else if( !obj.articles && articlesObjs2.length > 0){
       // console.log(`文章B:${articlesObjs2.length}`)
@@ -331,7 +337,7 @@ async function fbGetTrace(driver,row) {
 async function crawlerFB(row) {    
   const driver = await initDrive();
   //螢幕寬度
-  await driver.manage().window().setRect({ width: 1420, height: 1200 });
+  await driver.manage().window().setRect({ width: 1420, height: 1000 });
   // await fbLogin(driver)
   await fbGetTrace(driver,row)
   // const rows = await dbQuery( 'SELECT * from crawlerurl where deletes = ?',['n'])

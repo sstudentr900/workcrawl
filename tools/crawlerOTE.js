@@ -108,7 +108,7 @@ async function getTrace(driver,row) {
 }
 async function crawler(row) {    
   const driver = await initDrive()
-  await driver.manage().window().setRect({ width: 1420, height: 1200 });
+  await driver.manage().window().setRect({ width: 1420, height: 1000 });
   // await login(driver)
   await getTrace(driver,row)
   driver.quit();

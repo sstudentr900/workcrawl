@@ -26,6 +26,7 @@ const {crawlerFB} = require("./tools/crawlerFB.js"); //爬蟲FB
 const {crawlerOHF} = require("./tools/crawlerOHF.js"); //爬蟲104
 const {crawlerBEAR} = require("./tools/crawlerBEAR.js"); //爬蟲518
 const {crawlerOTE} = require("./tools/crawlerOTE.js"); //爬蟲1111
+const {crawlerYES} = require("./tools/crawlerYES.js"); //爬蟲yes123
 async function aa() { //執行程式
   console.log(`開始執行爬蟲排程作業： ${new Date()}`);
   const rows = await dbQuery( 'SELECT * from crawlerurl where deletes = ?',['n'])
@@ -42,6 +43,8 @@ async function aa() { //執行程式
       //   await crawlerOHF(row)
       // }
       await crawlerOHF(row)
+    }else if(row['storeurl'].includes('yes123')){
+      await crawlerYES(row)
     }else if(row['storeurl'].includes('518')){
       await crawlerBEAR(row)
     }else if(row['storeurl'].includes('1111')){
