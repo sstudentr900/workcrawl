@@ -4,8 +4,8 @@ const { initDrive } = require("./initDrive.js");
 const { By, until,Select } = require('selenium-webdriver') // 從套件中取出需要用到的功能
 const { dbQuery,dbInsert,dbUpdata,dbDelete,timeFn } = require('./db.js')
 const itemsClassName = '#listContent .all_job_hover';//欄
-const dataClaccName = 'span.job__date';//日期
-const titleClaccName = 'h2.job__title__inner a';//日期
+const dataClaccName = '.job__date';//日期
+const titleClaccName = 'h2.job__title__inner a';//標題
 async function login(driver) {
   const username = process.env.BEAR_USERNAME
   const userpass = process.env.BEAR_PASSWORD

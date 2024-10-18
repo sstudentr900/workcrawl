@@ -88,17 +88,19 @@ async function showData(driver,date){
   const title = await lisLast.findElement(By.css(titleClassName)).getText()
   if(date<=time){
     if( nowTitle == title){
-      console.log(`今天日期:${date}-來源日期:${time}-日期判斷${date<=time}-上個標題:${nowTitle}-標題:${title}-標題一樣重整`)
+      console.log(`來源日期:${time}-日期判斷:${date<=time}-上個標題:${nowTitle}-標題:${title}-標題一-跳出`)
       nowTitle = ''
-      await driver.navigate().refresh();
-      await driver.sleep(3000)
+      // await driver.navigate().refresh();
+      // await driver.sleep(3000)
+      return true;
     }else{
       nowTitle = title
-      console.log(`今天日期:${date}-來源日期:${time}-日期判斷${date<=time}-標題:${title}-下一個`)
+      console.log(`來源日期:${time}-日期判斷:${date<=time}-標題:${title}-下一個`)
     }
     await showData(driver,date)
   }else{
-    console.log(`今天日期:${date}-來源日期:${time}-日期判斷${date<=time}-標題:${title}-跳出`)
+    console.log(`來源日期:${time}-日期判斷:${date<=time}-標題:${title}-跳出`)
+    nowTitle = ''
     return true;
   }
 }
@@ -110,7 +112,7 @@ async function getTrace(driver,row) {
   let date = await timeFn()
   const year = `${date['year']}`
   date = `${String(date['month']).padStart(2,'0')}/${String(date['day']).padStart(2,'0')}`
-  console.log(`今天日期:`,date)
+  console.log(`今天日期:${date}`)
 
   //顯示抓取內容
   await showData(driver,date)
@@ -118,41 +120,57 @@ async function getTrace(driver,row) {
   //開始抓取內容
   const lis = await driver.findElements(By.css(lisClassName))
   console.log(`抓取總數:${ lis.length }筆`)
+  //nowTitle = ''
   for (const [index,li] of lis.entries()) {
     console.log(`start,104,index:${index}-------------------`);
     const obj = {}
-    //const time = await li.findElement(By.css(dateClassName)).getText()
-    let time = await li.findElements(By.css(dateClassName))
-    if(time.length>0){
-      time = await time[0].getText()
-      const time1 = new Date(date)
-      const time2 = new Date(time)
-      console.log('抓取內容，今天日期',time1,'來源日期',time2)
-      if(time1>time2){
-        console.log(`end,日期小於${date}-跳出-------------------`);
-        break;
-      }
-      //else if(!time){
-        //console.log(`來源日期有錯但繼續執行..`);
-      //}
-      obj.time = time?`${year}-${time.replaceAll('/','-')}`:`${year}-${date.replaceAll('/','-')}`
-    }else{
-      //obj.time = ''
-      console.log(`end,找不到時間-下一個-------------------`)
-      continue;
-    }
-
-    
 
     // console.log(`滾動到要抓取位置`)
     await driver.actions().scroll(0, 0, 0, 200, li).perform()
     await driver.sleep(3000)
 
+    //console.log('日期')
+    //const time = await li.findElement(By.css(dateClassName)).getText()
+    let time = await li.findElements(By.css(dateClassName))
+    // if(time.length>0){
+    time = await time[0].getText()
+    const time1 = new Date(date)
+    const time2 = new Date(time)
+    if(isNaN(time2.getTime())){
+      //obj.time = ''
+      console.log(`end,無效日期-${time2}-下一個-------------------`)
+      continue;
+    }
+    if(time1>time2){
+      console.log(`end,日期小於-${date}-跳出-------------------`);
+      break;
+    }
+    //else if(!time){
+      //console.log(`來源日期有錯但繼續執行..`);
+    //}
+    obj.time = time?`${year}-${time.replaceAll('/','-')}`:`${year}-${date.replaceAll('/','-')}`
+    console.log('抓取內容，今天日期',time1,'來源日期',time2)
+    // }else{
+    //   //obj.time = ''
+    //   console.log(`end,找不到時間-下一個-------------------`)
+    //   continue;
+    // }
+
+    //console.log('標題')
+    const title = await li.findElement(By.css(titleClassName)).getText()
+    if(!title){
+      console.log(`end,找不到標題-下一個-------------------`)
+      continue;
+    }
+    // if(nowTitle==title){
+    //   console.log(`end,標題一樣${nowTitle},${title}-跳出-------------------`)
+    //   break;
+    // }
+    // nowTitle = title
+    obj.name = title
+    obj.namehref = await li.findElement(By.css(titleClassName)).getAttribute('href')
     //來源ID
     obj.crawlerurl_id = row['id']
-    //標題
-    obj.name = await li.findElement(By.css(titleClassName)).getText()
-    obj.namehref = await li.findElement(By.css(titleClassName)).getAttribute('href')
     //文章
     let articles = await li.findElements(By.css(articlesClassName))
     if(articles.length>0){
@@ -178,6 +196,7 @@ async function getTrace(driver,row) {
     const nameValue = await dbQuery( 'SELECT * from work where name = ?',[obj.name])
     if(nameValue.length>0){
       console.log(`end,標題重複-下一個-------------------`);
+      continue;
     }else{
       //save
       await dbInsert('work',obj)

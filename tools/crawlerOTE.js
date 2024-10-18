@@ -5,6 +5,8 @@ const { By, until,Key,Select } = require('selenium-webdriver') // 從套件中�
 const { dbQuery,dbInsert,dbUpdata,dbDelete,timeFn } = require('./db.js')
 const itemsClassName = '.item__job.job-item.card.work';//欄
 const dataClaccName = '.bottom_content .data';//日期
+const titleClassName = '.title h2'
+let nowTitle = '';
 async function login(driver) {
   const username = process.env.OTE_USERNAME
   const userpass = process.env.OTE_PASSWORD
@@ -32,12 +34,28 @@ async function showData(driver,date){
   await driver.sleep(1000)
   //console.log(`判斷日期`)
   const time = await lisLast.findElement(By.css(dataClaccName)).getText()
-  const title = await lisLast.findElement(By.css('.title h2')).getText()
-  console.log(`今天日期:${date}-來源日期:${time}-日期判斷${time && !(date<=time)}-標題:${title}`)
-  if(time && !(date<=time)){
-    return true;
-  }else{
+  // const title = await lisLast.findElement(By.css('.title h2')).getText()
+  // console.log(`今天日期:${date}-來源日期:${time}-日期判斷${time && !(date<=time)}-標題:${title}`)
+  // if(time && !(date<=time)){
+  //   return true;
+  // }else{
+  //   await showData(driver,date)
+  // }
+  const title = await lisLast.findElement(By.css(titleClassName)).getText()
+  if(date<=time){
+    if( nowTitle == title){
+      console.log(`來源日期:${time}-日期判斷:${date<=time}-上個標題:${nowTitle}-標題:${title}-標題一-跳出`)
+      nowTitle = ''
+      return true;
+    }else{
+      nowTitle = title
+      console.log(`來源日期:${time}-日期判斷:${date<=time}-標題:${title}-下一個`)
+    }
     await showData(driver,date)
+  }else{
+    console.log(`來源日期:${time}-日期判斷:${date<=time}-標題:${title}-跳出`)
+    nowTitle = ''
+    return true;
   }
 }
 async function getTrace(driver,row) {

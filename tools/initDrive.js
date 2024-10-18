@@ -67,9 +67,9 @@ async function initDrive() {
 
 
   return await new webdriver.Builder()
-  .setChromeOptions(options)
-  // .forBrowser("chrome")
-  .withCapabilities(webdriver.Capabilities.chrome())
+  .forBrowser("chrome") // 指定浏览器是 Chrome
+  .setChromeOptions(options)  // 添加自定义 Chrome 配置
+  .withCapabilities(webdriver.Capabilities.chrome()) // 设置 Chrome 的默认能力
   .build();
 
   // return await new webdriver.Builder().forBrowser("chrome").withCapabilities(

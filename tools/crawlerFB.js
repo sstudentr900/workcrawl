@@ -225,11 +225,16 @@ async function fbGetData(driver,itemsCssName,itemTimeCssName,json) {
         //   await driver.sleep(2000)
         // });
       }
-      const articlesMore2 = await articlesObjs[0].findElements(By.xpath("//div[contains(text(),'查看更多')]"))
-      //console.log('查看更多',articlesMore2.length)
-      if(articlesMore2.length>0){
-        // console.log(`文章A_查看更多:${articlesMore2.length}`)
-        await driver.executeScript("arguments[0].click();", articlesMore2[0]);
+      try {
+        const articlesMore2 = await articlesObjs[0].findElements(By.xpath("//div[contains(text(),'查看更多')]"))
+        //console.log('查看更多',articlesMore2.length)
+        if(articlesMore2.length>0){
+          // console.log(`文章A_查看更多:${articlesMore2.length}`)
+          await driver.executeScript("arguments[0].click();", articlesMore2[0]);
+        }
+      } catch (error) {
+        console.log(`end,${error},元素失效跳出本循環------------------------------------------------`);
+        continue;
       }
       await driver.sleep(2000)
       if(articlesObjs.length>0){
