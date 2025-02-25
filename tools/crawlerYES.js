@@ -7,7 +7,9 @@ const itemsClassName = '.job_refer_list .Job_opening';//欄
 const dateClaccName = '.Job_opening_item_date .d-flex div+div';//日期
 const titleClaccName = '.Job_opening_item_title h5 a';//標題
 const articlesClaccName = '.Job_opening_item_title h6 a';//內容
-let limit = 0 
+const limitTptle = 4 //錯誤總次數
+let limit = 0 //當前錯誤次數
+let oldTitle = '' //錯誤標題
 async function showData(driver,date){
   const lis = await driver.findElements(By.css(itemsClassName))
   const lisLast = lis[lis.length-1]
@@ -20,15 +22,28 @@ async function showData(driver,date){
   const title = await lisLast.findElement(By.css(titleClaccName)).getText()
   console.log(`今天日期:${date}-來源日期:${time}-日期判斷${time && !(date<=time)}-標題:${title}`)
   if(!(date<=time)){
-    if(limit>=2){
+    // if(limit>=2 && oldTitle==title){
+    //   return true;
+    // }else{
+    //   limit++;
+    //   await showData(driver,date)
+    // }
+    console.log(`showData,日期小於今天跳出---------------`);
+    return true;
+  }
+  // else{
+  //   await showData(driver,date)
+  // }
+  if(date==time && oldTitle==title){
+    if(limit>= limitTptle){
+      console.log(`showData,日期標題一樣太多次跳出---------------`);
       return true;
     }else{
       limit++;
-      await showData(driver,date)
     }
-  }else{
-    await showData(driver,date)
   }
+  oldTitle = title
+  await showData(driver,date)
 }
 async function getTrace(driver,row) {
   console.log('start,yes,執行內容',row)
@@ -44,6 +59,7 @@ async function getTrace(driver,row) {
 
   //抓取內容
   limit = 0
+  oldTitle=''
   const lis = await driver.findElements(By.css(itemsClassName))
   console.log(`抓取yes內容數量:${ lis.length }`)
   for (const [index,li] of lis.entries()) {
@@ -58,22 +74,33 @@ async function getTrace(driver,row) {
     if(time.length<=0){continue;}
     time = await time[0].getText()
     time = time.replace(".", "/")
-    console.log('start,yes,index:',index,'今天日期',date,'來源日期',time,'---------------')
+    const title = await li.findElement(By.css(titleClaccName)).getText()    //標題
+    console.log('start,yes,index:',index,'今天日期',date,'來源日期',time,'標題',title,'---------------')
     if(!(date<=time)){
-      if(limit>=2){
-        console.log(`end,日期小於今天跳出---------------`);
+      if(limit>= limitTptle){
+        console.log(`end,limit,${limit},日期小於今天跳出---------------`);
         break;
       }else{
         limit++;
       }
     }
+    if(date==time && oldTitle==title){
+      if(limit>= limitTptle){
+        console.log(`end,limit,${limit},日期標題一樣太多次跳出---------------`);
+        break;
+      }else{
+        limit++;
+      }
+    }
+
+    oldTitle = title
     obj.time = `${year}-${time.replaceAll('/','-')}`
 
     //來源ID
     obj.crawlerurl_id = row['id']
 
     //標題
-    obj.name = await li.findElement(By.css(titleClaccName)).getText()
+    obj.name = title
     obj.namehref = await li.findElement(By.css(titleClaccName)).getAttribute('href')
 
     //文章

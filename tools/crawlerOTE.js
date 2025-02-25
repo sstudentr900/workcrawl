@@ -3,9 +3,9 @@ require('dotenv').config(); //載入.env環境檔
 const { initDrive } = require("./initDrive.js");
 const { By, until,Key,Select } = require('selenium-webdriver') // 從套件中取出需要用到的功能
 const { dbQuery,dbInsert,dbUpdata,dbDelete,timeFn } = require('./db.js')
-const itemsClassName = '.item__job.job-item.card.work';//欄
-const dataClaccName = '.bottom_content .data';//日期
-const titleClassName = '.title h2'
+const itemsClassName = '.search-content .job-card';//欄
+const dataClaccName = '.job-card__content .text-gray-600';//日期
+const titleClassName = 'h2.job-card__title'
 let nowTitle = '';
 async function login(driver) {
   const username = process.env.OTE_USERNAME
@@ -33,7 +33,8 @@ async function showData(driver,date){
   await driver.actions().scroll(0, 0, 0, 200, lisLast).perform()
   await driver.sleep(1000)
   //console.log(`判斷日期`)
-  const time = await lisLast.findElement(By.css(dataClaccName)).getText()
+  let time = await lisLast.findElement(By.css(dataClaccName)).getText()
+  time = time.replace(/\s*\/\s*/g, "/")
   // const title = await lisLast.findElement(By.css('.title h2')).getText()
   // console.log(`今天日期:${date}-來源日期:${time}-日期判斷${time && !(date<=time)}-標題:${title}`)
   // if(time && !(date<=time)){
@@ -78,7 +79,8 @@ async function getTrace(driver,row) {
   console.log(`抓取1111內容數量:${ lis.length }`)
   for (const [index,li] of lis.entries()) {
     const obj = {}
-    const time = await li.findElement(By.css(dataClaccName)).getText()
+    let time = await li.findElement(By.css(dataClaccName)).getText()
+    time = time.replace(/\s*\/\s*/g, "/")
     console.log(`start,1111,index:${index}-----------`)
     console.log('今天日期',date,'來源日期',time)
     if(time && !(date<= time)){
@@ -97,12 +99,13 @@ async function getTrace(driver,row) {
     //來源ID
     obj.crawlerurl_id = row['id']
     //標題
-    obj.name = await li.findElement(By.css('.title h2')).getText()
+    obj.name = await li.findElement(By.css(titleClassName)).getText()
     //路徑
     // obj.namehref = 'https://www.1111.com.tw/'+await li.findElement(By.css('.title a')).getAttribute('href')
-    obj.namehref = await li.findElement(By.css('.title a')).getAttribute('href')
+    const namehref = await li.findElement(By.css('.job-card__content a')).getAttribute('href')
+    obj.namehref = 'https://www.1111.com.tw/'+namehref
     //文章
-    obj.articles = await li.findElement(By.css('.introduce')).getText()
+    obj.articles = await li.findElement(By.css('.line-clamp-2')).getText()
 
     console.log('目前抓取資料',obj)
 

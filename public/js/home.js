@@ -111,7 +111,8 @@ const publicBoxsHtml = (r)=>{
                       // window.location.reload();
                       deletBtn.closest('.publicBox').remove()
                       document.querySelectorAll('.publicBox.active').forEach(i=>i.remove())
-                      cascadeDisplay()
+                      // cascadeDisplay()
+                      search(1)
                     }
                   });
                 }
@@ -266,6 +267,10 @@ const search = (page)=>{
         'addHtml': json['rows'].map(r=>publicBoxsHtml(r))
       }))
       // afterNumber = 0
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth' 
+      });
     }
     // console.log( 179,page,json['pageTotle'], page<=json['pageTotle'])
     if(page>1 && page <= json['pageTotle']){
@@ -286,6 +291,7 @@ const scroll=()=>{
     // console.log('scroll')
     const publicWidth = document.querySelector('.publicContent .publicWidth')
     const publicBoxs = publicWidth.querySelector(".publicBoxs");
+    console.log('publicBoxs',publicBoxs.dataset)
     const pageCount = publicBoxs.dataset.pagetotle;
     let currentPage = publicBoxs.dataset.pagenow;
     const throttle = (callback, time) => {

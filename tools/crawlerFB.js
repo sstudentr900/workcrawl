@@ -5,6 +5,7 @@ const { By, until } = require('selenium-webdriver') // 從套件中取出需要�
 const { dbQuery,dbInsert,dbUpdata,dbDelete } = require('./db')
 const { createWorker, OEM, PSM } = require('tesseract.js');  //文本識別
 const fs = require('fs');
+const articlesClass = ''//文章位置
 async function fbLogin(driver) {
   const fb_username = process.env.FB_USERNAME
   const fb_userpass = process.env.FB_PASSWORD
@@ -164,11 +165,17 @@ async function fbGetData(driver,itemsCssName,itemTimeCssName,json) {
     const nameObj2= await item.findElements(By.css('h3 a'));
     if(nameObj.length>0){
       //console.log(await item.findElement(By.css('a.x1i10hfl.xjbqb8w span')).getText())
-      obj.name= await nameObj[0].findElement(By.css('span')).getText()
-      obj.namehref= await nameObj[0].getAttribute('href');
+      const nameObjSpan= await nameObj[0].findElements(By.css('span'));
+      if(nameObjSpan.length>0){
+        obj.name= await nameObjSpan[0].getText()
+        obj.namehref= await nameObj[0].getAttribute('href');
+      }
     }else if(nameObj2.length>0){
-      obj.name= await nameObj2[0].findElement(By.css('span')).getText()
-      obj.namehref= await nameObj2[0].getAttribute('href');
+      const nameObjSpan2= await nameObj2[0].findElements(By.css('span'));
+      if(nameObjSpan2.length>0){
+        obj.name= await nameObjSpan2[0].getText()
+        obj.namehref= await nameObj2[0].getAttribute('href');
+      }
     }
     console.log(`名子:${obj.name}`)
     console.log(`名子href:${obj.namehref}`)

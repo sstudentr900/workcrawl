@@ -8,6 +8,7 @@ const dateClassName = '.date-container'
 const titleClassName = 'a.h2'
 const articlesClassName = 'div.info-description'
 let nowTitle = '';
+let misse = 0
 async function login(driver) {
   const OHF_username = process.env.OHF_USERNAME
   const OHF_userpass = process.env.OHF_PASSWORD
@@ -49,7 +50,7 @@ async function login(driver) {
   //   return false;
   // }
 }
-async function showData(driver,date){
+async function showData(driver,date,row){
   //console.log(`手動載入`)
   // const button = await driver.findElements(By.css('button.b-btn.b-btn--link.js-more-page'))
   // if(button.length>0){
@@ -59,9 +60,13 @@ async function showData(driver,date){
   //console.log(`抓最後一筆`)
   const lis = await driver.findElements(By.css(lisClassName))
   if(!(lis.length>0)){ 
-    console.log(`找不到lis-下一個`)
-    //await showData(driver,date)
-    return true;
+    if(misse>4){
+      misse++
+      console.log(`找不到lis-下一個`)
+      return true;
+    }else{
+      getTrace(driver,row)
+    }
   }
 
   //await driver.sleep(2000)
@@ -76,13 +81,30 @@ async function showData(driver,date){
   //   await showData(driver,date)
   // }
   //console.log(`判斷lisLast`,lis)
-  let time = await lisLast.findElements(By.css(dateClassName))
-  if(!(time.length > 0)){ 
-    console.log(`找不到時間-下一個`)
-    await showData(driver,date) 
-  }else{
-    time = await time[0].getText() 
+  let time = ''
+  try {
+    time = await lisLast.findElements(By.css(dateClassName))
+    if(!(time.length > 0)){ 
+      if(misse>4){
+        misse++
+        console.log(`找不到lis-下一個`)
+        return true;
+      }else{
+        getTrace(driver,row)
+      }
+    }else{
+      time = await time[0].getText() 
+    }
+  }catch (error){
+    if(misse>4){
+      misse++
+      console.log(`找不到lis-下一個`)
+      return true;
+    }else{
+      getTrace(driver,row)
+    }
   }
+
 
   //console.log(`標題`)
   const title = await lisLast.findElement(By.css(titleClassName)).getText()
@@ -115,7 +137,7 @@ async function getTrace(driver,row) {
   console.log(`今天日期:${date}`)
 
   //顯示抓取內容
-  await showData(driver,date)
+  await showData(driver,date,row)
 
   //開始抓取內容
   const lis = await driver.findElements(By.css(lisClassName))
