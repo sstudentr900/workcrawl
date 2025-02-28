@@ -22,37 +22,42 @@
 
 
 const { dbQuery,dbInsert,dbUpdata,dbDelete,timeFn } = require('./tools/db')
+const { initDrive } = require("./tools/initDrive.js");
 const {crawlerFB} = require("./tools/crawlerFB.js"); //爬蟲FB
 const {crawlerOHF} = require("./tools/crawlerOHF.js"); //爬蟲104
 const {crawlerBEAR} = require("./tools/crawlerBEAR.js"); //爬蟲518
 const {crawlerOTE} = require("./tools/crawlerOTE.js"); //爬蟲1111
 const {crawlerYES} = require("./tools/crawlerYES.js"); //爬蟲yes123
+
 async function aa() { //執行程式
   console.log(`開始執行爬蟲排程作業： ${new Date()}`);
   const rows = await dbQuery( 'SELECT * from crawlerurl where deletes = ?',['n'])
   // const rows = await dbQuery( 'SELECT * from crawlerurl where id= 6')
   // console.log(rows.length)
   if(!rows.length){console.log(`cronJob_rows沒有資料跳出`);return false;}
+  const driver = await initDrive();
+  await driver.manage().window().setRect({ width: 1420, height: 1000 });   //螢幕寬度
   for (const row of rows) {
     if(row['storeurl'].includes('facebook')){
-      await crawlerFB(row)
+      await crawlerFB(driver,row)
     }else if(row['storeurl'].includes('104')){
       // let week = await timeFn()
       // week = week['week']
       // if(week!=0 || week!=6){
       //   await crawlerOHF(row)
       // }
-      await crawlerOHF(row)
+      await crawlerOHF(driver,row)
     }else if(row['storeurl'].includes('yes123')){
-      await crawlerYES(row)
+      await crawlerYES(driver,row)
     }else if(row['storeurl'].includes('518')){
-      await crawlerBEAR(row)
+      await crawlerBEAR(driver,row)
     }else if(row['storeurl'].includes('1111')){
-      await crawlerOTE(row)
+      await crawlerOTE(driver,row)
     }else{
       console.log('cronJob_storeurl沒有資料跳出 error')
     }
   }
+  driver.quit();
   console.log('排程作業執行完畢！');
 }
 aa()

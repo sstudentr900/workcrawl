@@ -61,7 +61,7 @@ async function initDrive() {
   // options.addArguments("--incognito")
 
   //使用者的資料
-  options.addArguments('--user-data-dir=C:/Users/sstud/AppData/Local/Google/Chrome/User Data2/')
+  options.addArguments("--user-data-dir=C:/Users/User/AppData/Local/Google/Chrome/User Data2")
   //chrom使用者
   options.addArguments('--profile-directory=Profile 4')
 

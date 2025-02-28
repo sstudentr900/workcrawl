@@ -117,12 +117,12 @@ async function getTrace(driver,row) {
     }
   }
 }
-async function crawlerBEAR(row) {    
-  const driver = await initDrive()
-  await driver.manage().window().setRect({ width: 1420, height: 1000 });
+async function crawlerBEAR(driver,row) {    
+  //const driver = await initDrive()
+  //await driver.manage().window().setRect({ width: 1420, height: 1000 });
   // await login(driver)
   await getTrace(driver,row)
-  driver.quit();
+  //driver.quit();
 }
 exports.crawlerBEAR = crawlerBEAR;//讓其他程式在引入時可以使用這個函式
 

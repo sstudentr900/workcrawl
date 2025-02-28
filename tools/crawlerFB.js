@@ -5,7 +5,9 @@ const { By, until } = require('selenium-webdriver') // 從套件中取出需要�
 const { dbQuery,dbInsert,dbUpdata,dbDelete } = require('./db')
 const { createWorker, OEM, PSM } = require('tesseract.js');  //文本識別
 const fs = require('fs');
-const articlesClass = ''//文章位置
+// console.log(`類別名`)
+const itemsCssName = '.x1yztbdb.x1n2onr6.xh8yej3.x1ja2u2z';
+const itemTimeCssName = '.x193iq5w.xeuugli.x13faqbe.x1vvkbs.x1xmvt09.x1lliihq.x1s928wv.xhkezso.x1gmr53x.x1cpjm7i.x1fgarty.x1943h6x.x4zkp8e.x676frb.x1nxh6w3.x1sibtaa.xo1l8bm.xi81zsa.x1yc453h a';
 async function fbLogin(driver) {
   const fb_username = process.env.FB_USERNAME
   const fb_userpass = process.env.FB_PASSWORD
@@ -55,7 +57,7 @@ async function fbSelectNewPost(driver) {
   }
   await driver.sleep(2000)
 }
-async function fbGetTime(driver,obj,itemTimeCssName){
+async function fbGetTime(driver,obj){
   const timeLink = await obj.findElements(By.css(`${itemTimeCssName}`))
   const timeLink_use = await obj.findElements(By.css(`${itemTimeCssName} use`))
   const timeLink_canvas = await obj.findElements(By.css(`${itemTimeCssName} canvas`))
@@ -92,7 +94,7 @@ async function fbGetTime(driver,obj,itemTimeCssName){
   }
   return timeText;
 }
-async function fbShowData(driver,number,itemsCssName,itemTimeCssName){
+async function fbShowData(driver,number){
   // console.log(`顯示資料`)
   // const itemFirst = await driver.findElement(By.css(itemsCssName))
   // const itemFirstY = Math.round((await itemFirst.getRect()).y) //該DIV的高
@@ -127,7 +129,7 @@ async function fbShowData(driver,number,itemsCssName,itemTimeCssName){
     await fbShowData(driver,number,itemsCssName,itemTimeCssName)
   }
 }
-async function fbGetData(driver,itemsCssName,itemTimeCssName,json) {
+async function fbGetData(driver,json) {
   // console.log(`抓取fb資料`)
   //const arrays = []
   const items = await driver.findElements(By.css(itemsCssName))
@@ -139,6 +141,7 @@ async function fbGetData(driver,itemsCssName,itemTimeCssName,json) {
     console.log(`start,fb,id:${json['id']},index:${index},totle:${items.length}----------------------------------------------------`)
     //console.log(`一定滾動到要抓取位置`)
     await driver.actions().scroll(0, 0, 0, 0, item).perform()
+    //
     await driver.sleep(4000)
 
 
@@ -195,16 +198,16 @@ async function fbGetData(driver,itemsCssName,itemTimeCssName,json) {
 
 
     // console.log(`圖片`)
-    obj.imgsrc=''
-    const imgsrcdivs= await item.findElements(By.css('img.x1ey2m1c.xds687c.x5yr21d.x10l6tqk.x17qophe.x13vifvy.xh8yej3'));
-    if(imgsrcdivs.length > 0){
-      const img = [];
-      for (const imgsrcdiv of imgsrcdivs) {
-        img.push(await imgsrcdiv.getAttribute("src"))
-      }
-      obj.imgsrc= img.join(',')
-    }
-    console.log(`圖片:${obj.imgsrc}`)
+    // obj.imgsrc=''
+    // const imgsrcdivs= await item.findElements(By.css('img.x1ey2m1c.xds687c.x5yr21d.x10l6tqk.x17qophe.x13vifvy.xh8yej3'));
+    // if(imgsrcdivs.length > 0){
+    //   const img = [];
+    //   for (const imgsrcdiv of imgsrcdivs) {
+    //     img.push(await imgsrcdiv.getAttribute("src"))
+    //   }
+    //   obj.imgsrc= img.join(',')
+    // }
+    // console.log(`圖片:${obj.imgsrc}`)
 
 
     // console.log(`頭圖`)
@@ -216,55 +219,59 @@ async function fbGetData(driver,itemsCssName,itemTimeCssName,json) {
     console.log(`頭圖:${obj.headimgsrc}`)
 
     //console.log(`文章`)
-    obj.articles=''
-    const articlesObjs = await item.findElements(By.css('.x1iorvi4.x1pi30zi'))
-    const articlesObjs2 = await item.findElements(By.css('.x1swvt13.x1pi30zi.xexx8yu.x18d9i69'))
-    const articlesObjs3 = await item.findElements(By.css('.x5yr21d.xyqdw3p'))
-    if(!obj.articles && articlesObjs.length > 0){
-      // console.log(`文章A:${articlesObjs.length}`)
-      const articlesMore = await articlesObjs[0].findElements(By.xpath("//div[contains(text(),'顯示更多')]"))
-      //console.log('顯示更多',articlesMore.length)
-      if(articlesMore.length>0){
-        // console.log(`文章A_顯示更多:${articlesMore.length}`)
-        await driver.executeScript("arguments[0].click();", articlesMore[0]);
-        // articlesMore.forEach(async(element) => {
-        //   await driver.executeScript("arguments[0].click();", element);
-        //   await driver.sleep(2000)
-        // });
-      }
-      try {
-        const articlesMore2 = await articlesObjs[0].findElements(By.xpath("//div[contains(text(),'查看更多')]"))
-        //console.log('查看更多',articlesMore2.length)
-        if(articlesMore2.length>0){
-          // console.log(`文章A_查看更多:${articlesMore2.length}`)
-          await driver.executeScript("arguments[0].click();", articlesMore2[0]);
-        }
-      } catch (error) {
-        console.log(`end,${error},元素失效跳出本循環------------------------------------------------`);
-        continue;
-      }
-      await driver.sleep(2000)
-      if(articlesObjs.length>0){
-        obj.articles = await articlesObjs[0].getText()
-      }else{
-        console.log(`end,文章找不到跳出本循環------------------------------------------------`)
-        continue;
-      }
-      //console.log(`文章1:${obj.articles}`)
-    }else if( !obj.articles && articlesObjs2.length > 0){
-      // console.log(`文章B:${articlesObjs2.length}`)
-      obj.articles = await item.findElement(By.css('.x1swvt13.x1pi30zi.xexx8yu.x18d9i69')).getText()
-      //console.log(`文章2:${obj.articles}`)
-    }else if(!obj.articles && articlesObjs3.length > 0){
-      // console.log(`文章B:${articlesObjs3.length}`)
-      obj.articles = await item.findElement(By.css('.x5yr21d.xyqdw3p')).getText()
+    obj.articles = 'false'
+    // const articlesObjs = await item.findElements(By.css('.x1iorvi4.x1pi30zi'))
+    // const articlesObjs2 = await item.findElements(By.css('.x1swvt13.x1pi30zi.xexx8yu.x18d9i69'))
+    // const articlesObjs3 = await item.findElements(By.css('.x5yr21d.xyqdw3p'))
+    // if(!obj.articles && articlesObjs.length > 0){
+    //   // console.log(`文章A:${articlesObjs.length}`)
+    //   const articlesMore = await articlesObjs[0].findElements(By.xpath("//div[contains(text(),'顯示更多')]"))
+    //   //console.log('顯示更多',articlesMore.length)
+    //   if(articlesMore.length>0){
+    //     // console.log(`文章A_顯示更多:${articlesMore.length}`)
+    //     await driver.executeScript("arguments[0].click();", articlesMore[0]);
+    //     // articlesMore.forEach(async(element) => {
+    //     //   await driver.executeScript("arguments[0].click();", element);
+    //     //   await driver.sleep(2000)
+    //     // });
+    //   }
+    //   try {
+    //     const articlesMore2 = await articlesObjs[0].findElements(By.xpath("//div[contains(text(),'查看更多')]"))
+    //     //console.log('查看更多',articlesMore2.length)
+    //     if(articlesMore2.length>0){
+    //       // console.log(`文章A_查看更多:${articlesMore2.length}`)
+    //       await driver.executeScript("arguments[0].click();", articlesMore2[0]);
+    //     }
+    //   } catch (error) {
+    //     console.log(`end,${error},元素失效跳出本循環------------------------------------------------`);
+    //     continue;
+    //   }
+    //   await driver.sleep(2000)
+    //   if(articlesObjs.length>0){
+    //     obj.articles = await articlesObjs[0].getText()
+    //   }else{
+    //     console.log(`end,文章找不到跳出本循環------------------------------------------------`)
+    //     continue;
+    //   }
+    //   //console.log(`文章1:${obj.articles}`)
+    // }else if( !obj.articles && articlesObjs2.length > 0){
+    //   // console.log(`文章B:${articlesObjs2.length}`)
+    //   obj.articles = await item.findElement(By.css('.x1swvt13.x1pi30zi.xexx8yu.x18d9i69')).getText()
+    //   //console.log(`文章2:${obj.articles}`)
+    // }else if(!obj.articles && articlesObjs3.length > 0){
+    //   // console.log(`文章B:${articlesObjs3.length}`)
+    //   obj.articles = await item.findElement(By.css('.x5yr21d.xyqdw3p')).getText()
+    // }
+    const articlesObjs4 = await item.findElements(By.css('div[data-ad-comet-preview="message"]'))
+    if(articlesObjs4.length > 0){
+      obj.articles = await articlesObjs4[0].getText()
     }
-    console.log(`文章:${obj.articles}`)
+    console.log(`文章:${obj.articles},${articlesObjs4.length}`)
     
 
   
     //console.log(`判斷文章`)
-    if(obj.articles){
+    if(obj.articles!='false'){
       const nokeyword = json['nokeyword'].split(',').find(value=>obj.articles.includes(value))
       const keyword = json['keyword'].split(',').find(value=>obj.articles.includes(value))
       if(nokeyword){
@@ -276,22 +283,22 @@ async function fbGetData(driver,itemsCssName,itemTimeCssName,json) {
         console.log(`文章(其他)抓取`)
         // continue;
       }
+
+      //驗證文章
+      const articles = await dbQuery( 'SELECT * from work where articles = ?',[obj.articles])
+      if(articles.length>0){
+        console.log(`end,文章重複跳出------------------------------------------------`);
+        continue;
+      }else{
+        obj.crawlerurl_id = json['id']
+        await dbInsert('work',obj)
+        console.log('end,儲存資料庫---------------------------------------------------')
+      }
     }
 
 
-    //驗證文章
-    const articles = await dbQuery( 'SELECT * from work where articles = ?',[obj.articles])
-    if(articles.length>0){
-      console.log(`end,文章重複跳出------------------------------------------------`);
-      continue;
-    }else{
-      obj.crawlerurl_id = json['id']
-      await dbInsert('work',obj)
-      console.log('end,儲存資料庫---------------------------------------------------')
-    }
-
-    //等10秒
-    //await driver.sleep(10000)
+    //等10秒下一個
+    await driver.sleep(10000)
     //push arrays
     // if(arrays.length>5){
     //   console.log('fb_大於5個跳出')
@@ -308,9 +315,7 @@ async function fbGetTrace(driver,row) {
   //來源ID
   //const crawlerurl_id = row['id']
 
-  // console.log(`類別名`)
-  const itemsCssName = '.x1yztbdb.x1n2onr6.xh8yej3.x1ja2u2z';
-  const itemTimeCssName = '.x193iq5w.xeuugli.x13faqbe.x1vvkbs.x1xmvt09.x1lliihq.x1s928wv.xhkezso.x1gmr53x.x1cpjm7i.x1fgarty.x1943h6x.x4zkp8e.x676frb.x1nxh6w3.x1sibtaa.xo1l8bm.xi81zsa.x1yc453h a';
+  
 
 
   //前往該網址
@@ -325,10 +330,10 @@ async function fbGetTrace(driver,row) {
   // await fbSelectNewPost(driver)
 
   // console.log(`顯示fb資料`)
-  await fbShowData(driver,200,itemsCssName,itemTimeCssName)
+  await fbShowData(driver,200)
 
   // console.log(`抓取fb資料`)
-  await fbGetData(driver,itemsCssName,itemTimeCssName,row)
+  await fbGetData(driver,row)
 
   //const arrays = await fbGetData(driver,itemsCssName,itemTimeCssName,row)
   //console.log('抓取FB內容數量',arrays.length)
@@ -346,12 +351,16 @@ async function fbGetTrace(driver,row) {
   //   await dbInsert('work',array)
   // }
 }
-async function crawlerFB(row) {    
-  const driver = await initDrive();
+async function crawlerFB(driver,row) {    
+  //const driver = await initDrive();
   //螢幕寬度
-  await driver.manage().window().setRect({ width: 1420, height: 1000 });
-  // await fbLogin(driver)
+  //await driver.manage().window().setRect({ width: 1420, height: 1000 });
+  //console.log(`start,FB,crawlerFB'`,row)
   await fbGetTrace(driver,row)
+  //driver.quit();
+
+
+  // await fbLogin(driver)
   // const rows = await dbQuery( 'SELECT * from crawlerurl where deletes = ?',['n'])
   // if(!rows){console.log(`crawlerFB沒有資料跳出`);return false;}
   // for (const row of rows) {
@@ -362,7 +371,6 @@ async function crawlerFB(row) {
   //   }
   // }
   // await fbGetTrace(driver,rows[0])
-  driver.quit();
 }
 exports.crawlerFB = crawlerFB;//讓其他程式在引入時可以使用這個函式
 // module.exports={

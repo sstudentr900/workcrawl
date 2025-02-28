@@ -226,12 +226,12 @@ async function getTrace(driver,row) {
     }
   }
 }
-async function crawlerOHF(row) {    
-  const driver = await initDrive();
-  await driver.manage().window().setRect({ width: 1420, height: 1000 });
+async function crawlerOHF(driver,row) {    
+  //const driver = await initDrive();
+  //await driver.manage().window().setRect({ width: 1420, height: 1000 });
   // await login(driver)
   await getTrace(driver,row)
-  driver.quit();
+  //driver.quit();
 }
 exports.crawlerOHF = crawlerOHF;//讓其他程式在引入時可以使用這個函式
 // module.exports={
