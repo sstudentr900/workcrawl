@@ -6,6 +6,8 @@ const { dbQuery,dbInsert,dbUpdata,dbDelete,timeFn } = require('./db.js')
 const itemsClassName = '#listContent .all_job_hover';//欄
 const dataClaccName = '.job__date';//日期
 const titleClaccName = 'h2.job__title__inner a';//標題
+let nowyear = '';
+let nowdate = '';
 async function login(driver) {
   const username = process.env.BEAR_USERNAME
   const userpass = process.env.BEAR_PASSWORD
@@ -23,7 +25,17 @@ async function login(driver) {
   login_elem.click()
   await driver.sleep(3000)
 }
-async function showData(driver,date){
+async function nowDateFn() { 
+  //今天日期在減3天
+  // const date = await timeFn({day:-3})
+  // nowYear = String(date['year'])
+  // nowdate = `${String(date['month']).padStart(2,'0')}/${String(date['day']).padStart(2,'0')}`
+  // console.log(`今天日期:${nowdate}`)
+  const date = await timeFn({day:-3})
+  nowyear = `${date['year']}`
+  nowdate = `${date['month']}/${date['day']}`
+}
+async function showData(driver){
   //console.log(`手動載入`)
   // const button = await driver.findElements(By.css('button.b-btn.b-btn--link.js-more-page'))
   // if(button.length>0){
@@ -40,11 +52,11 @@ async function showData(driver,date){
   let time = await lisLast.findElements(By.css(dataClaccName))
   if(time.length<=0){return true;}else{ time = time[0].getText(); }
   const title = await lisLast.findElement(By.css(titleClaccName)).getText()
-  console.log(`今天日期:${date}-來源日期:${time}-日期判斷${time && !(date<=time)}-標題:${title}`)
-  if(!(date<=time) || date<time){
+  console.log(`今天日期:${nowdate}-來源日期:${time}-日期判斷${time && !(nowdate<=time)}-標題:${title}`)
+  if(!(nowdate<=time) || nowdate<time){
     return true;
   }else{
-    await showData(driver,date)
+    await showData(driver)
   }
 }
 async function getTrace(driver,row) {
@@ -52,36 +64,36 @@ async function getTrace(driver,row) {
   await driver.get(row.storeurl)
 
   //抓取今天日期
-  let date = await timeFn()
-  const year = `${date['year']}`
-  date = `${date['month']}/${date['day']}`
+  // let date = await timeFn()
+  // const year = `${date['year']}`
+  // date = `${date['month']}/${date['day']}`
 
   //顯示要抓取內容
-  await showData(driver,date)
+  await showData(driver)
 
   //抓取內容
   const lis = await driver.findElements(By.css('#listContent .all_job_hover'))
-  console.log(`抓取518內容數量:${ lis.length }`)
+  console.log(`lis數量:${ lis.length-1 }`)
   for (const [index,li] of lis.entries()) {
     const obj = {}
     // let time = await li.findElement(By.css('span.job__date')).getText()
     let time = await li.findElements(By.css(dataClaccName))
     if(time.length<=0){continue;}
     time = await time[0].getText()
-    console.log(`start,518,index:${index}---------------`)
-    console.log('今天日期',date,'來源日期',time)
-    if(time && !(date<=time)){
+    console.log(`start,518,lis數量:${ lis.length-1 },index:${index}---------------`)
+    console.log('今天日期',nowdate,'來源日期',time)
+    if(time && !(nowdate<=time)){
       console.log(`end,日期小於今天跳出---------------`);
       break;
     }else if(!time){
       console.log(`來源日期沒有繼續..`);
     }
-    obj.time = `${year}-${time.replaceAll('/','-')}`
+    obj.time = `${nowyear}-${time.replaceAll('/','-')}`
 
 
     // console.log(`滾動到要抓取位置`)
     await driver.actions().scroll(0, 0, 0, 200, li).perform()
-    await driver.sleep(4000)
+    await driver.sleep(3000)
 
     //來源ID
     obj.crawlerurl_id = row['id']
@@ -121,6 +133,7 @@ async function crawlerBEAR(driver,row) {
   //const driver = await initDrive()
   //await driver.manage().window().setRect({ width: 1420, height: 1000 });
   // await login(driver)
+  await nowDateFn()
   await getTrace(driver,row)
   //driver.quit();
 }

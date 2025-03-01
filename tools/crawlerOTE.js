@@ -7,6 +7,7 @@ const itemsClassName = '.search-content .job-card';//欄
 const dataClaccName = '.job-card__content .text-gray-600';//日期
 const titleClassName = 'h2.job-card__title'
 let nowTitle = '';
+let nowdate = '';
 async function login(driver) {
   const username = process.env.OTE_USERNAME
   const userpass = process.env.OTE_PASSWORD
@@ -24,7 +25,16 @@ async function login(driver) {
   login_elem.click()
   await driver.sleep(3000)
 }
-async function showData(driver,date){
+async function nowDateFn() { 
+  //今天日期在減3天
+  // const date = await timeFn({day:-3})
+  // nowYear = String(date['year'])
+  // nowdate = `${String(date['month']).padStart(2,'0')}/${String(date['day']).padStart(2,'0')}`
+  // console.log(`今天日期:${nowdate}`)
+  const date = await timeFn({day:-3})
+  nowdate = date['date'].replaceAll('-','/')
+}
+async function showData(driver){
   //console.log(`抓最後一筆`)
   const lis = await driver.findElements(By.css(itemsClassName))
   const lisLast = lis[lis.length-1]
@@ -43,18 +53,18 @@ async function showData(driver,date){
   //   await showData(driver,date)
   // }
   const title = await lisLast.findElement(By.css(titleClassName)).getText()
-  if(date<=time){
+  if(nowdate<=time){
     if( nowTitle == title){
-      console.log(`來源日期:${time}-日期判斷:${date<=time}-上個標題:${nowTitle}-標題:${title}-標題一-跳出`)
+      console.log(`來源日期:${time}-日期判斷:${nowdate<=time}-上個標題:${nowTitle}-標題:${title}-標題一-跳出`)
       nowTitle = ''
       return true;
     }else{
       nowTitle = title
-      console.log(`來源日期:${time}-日期判斷:${date<=time}-標題:${title}-下一個`)
+      console.log(`來源日期:${time}-日期判斷:${nowdate<=time}-標題:${title}-下一個`)
     }
-    await showData(driver,date)
+    await showData(driver,nowdate)
   }else{
-    console.log(`來源日期:${time}-日期判斷:${date<=time}-標題:${title}-跳出`)
+    console.log(`來源日期:${time}-日期判斷:${nowdate<=time}-標題:${title}-跳出`)
     nowTitle = ''
     return true;
   }
@@ -68,23 +78,23 @@ async function getTrace(driver,row) {
   await driver.actions().scroll(0, 100, 0, 500).perform()
 
   //抓取今天日期
-  let date = await timeFn()
-  date = date['date'].replaceAll('-','/')
+  // let date = await timeFn()
+  // date = date['date'].replaceAll('-','/')
 
   //顯示要抓取內容
-  await showData(driver,date)
+  await showData(driver)
 
   //抓取內容
   const lis = await driver.findElements(By.css(itemsClassName))
-  console.log(`抓取1111內容數量:${ lis.length }`)
+  console.log(`lis數量:${ lis.length-1 }`)
   for (const [index,li] of lis.entries()) {
     const obj = {}
     let time = await li.findElement(By.css(dataClaccName)).getText()
     time = time.replace(/\s*\/\s*/g, "/")
-    console.log(`start,1111,index:${index}-----------`)
-    console.log('今天日期',date,'來源日期',time)
-    if(time && !(date<= time)){
-      console.log(`end,日期小於${date}跳出--------------`);
+    console.log(`start,1111,lis:${ lis.length-1 },index:${index}-----------`)
+    console.log('今天日期',nowdate,'來源日期',time)
+    if(time && !(nowdate<= time)){
+      console.log(`end,日期小於${nowdate}跳出--------------`);
       break;
     }else if(!time){
       console.log(`來源日期沒有繼續..`);
@@ -102,8 +112,7 @@ async function getTrace(driver,row) {
     obj.name = await li.findElement(By.css(titleClassName)).getText()
     //路徑
     // obj.namehref = 'https://www.1111.com.tw/'+await li.findElement(By.css('.title a')).getAttribute('href')
-    const namehref = await li.findElement(By.css('.job-card__content a')).getAttribute('href')
-    obj.namehref = 'https://www.1111.com.tw/'+namehref
+    obj.namehref = await li.findElement(By.css('.job-card__content a')).getAttribute('href')
     //文章
     obj.articles = await li.findElement(By.css('.line-clamp-2')).getText()
 
@@ -131,6 +140,7 @@ async function crawler(driver,row) {
   //const driver = await initDrive()
   //await driver.manage().window().setRect({ width: 1420, height: 1000 });
   // await login(driver)
+  await nowDateFn()
   await getTrace(driver,row)
   //driver.quit();
 }

@@ -82,8 +82,8 @@ async function timeFn(obj){
   const objDay = obj?.day
   const objYear= obj?.year
   const dt = objDate?new Date(objDate):new Date();
-  objDay?dt.setDate(dt.getDate()+Number(objDay)):'';//加減日
-  objYear?dt.setFullYear(dt.getFullYear()+Number(objYear)):'';//加減日
+  objDay?dt.setDate(dt.getDate()+Number(objDay)):'';//加減日 timeFn({day:-3})
+  objYear?dt.setFullYear(dt.getFullYear()+Number(objYear)):'';//加減年
   // const year = Number(dt.getFullYear());//取幾年-2022
   // let month = Number(dt.getMonth())+1;//取幾月-8
   // month = month>9?month:'0'+month//08

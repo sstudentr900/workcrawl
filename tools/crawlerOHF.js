@@ -5,10 +5,13 @@ const { By, until,Select } = require('selenium-webdriver') // 從套件中取出
 const { dbQuery,dbInsert,dbUpdata,dbDelete,timeFn } = require('./db.js')
 const lisClassName = '.job .job-summary'
 const dateClassName = '.date-container'
-const titleClassName = 'a.h2'
+const titleClassName = '.info-job a'
 const articlesClassName = 'div.info-description'
 let nowTitle = '';
-let misse = 0
+let misse = 0;
+const misseMax = 4;
+let nowdate = '';
+let nowYear = '';
 async function login(driver) {
   const OHF_username = process.env.OHF_USERNAME
   const OHF_userpass = process.env.OHF_PASSWORD
@@ -50,7 +53,14 @@ async function login(driver) {
   //   return false;
   // }
 }
-async function showData(driver,date,row){
+async function nowDateFn() { 
+  //今天日期在減3天
+  const date = await timeFn({day:-3})
+  nowYear = String(date['year'])
+  nowdate = `${String(date['month']).padStart(2,'0')}/${String(date['day']).padStart(2,'0')}`
+  console.log(`今天日期:${nowdate}`)
+}
+async function showData(driver,row){
   //console.log(`手動載入`)
   // const button = await driver.findElements(By.css('button.b-btn.b-btn--link.js-more-page'))
   // if(button.length>0){
@@ -60,11 +70,12 @@ async function showData(driver,date,row){
   //console.log(`抓最後一筆`)
   const lis = await driver.findElements(By.css(lisClassName))
   if(!(lis.length>0)){ 
-    if(misse>4){
+    if(misse>misseMax){
       misse++
       console.log(`找不到lis-下一個`)
       return true;
     }else{
+      console.log(`找不到lis-getTrace`)
       getTrace(driver,row)
     }
   }
@@ -81,47 +92,64 @@ async function showData(driver,date,row){
   //   await showData(driver,date)
   // }
   //console.log(`判斷lisLast`,lis)
-  let time = ''
-  try {
-    time = await lisLast.findElements(By.css(dateClassName))
-    if(!(time.length > 0)){ 
-      if(misse>4){
-        misse++
-        console.log(`找不到lis-下一個`)
-        return true;
-      }else{
-        getTrace(driver,row)
-      }
-    }else{
-      time = await time[0].getText() 
-    }
-  }catch (error){
-    if(misse>4){
+  //let time = ''
+  // try {
+  //   time = await lisLast.findElements(By.css(dateClassName))
+  //   if(!(time.length > 0)){ 
+  //     if(misse>4){
+  //       misse++
+  //       console.log(`找不到time-下一個`)
+  //       return true;
+  //     }else{
+  //       console.log(`找不到time-getTrace,${time.length}`)
+  //       getTrace(driver,row)
+  //     }
+  //   }else{
+  //     time = await time[0].getText() 
+  //   }
+  // }catch (error){
+  //   if(misse>4){
+  //     misse++
+  //     console.log(`錯誤找不到lis-下一個`)
+  //     return true;
+  //   }else{
+  //     console.log(`錯誤找不到time-getTrace`)
+  //     getTrace(driver,row)
+  //   }
+  // }
+  let time = await lisLast.findElements(By.css(dateClassName))
+  if(!(time.length > 0)){ 
+    if(misse>misseMax){
       misse++
-      console.log(`找不到lis-下一個`)
+      console.log(`找不到time-下一個`)
       return true;
     }else{
+      console.log(`找不到time-getTrace`)
       getTrace(driver,row)
     }
+  }else{
+    time = await time[0].getText() 
   }
 
 
   //console.log(`標題`)
   const title = await lisLast.findElement(By.css(titleClassName)).getText()
-  if(date<=time){
+
+  //判斷結束
+  if(nowdate<=time){
     if( nowTitle == title){
-      console.log(`來源日期:${time}-日期判斷:${date<=time}-上個標題:${nowTitle}-標題:${title}-標題一-跳出`)
+      console.log(`來源日期:${time}-日期判斷:${nowdate<=time}-上個標題:${nowTitle}-標題:${title}-標題一-跳出`)
       nowTitle = ''
       // await driver.navigate().refresh();
       // await driver.sleep(3000)
       return true;
     }else{
       nowTitle = title
-      console.log(`來源日期:${time}-日期判斷:${date<=time}-標題:${title}-下一個`)
+      console.log(`來源日期:${time}-日期判斷:${nowdate<=time}-標題:${title}-下一個`)
     }
-    await showData(driver,date)
+    await showData(driver,nowdate)
   }else{
-    console.log(`來源日期:${time}-日期判斷:${date<=time}-標題:${title}-跳出`)
+    console.log(`來源日期:${time}-日期判斷:${nowdate<=time}-標題:${title}-跳出`)
     nowTitle = ''
     return true;
   }
@@ -129,22 +157,17 @@ async function showData(driver,date,row){
 async function getTrace(driver,row) {
   console.log('104,頁面抓取內容',row)
   await driver.get(row.storeurl)
+  await driver.sleep(6000)
 
-  //抓取今天日期
-  let date = await timeFn()
-  const year = `${date['year']}`
-  date = `${String(date['month']).padStart(2,'0')}/${String(date['day']).padStart(2,'0')}`
-  console.log(`今天日期:${date}`)
-
-  //顯示抓取內容
-  await showData(driver,date,row)
+  //顯示要抓取內容
+  await showData(driver,row)
 
   //開始抓取內容
   const lis = await driver.findElements(By.css(lisClassName))
-  console.log(`抓取總數:${ lis.length }筆`)
+  console.log(`lis數:${ lis.length-1 }筆`)
   //nowTitle = ''
   for (const [index,li] of lis.entries()) {
-    console.log(`start,104,index:${index}-------------------`);
+    console.log(`start,104,li:${lis.length-1},index:${index}-------------------`);
     const obj = {}
 
     // console.log(`滾動到要抓取位置`)
@@ -156,7 +179,7 @@ async function getTrace(driver,row) {
     let time = await li.findElements(By.css(dateClassName))
     // if(time.length>0){
     time = await time[0].getText()
-    const time1 = new Date(date)
+    const time1 = new Date(nowdate)
     const time2 = new Date(time)
     if(isNaN(time2.getTime())){
       //obj.time = ''
@@ -164,13 +187,13 @@ async function getTrace(driver,row) {
       continue;
     }
     if(time1>time2){
-      console.log(`end,日期小於-${date}-跳出-------------------`);
+      console.log(`end,日期小於-${nowdate}-跳出-------------------`);
       break;
     }
     //else if(!time){
       //console.log(`來源日期有錯但繼續執行..`);
     //}
-    obj.time = time?`${year}-${time.replaceAll('/','-')}`:`${year}-${date.replaceAll('/','-')}`
+    obj.time = time?`${nowYear}-${time.replaceAll('/','-')}`:`${nowYear}-${nowdate.replaceAll('/','-')}`
     console.log('抓取內容，今天日期',time1,'來源日期',time2)
     // }else{
     //   //obj.time = ''
@@ -203,7 +226,6 @@ async function getTrace(driver,row) {
     }
     //類別
     //const classlist = await li.findElement(By.css('.job-list-tag.b-content')).getText()
-
     console.log('目前抓取資料',obj)
 
     //判斷關鍵字
@@ -213,7 +235,6 @@ async function getTrace(driver,row) {
       continue;
     }
 
-  
     //判斷標題
     const nameValue = await dbQuery( 'SELECT * from work where name = ?',[obj.name])
     if(nameValue.length>0){
@@ -230,6 +251,7 @@ async function crawlerOHF(driver,row) {
   //const driver = await initDrive();
   //await driver.manage().window().setRect({ width: 1420, height: 1000 });
   // await login(driver)
+  await nowDateFn()
   await getTrace(driver,row)
   //driver.quit();
 }
