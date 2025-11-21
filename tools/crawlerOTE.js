@@ -4,8 +4,8 @@ const { initDrive } = require("./initDrive.js");
 const { By, until,Key,Select } = require('selenium-webdriver') // 從套件中取出需要用到的功能
 const { dbQuery,dbInsert,dbUpdata,dbDelete,timeFn } = require('./db.js')
 const itemsClassName = '.search-content .job-card';//欄
-const dataClaccName = '.job-card__content .text-gray-600';//日期
-const titleClassName = 'h2.job-card__title'
+const dataClaccName = '.job-card__content .job-summary';//日期
+const titleClassName = 'a h2'
 let nowTitle = '';
 let nowdate = '';
 async function login(driver) {
@@ -44,6 +44,7 @@ async function showData(driver){
   await driver.sleep(1000)
   //console.log(`判斷日期`)
   let time = await lisLast.findElement(By.css(dataClaccName)).getText()
+  time = time.split(" ｜ ")[0]; // Split by " ｜ " and take the first part
   time = time.replace(/\s*\/\s*/g, "/")
   // const title = await lisLast.findElement(By.css('.title h2')).getText()
   // console.log(`今天日期:${date}-來源日期:${time}-日期判斷${time && !(date<=time)}-標題:${title}`)
@@ -89,19 +90,25 @@ async function getTrace(driver,row) {
   console.log(`lis數量:${ lis.length-1 }`)
   for (const [index,li] of lis.entries()) {
     const obj = {}
-    let time = await li.findElement(By.css(dataClaccName)).getText()
-    time = time.replace(/\s*\/\s*/g, "/")
-    console.log(`start,1111,lis:${ lis.length-1 },index:${index}-----------`)
-    console.log('今天日期',nowdate,'來源日期',time)
-    if(time && !(nowdate<= time)){
-      console.log(`end,日期小於${nowdate}跳出--------------`);
-      break;
-    }else if(!time){
-      console.log(`來源日期沒有繼續..`);
-    }
-    
-    obj.time = time.replaceAll('/','-')
 
+    //日期
+    let time = await li.findElements(By.css(dataClaccName))
+    if (time.length > 0) {
+      time = await time[0].getText()
+      time = time.replace(/\s*\/\s*/g, "/")
+      console.log(`start,1111,lis:${ lis.length-1 },index:${index}-----------`)
+      console.log('今天日期',nowdate,'來源日期',time)
+      if(time && !(nowdate<= time)){
+        console.log(`end,日期小於${nowdate}跳出--------------`);
+        break;
+      }else if(!time){
+        console.log(`來源日期沒有繼續..`);
+      }
+      obj.time = time.replaceAll('/','-')
+    } else {
+      console.log("找不到日期");
+      obj.time = ''
+    }
     // console.log(`滾動到要抓取位置`)
     await driver.actions().scroll(0, 0, 0, 0, li).perform()
     await driver.sleep(1000)
